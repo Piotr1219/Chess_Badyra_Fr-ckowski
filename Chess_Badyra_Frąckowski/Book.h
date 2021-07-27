@@ -1,9 +1,12 @@
+#pragma once
 #include <string>
 #include <list>
 #include <stack>
-#include "Engine.h"
-#include "main.h"
-#include "functions.h"
+#include <vector>
+//#include "Engine.h"
+//#include "Board.h"
+//#include "main.h"
+//#include "functions.h"
 #include "MoveContent.h"
 
 

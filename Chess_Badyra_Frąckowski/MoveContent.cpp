@@ -1,12 +1,12 @@
 #include <string>
 #include <list>
 #include <stack>
-#include "Engine.h"
+//#include "Engine.h"
 #include "Board.h"
-#include "Book.h"
-#include "main.h"
-#include "functions.h"
-#include "MoveContent.h"
+//#include "Book.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "MoveContent.h"
 #include "Piece.h"
 
 using namespace std;
@@ -42,10 +42,14 @@ public:
     PieceMoving(ChessPieceType pieceType)
     {
         PieceType = pieceType;
-        PieceColor = ChessPieceColor.White;
+        PieceColor = ChessPieceColor::White;
         SrcPosition = (byte)0;
         DstPosition = (byte)0;
         Moved = false;
+    }
+
+    PieceMoving() {
+        ;
     }
 };
 
@@ -68,10 +72,13 @@ public:
 
     PieceTaken(ChessPieceType pieceType)
     {
-        PieceColor = ChessPieceColor.White;
+        PieceColor = ChessPieceColor::White;
         PieceType = pieceType;
         Position = (byte)0;
         Moved = false;
+    }
+    PieceTaken() {
+        ;
     }
 };
 
@@ -97,9 +104,9 @@ public:
 
     MoveContent()
     {
-        PieceMoving MovingPiecePrimary(ChessPieceType.None);
-        PieceMoving MovingPieceSecondary(ChessPieceType.None);
-        PieceTaken TakenPiece(ChessPieceType.None);
+        PieceMoving MovingPiecePrimary = PieceMoving(ChessPieceType::None);
+        PieceMoving MovingPieceSecondary = PieceMoving(ChessPieceType::None);
+        PieceTaken TakenPiece = PieceTaken(ChessPieceType::None);
     }
 
     MoveContent(const MoveContent &moveContent)
@@ -126,19 +133,19 @@ public:
 
         if (move.find("=Q") != std::string::npos)
         {
-            PawnPromotedTo = ChessPieceType.Queen;
+            PawnPromotedTo = ChessPieceType::Queen;
         }
         else if (move.find("=N") != std::string::npos)
         {
-            PawnPromotedTo = ChessPieceType.Knight;
+            PawnPromotedTo = ChessPieceType::Knight;
         }
         else if (move.find("=R") != std::string::npos)
         {
-            PawnPromotedTo = ChessPieceType.Rook;
+            PawnPromotedTo = ChessPieceType::Rook;
         }
         else if (move.find("=B") != std::string::npos)
         {
-            PawnPromotedTo = ChessPieceType.Bishop;
+            PawnPromotedTo = ChessPieceType::Bishop;
         }
 
         for (auto& c : move)
@@ -159,14 +166,14 @@ public:
                 continue;
             }
 
-            if (MovingPiecePrimary.PieceType == ChessPieceType.None)
+            if (MovingPiecePrimary.PieceType == ChessPieceType::None)
             {
                 //Get Piece Type
                 MovingPiecePrimary.PieceType = GetPieceType(c);
 
-                if (MovingPiecePrimary.PieceType == ChessPieceType.None)
+                if (MovingPiecePrimary.PieceType == ChessPieceType::None)
                 {
-                    MovingPiecePrimary.PieceType = ChessPieceType.Pawn;
+                    MovingPiecePrimary.PieceType = ChessPieceType::Pawn;
 
                     //This is a column character
                     srcCol = GetIntFromColumn(c);
@@ -217,19 +224,19 @@ public:
         byte dstRow = (byte)(8 - ((int)MovingPiecePrimary.DstPosition / 8));
 
         std::string result = "" + (char)('a' + (char)srcCol) + ((char)srcRow)+(char)('a' + (char)dstCol) + ((char)dstRow);
-        if (PawnPromotedTo == ChessPieceType.Queen)
+        if (PawnPromotedTo == ChessPieceType::Queen)
         {
             result += "=Q";
         }
-        else if (PawnPromotedTo == ChessPieceType.Rook)
+        else if (PawnPromotedTo == ChessPieceType::Rook)
         {
             result += "=R";
         }
-        else if (PawnPromotedTo == ChessPieceType.Bishop)
+        else if (PawnPromotedTo == ChessPieceType::Bishop)
         {
             result += "=B";
         }
-        else if (PawnPromotedTo == ChessPieceType.Knight)
+        else if (PawnPromotedTo == ChessPieceType::Knight)
         {
             result += "=N";
         }
@@ -248,9 +255,9 @@ public:
         byte dstCol = (byte)((int)MovingPiecePrimary.DstPosition % 8);
         byte dstRow = (byte)(8 - ((int)MovingPiecePrimary.DstPosition / 8));
 
-        if (MovingPieceSecondary.PieceType == ChessPieceType.Rook)
+        if (MovingPieceSecondary.PieceType == ChessPieceType::Rook)
         {
-            if (MovingPieceSecondary.PieceColor == ChessPieceColor.Black)
+            if (MovingPieceSecondary.PieceColor == ChessPieceColor::Black)
             {
                 if (MovingPieceSecondary.SrcPosition == (byte)7)
                 {
@@ -261,7 +268,7 @@ public:
                     PgnMove += "O-O-O";
                 }
             }
-            else if (MovingPieceSecondary.PieceColor == ChessPieceColor.White)
+            else if (MovingPieceSecondary.PieceColor == ChessPieceColor::White)
             {
                 if (MovingPieceSecondary.SrcPosition == (byte)63)
                 {
@@ -279,44 +286,44 @@ public:
 
             switch (MovingPiecePrimary.PieceType)
             {
-                case ChessPieceType.Knight:
-                    PgnMove += GetColumnFromInt(srcCol);
+                case ChessPieceType::Knight:
+                    PgnMove += GetColumnFromInt((int)srcCol);
                     PgnMove += (char)srcRow;
                     break;
-                case ChessPieceType.Rook:
-                    PgnMove += GetColumnFromInt(srcCol);
+                case ChessPieceType::Rook:
+                    PgnMove += GetColumnFromInt((int)srcCol);
                     PgnMove += (char)srcRow;
                     break;
-                case ChessPieceType.Pawn:
+                case ChessPieceType::Pawn:
                     if (srcCol != dstCol)
                     {
-                        PgnMove += GetColumnFromInt(srcCol);
+                        PgnMove += GetColumnFromInt((int)srcCol);
                     }
                     break;
             }
 
-            if (TakenPiece.PieceType != ChessPieceType.None)
+            if (TakenPiece.PieceType != ChessPieceType::None)
             {
                 PgnMove += "x";
             }
 
-            PgnMove += GetColumnFromInt(dstCol);
+            PgnMove += GetColumnFromInt((int)dstCol);
 
             PgnMove += (char)dstRow;
 
-            if (PawnPromotedTo == ChessPieceType.Queen)
+            if (PawnPromotedTo == ChessPieceType::Queen)
             {
                 PgnMove += "=Q";
             }
-            else if (PawnPromotedTo == ChessPieceType.Rook)
+            else if (PawnPromotedTo == ChessPieceType::Rook)
             {
                 PgnMove += "=R";
             }
-            else if (PawnPromotedTo == ChessPieceType.Bishop)
+            else if (PawnPromotedTo == ChessPieceType::Bishop)
             {
                 PgnMove += "=B";
             }
-            else if (PawnPromotedTo == ChessPieceType.Knight)
+            else if (PawnPromotedTo == ChessPieceType::Knight)
             {
                 PgnMove += "=N";
             }
@@ -352,15 +359,15 @@ public:
 
             Square square = board.Squares[x];
 
-            if (square.Piece == NULL)
+            if (square.Piece1.PieceType != ChessPieceType::None)
                 continue;
 
 
-            if (square.Piece.PieceType == MovingPiecePrimary.PieceType)
+            if (square.Piece1.PieceType == MovingPiecePrimary.PieceType)
             {
-                if (square.Piece.PieceColor == MovingPiecePrimary.PieceColor)
+                if (square.Piece1.PieceColor == MovingPiecePrimary.PieceColor)
                 {
-                    for(auto $move : square.Piece.ValidMoves)
+                    for(byte &move : square.Piece1.ValidMoves)
                     {
                         if (move == MovingPiecePrimary.DstPosition)
                         {
@@ -389,9 +396,9 @@ public:
         }
 
 
-        if (MovingPieceSecondary.PieceType == ChessPieceType.Rook)
+        if (MovingPieceSecondary.PieceType == ChessPieceType::Rook)
         {
-            if (MovingPieceSecondary.PieceColor == ChessPieceColor.Black)
+            if (MovingPieceSecondary.PieceColor == ChessPieceColor::Black)
             {
                 if (MovingPieceSecondary.SrcPosition == (byte)7)
                 {
@@ -402,7 +409,7 @@ public:
                     PgnMove += "O-O-O";
                 }
             }
-            else if (MovingPieceSecondary.PieceColor == ChessPieceColor.White)
+            else if (MovingPieceSecondary.PieceColor == ChessPieceColor::White)
             {
                 if (MovingPieceSecondary.SrcPosition == (byte)63)
                 {
@@ -420,7 +427,7 @@ public:
 
             switch (MovingPiecePrimary.PieceType)
             {
-                case ChessPieceType.Knight:
+            case ChessPieceType::Knight:
                     {
                         if (doubleDestination)
                         {
@@ -440,7 +447,7 @@ public:
                         }
                         break;
                     }
-                case ChessPieceType.Bishop:
+            case ChessPieceType::Bishop:
                     {
                         if (doubleDestination)
                         {
@@ -460,7 +467,7 @@ public:
                         }
                         break;
                     }
-                case ChessPieceType.Rook:
+            case ChessPieceType::Rook:
                     {
                         if (doubleDestination)
                         {
@@ -480,7 +487,7 @@ public:
                         }
                         break;
                     }
-                case ChessPieceType.Queen:
+            case ChessPieceType::Queen:
                     {
                         if (doubleDestination)
                         {
@@ -500,13 +507,13 @@ public:
                         }
                         break;
                     }
-                case ChessPieceType.Pawn:
+            case ChessPieceType::Pawn:
                     {
                         if (doubleDestination && srcCol != dstCol)
                         {
                             PgnMove += GetColumnFromInt((int)srcCol);
                         }
-                        else if (TakenPiece.PieceType != ChessPieceType.None)
+                        else if (TakenPiece.PieceType != ChessPieceType::None)
                         {
                             PgnMove += GetColumnFromInt((int)srcCol);
                         }
@@ -514,7 +521,7 @@ public:
                     }
             }
 
-            if (TakenPiece.PieceType != ChessPieceType.None)
+            if (TakenPiece.PieceType != ChessPieceType::None)
             {
 
                 PgnMove += "x";
@@ -524,19 +531,19 @@ public:
 
             PgnMove += (char)dstRow;
 
-            if (PawnPromotedTo == ChessPieceType.Queen)
+            if (PawnPromotedTo == ChessPieceType::Queen)
             {
                 PgnMove += "=Q";
             }
-            else if (PawnPromotedTo == ChessPieceType.Rook)
+            else if (PawnPromotedTo == ChessPieceType::Rook)
             {
                 PgnMove += "=R";
             }
-            else if (PawnPromotedTo == ChessPieceType.Bishop)
+            else if (PawnPromotedTo == ChessPieceType::Bishop)
             {
                 PgnMove += "=B";
             }
-            else if (PawnPromotedTo == ChessPieceType.Knight)
+            else if (PawnPromotedTo == ChessPieceType::Knight)
             {
                 PgnMove += "=N";
             }
@@ -606,17 +613,17 @@ public:
         switch (c)
         {
             case 'B':
-                return ChessPieceType.Bishop;
+                return ChessPieceType::Bishop;
             case 'K':
-                return ChessPieceType.King;
+                return ChessPieceType::King;
             case 'N':
-                return ChessPieceType.Knight;
+                return ChessPieceType::Knight;
             case 'Q':
-                return ChessPieceType.Queen;
+                return ChessPieceType::Queen;
             case 'R':
-                return ChessPieceType.Rook;
+                return ChessPieceType::Rook;
             default:
-                return ChessPieceType.None;
+                return ChessPieceType::None;
         }
     }
 
@@ -624,19 +631,19 @@ public:
     {
         switch (pieceType)
         {
-            case ChessPieceType.Bishop:
+            case ChessPieceType::Bishop:
                 return "B";
 
-            case ChessPieceType.King:
+            case ChessPieceType::King:
                 return "K";
 
-            case ChessPieceType.Knight:
+            case ChessPieceType::Knight:
                 return "N";
 
-            case ChessPieceType.Queen:
+            case ChessPieceType::Queen:
                 return "Q";
 
-            case ChessPieceType.Rook:
+            case ChessPieceType::Rook:
                 return "R";
             default:
                 return "";

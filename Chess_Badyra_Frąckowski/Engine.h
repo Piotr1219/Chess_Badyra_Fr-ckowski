@@ -1,19 +1,20 @@
+#pragma once
 #include <string>
 #include <list>
 #include <stack>
-#include "Board.h"
+//#include "Board.h"
 #include "Book.h"
-#include "main.h"
-#include "functions.h"
-#include "MoveContent.h"
-#include "Piece.h"
-#include "Evaluations.h"
-#include "PGN.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "MoveContent.h"
+//#include "Piece.h"
+//#include "Evaluations.h"
+//#include "PGN.h"
 #include "PieceMoves.h"
 #include "PieceTaken.h"
-#include "PieceSquareTable.h"
-#include "PieceValidMoves.h"
-#include "Square.h"
+//#include "PieceSquareTable.h"
+//#include "PieceValidMoves.h"
+//#include "Square.h"
 
 using namespace std;
 
@@ -45,7 +46,9 @@ public:
     PiecesTaken PiecesTakenCount = new PiecesTaken();
 
     //State Variables
-    ChessPieceColor HumanPlayer;
+    */
+    static ChessPieceColor HumanPlayer;
+    /*
     bool Thinking;
     bool TrainingMode;
 

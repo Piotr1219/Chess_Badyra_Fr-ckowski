@@ -1,15 +1,15 @@
+#pragma once
 #include <string>
 #include <list>
 #include <stack>
-#include "Engine.h"
-#include "Board.h"
-#include "Book.h"
-#include "main.h"
-#include "functions.h"
-#include "MoveContent.h"
+//#include "Engine.h"
+//#include "Board.h"
+//#include "Book.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "MoveContent.h"
 
 using namespace std;
-
 
 enum ChessPieceColor
 {
@@ -55,7 +55,7 @@ class Piece
 
     bool Selected;
 
-    stack<byte> ValidMoves;
+    list<byte> ValidMoves;
 
     Piece();
 

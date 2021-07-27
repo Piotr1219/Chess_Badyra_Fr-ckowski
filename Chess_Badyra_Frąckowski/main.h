@@ -4,8 +4,11 @@
 #include <ctime>
 #include <algorithm>
 #include <cctype>
-#include "Engine.h"
-#include "functions.h"
+//#include "Engine.h"
+//#include "functions.h"
+//#include "Board.h"
+//#include "Book.h"
+//#include "Piece.h"
 
 using namespace std;
 

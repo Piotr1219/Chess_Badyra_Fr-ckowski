@@ -1,15 +1,16 @@
 #include <string>
 #include <list>
 #include <stack>
-#include "Engine.h"
-#include "Board.h"
-#include "Book.h"
-#include "main.h"
-#include "functions.h"
-#include "MoveContent.h"
-#include "Piece.h"
-#include "Evaluations.h"
-#include "PGN.h"
+//#include "Engine.h"
+//#include "Board.h"
+//#include "Book.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "MoveContent.h"
+//#include "Piece.h"
+#include "PieceMoves.h"
+//#include "Evaluations.h"
+//#include "PGN.h"
 
 using namespace std;
 

@@ -1,12 +1,12 @@
 #include <string>
 #include <list>
 #include <stack>
-#include "Engine.h"
-#include "Board.h"
-#include "Book.h"
-#include "main.h"
-#include "functions.h"
-#include "MoveContent.h"
+//#include "Engine.h"
+//#include "Board.h"
+//#include "Book.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "MoveContent.h"
 #include "Piece.h"
 
 using namespace std;
@@ -58,7 +58,7 @@ class Piece
 
     bool Selected;
 
-    stack<byte> ValidMoves;
+    list<byte> ValidMoves;
 
     //#endregion
 
@@ -94,9 +94,9 @@ class Piece
             LastValidMoveCount = 0;
         }
 
-        stack<byte> temp_stack;
+        list<byte> temp_stack;
         ValidMoves = temp_stack;
-        ValidMoves.push((byte)LastValidMoveCount);
+        ValidMoves.push_back((byte)LastValidMoveCount);
 
         PieceValue = CalculatePieceValue(PieceType);
         PieceActionValue = CalculatePieceActionValue(PieceType);

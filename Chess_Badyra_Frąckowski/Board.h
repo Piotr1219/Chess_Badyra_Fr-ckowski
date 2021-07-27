@@ -1,16 +1,20 @@
+#pragma once
 #include <string>
 #include <list>
 #include <stack>
-#include "Engine.h"
-#include "Book.h"
-#include "main.h"
-#include "functions.h"
+//#include "Engine.h"
+//#include "Book.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "Piece.h"
+#include "MoveContent.h"
+#include "Square.h"
 
 
 class Board
 {
 public:
-    Square[] Squares;
+    Square Squares[64];
 
     bool InsufficientMaterial;
 
@@ -49,7 +53,7 @@ public:
     //Positions liable to En Passant
     byte EnPassantPosition;
 
-    ChessPieceColor WhoseMove;
+    static ChessPieceColor WhoseMove;
 
     int MoveCount;
 
@@ -64,7 +68,7 @@ public:
 
 
 private:
-    Board(Square[] squares);
+    Board(Square squares[]);
 
     //Constructor
     Board(int score);

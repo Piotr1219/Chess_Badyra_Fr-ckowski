@@ -1,14 +1,14 @@
 #include <string>
 #include <list>
 #include <stack>
-#include "Engine.h"
+//#include "Engine.h"
 #include "Board.h"
-#include "Book.h"
-#include "main.h"
-#include "functions.h"
-#include "MoveContent.h"
-#include "Piece.h"
-#include "Evaluations.h"
+//#include "Book.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "MoveContent.h"
+//#include "Piece.h"
+//#include "Evaluations.h"
 #include "Square.h"
 
 using namespace std;
@@ -16,10 +16,10 @@ using namespace std;
 class Evaluation
 {
 private:
-    short blackPawnCount[8];
-    short whitePawnCount[8];
+    static short blackPawnCount[8];
+    static short whitePawnCount[8];
 
-    const short PawnTable[64] = 
+    static const int PawnTable[64] =
     {
             0,  0,  0,  0,  0,  0,  0,  0,
         50, 50, 50, 50, 50, 50, 50, 50,
@@ -31,7 +31,7 @@ private:
             0,  0,  0,  0,  0,  0,  0,  0
     };
 
-    const short KnightTable[64] =
+    static const short KnightTable[64] =
     {
         -50,-40,-30,-30,-30,-30,-40,-50,
         -40,-20,  0,  0,  0,  0,-20,-40,
@@ -79,36 +79,36 @@ private:
         -50,-30,-30,-30,-30,-30,-30,-50
     };
 
-    int EvaluatePieceScore(Square square, byte position, bool endGamePhase,
+    static int EvaluatePieceScore(Square square, byte position, bool endGamePhase,
                                             byte *knightCount, byte *bishopCount, bool *insufficientMaterial)
     {
         int score = 0;
 
         byte index = position;
 
-        if (square.Piece.PieceColor == ChessPieceColor::Black)
+        if (square.Piece1.PieceColor == ChessPieceColor::Black)
         {
             index = (byte)(63 - (int)position);
         }
 
         //Calculate Piece Values
-        score += square.Piece.PieceValue;
-        score += square.Piece.DefendedValue;
-        score -= square.Piece.AttackedValue;
+        score += square.Piece1.PieceValue;
+        score += square.Piece1.DefendedValue;
+        score -= square.Piece1.AttackedValue;
 
         //Double Penalty for Hanging Pieces
-        if (square.Piece.DefendedValue < square.Piece.AttackedValue)
+        if (square.Piece1.DefendedValue < square.Piece1.AttackedValue)
         {
-            score -= ((square.Piece.AttackedValue - square.Piece.DefendedValue) * 10);
+            score -= ((square.Piece1.AttackedValue - square.Piece1.DefendedValue) * 10);
         }
 
         //Add Points for Mobility
-        if (!square.Piece.ValidMoves.empty())
+        if (!square.Piece1.ValidMoves.empty())
         {
-            score += square.Piece.ValidMoves.size();
+            score += square.Piece1.ValidMoves.size();
         }
 
-        if (square.Piece.PieceType == ChessPieceType::Pawn)
+        if (square.Piece1.PieceType == ChessPieceType::Pawn)
         {
             insufficientMaterial = false;
 
@@ -121,7 +121,7 @@ private:
             //Calculate Position Values
             score += PawnTable[(int)index];
 
-            if (square.Piece.PieceColor == ChessPieceColor::White)
+            if (square.Piece1.PieceColor == ChessPieceColor::White)
             {
                 if (whitePawnCount[(int)position % 8] > 0)
                 {
@@ -131,22 +131,22 @@ private:
 
                 if ((int)position >= 8 && (int)position <= 15)
                 {
-                    if (square.Piece.AttackedValue == 0)
+                    if (square.Piece1.AttackedValue == 0)
                     {
                         whitePawnCount[(int)position % 8] += 50;
 
-                        if (square.Piece.DefendedValue != 0)
+                        if (square.Piece1.DefendedValue != 0)
                             whitePawnCount[(int)position % 8] += 50;
                     }
                 }
                 else if ((int)position >= 16 && (int)position <= 23)
                 {
-                    if (square.Piece.AttackedValue == 0)
+                    if (square.Piece1.AttackedValue == 0)
                     {
                         whitePawnCount[(int)position % 8] += 25;
 
 
-                        if (square.Piece.DefendedValue != 0)
+                        if (square.Piece1.DefendedValue != 0)
                             whitePawnCount[(int)position % 8] += 25;
                     }
                 }
@@ -163,22 +163,22 @@ private:
 
                 if ((int)position >= 48 && (int)position <= 55)
                 {
-                    if (square.Piece.AttackedValue == 0)
+                    if (square.Piece1.AttackedValue == 0)
                     {
                         blackPawnCount[(int)position % 8] += 200;
 
-                        if (square.Piece.DefendedValue != 0)
+                        if (square.Piece1.DefendedValue != 0)
                             blackPawnCount[(int)position % 8] += 50;
                     }
                 }
                 //Pawns in 6th Row that are not attacked are worth more points.
                 else if ((int)position >= 40 && (int)position <= 47)
                 {
-                    if (square.Piece.AttackedValue == 0)
+                    if (square.Piece1.AttackedValue == 0)
                     {
                         blackPawnCount[(int)position % 8] += 100;
 
-                        if (square.Piece.DefendedValue != 0)
+                        if (square.Piece1.DefendedValue != 0)
                             blackPawnCount[(int)position % 8] += 25;
                     }
                 }
@@ -187,7 +187,7 @@ private:
 
             }
         }
-        else if (square.Piece.PieceType == ChessPieceType::Knight)
+        else if (square.Piece1.PieceType == ChessPieceType::Knight)
         {
             *knightCount = (byte)((int)knightCount);
 
@@ -200,7 +200,7 @@ private:
             }
 
         }
-        else if (square.Piece.PieceType == ChessPieceType::Bishop)
+        else if (square.Piece1.PieceType == ChessPieceType::Bishop)
         {
             *bishopCount = (byte)((int)bishopCount+1);
 
@@ -218,24 +218,24 @@ private:
 
             score += BishopTable[(int)index];
         }
-        else if (square.Piece.PieceType == ChessPieceType::Rook)
+        else if (square.Piece1.PieceType == ChessPieceType::Rook)
         {
             *insufficientMaterial = false;
         }
-        else if (square.Piece.PieceType == ChessPieceType::Queen)
+        else if (square.Piece1.PieceType == ChessPieceType::Queen)
         {
             *insufficientMaterial = false;
 
-            if (square.Piece.Moved && !endGamePhase)
+            if (square.Piece1.Moved && !endGamePhase)
             {
                 score -= 10;
             }
         }
-        else if (square.Piece.PieceType == ChessPieceType::King)
+        else if (square.Piece1.PieceType == ChessPieceType::King)
         {
-            if (!square.Piece.ValidMoves.empty())
+            if (!square.Piece1.ValidMoves.empty())
             {
-                if (square.Piece.ValidMoves.size() < 2)
+                if (square.Piece1.ValidMoves.size() < 2)
                 {
                     score -= 5;
                 }
@@ -335,11 +335,11 @@ private:
         {
             Square square = board.Squares[x];
 
-            if (square.Piece == NULL)
+            if (square.Piece1.PieceType != ChessPieceType::None)
                 continue;
 
 
-            if (square.Piece.PieceColor == ChessPieceColor::White)
+            if (square.Piece1.PieceColor == ChessPieceColor::White)
             {
                 board.Score += EvaluatePieceScore(square, (byte)x, board.EndGamePhase,
                     &whiteKnightCount, &whiteBishopCount, &insufficientMaterial);

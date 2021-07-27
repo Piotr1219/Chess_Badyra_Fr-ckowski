@@ -4,11 +4,11 @@
 #include <algorithm>
 #include <cctype>
 #include "Engine.h"
-#include "main.h"
+//#include "main.h"
 #include "functions.h"
-#include "Board.h"
-#include "Book.h"
-#include "Piece.h"
+//#include "Board.h"
+//#include "Book.h"
+//#include "Piece.h"
 
 using namespace std;
 
@@ -25,7 +25,7 @@ private:
 	{
 		bool ShowBoard = false;
 
-		Engine engine();
+		Engine engine = Engine();
 
 
 
@@ -48,7 +48,7 @@ private:
 					DrawBoard(engine);
 				}
 
-				if (engine.WhoseMove != engine.HumanPlayer)
+				if (engine.WhoseMove() != engine.HumanPlayer)
 				{
 					MakeEngineMove(engine);
 				}
