@@ -30,11 +30,12 @@ public:
 
 class Book
 {
+public:
     static list<OpeningMove> LoadOpeningBook()
     {
         return PopulateOpeningBook();
     }
-
+private:
     list<OpeningMove> PopulateOpeningBook()
     {
         list<OpeningMove> openingBook = list<OpeningMove>();

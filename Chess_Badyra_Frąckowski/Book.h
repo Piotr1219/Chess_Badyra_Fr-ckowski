@@ -24,8 +24,9 @@ public:
 
 class Book
 {
+public:
     static list<OpeningMove> LoadOpeningBook();
-
+private:
     list<OpeningMove> PopulateOpeningBook();
 public:
     static int ValidateOpeningBook(list<OpeningMove> openingBook);

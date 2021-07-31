@@ -15,6 +15,7 @@
 //#include "PieceSquareTable.h"
 //#include "PieceValidMoves.h"
 //#include "Square.h"
+#include "Test.h"
 
 using namespace std;
 
@@ -147,7 +148,7 @@ public:
 
     void AiPonderMove();
 
-    PerformanceTest.PerformanceResult RunPerformanceTest(int depth = 5);
+    //PerformanceTest.PerformanceResult RunPerformanceTest(int depth = 5);
 
 
     bool SaveGame(string filePath);
