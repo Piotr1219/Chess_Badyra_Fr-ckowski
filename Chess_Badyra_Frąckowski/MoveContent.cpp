@@ -6,7 +6,7 @@
 //#include "Book.h"
 //#include "main.h"
 //#include "functions.h"
-//#include "MoveContent.h"
+#include "MoveContent.h"
 #include "Piece.h"
 
 using namespace std;
@@ -206,7 +206,7 @@ public:
         }
     }
 
-    bool ParseAN(string move, byte* sourceColumn, byte* sourceRow, byte* destinationColumn, byte* destinationRow)
+    static bool ParseAN(string move, byte* sourceColumn, byte* sourceRow, byte* destinationColumn, byte* destinationRow)
     {
         if (move.length() != 4) return false;
         *sourceColumn = (byte)GetIntFromColumn(move[0]);
@@ -583,7 +583,7 @@ public:
         }
     }
 
-    int GetIntFromColumn(char column)
+    static int GetIntFromColumn(char column)
     {
         switch (column)
         {

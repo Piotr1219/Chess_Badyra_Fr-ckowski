@@ -12,6 +12,7 @@
 //#include "PGN.h"
 //#include "PieceMoves.h"
 //#include "PieceSquareTable.h"
+#include "Square.h"
 
 struct Square
 {

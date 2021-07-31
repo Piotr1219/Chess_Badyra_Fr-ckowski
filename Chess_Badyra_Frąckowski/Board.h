@@ -2,10 +2,11 @@
 #include <string>
 #include <list>
 #include <stack>
+#include <algorithm>
 //#include "Engine.h"
 //#include "Book.h"
 //#include "main.h"
-//#include "functions.h"
+#include "functions.h"
 //#include "Piece.h"
 #include "MoveContent.h"
 #include "Square.h"
@@ -66,6 +67,8 @@ public:
 
     Board();
 
+    bool isEmpty();
+
 
 private:
     Board(Square squares[]);
@@ -77,19 +80,19 @@ public:
     Board(const Board &board);
 private:
 
-    bool PromotePawns(Board board, Piece piece, byte dstPosition, ChessPieceType promoteToPiece);
+    static bool PromotePawns(Board board, Piece piece, byte dstPosition, ChessPieceType promoteToPiece);
 
-    void RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, byte srcPosition, byte dstPosition);
+    static void RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, byte srcPosition, byte dstPosition);
 
-    bool SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, ChessPieceColor pcColor);
+    static bool SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, ChessPieceColor pcColor);
 
-    void KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosition);
+    static void KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosition);
 
     //Fast Copy
 public:
     Board FastCopy();
 
-    MoveContent MovePiece(Board board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece);
+    static MoveContent MovePiece(Board board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece);
 
 private:
     static string GetColumnFromByte(byte column);

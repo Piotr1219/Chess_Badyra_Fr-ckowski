@@ -4,19 +4,20 @@
 #include <vector>
 //#include "Engine.h"
 #include "Board.h"
-//#include "Book.h"
+#include "Book.h"
 //#include "main.h"
 //#include "functions.h"
 //#include "MoveContent.h"
 //#include "Piece.h"
 //#include "Evaluations.h"
-//#include "FileIO.h"
+#include "FileIO.h"
 
 using namespace std;
 
 class FileIO
 {
-    void SaveCurrentGameMove(Board currentBoard, Board previousBoard, vector<OpeningMove> gameBook, MoveContent bestMove)
+public:
+    static void SaveCurrentGameMove(Board currentBoard, Board previousBoard, list<OpeningMove> gameBook, MoveContent bestMove)
     {
         try
         {
@@ -59,7 +60,7 @@ class FileIO
         return;
     }
 
-    static bool SaveGame(string filePath, Board chessBoard, ChessPieceColor whoseMove, stack<MoveContent> moveHistory)
+    static bool SaveGame(string filePath, Board chessBoard, ChessPieceColor whoseMove, list<MoveContent> moveHistory)
     {
         if (filePath == "")
             return false;
@@ -101,7 +102,7 @@ class FileIO
             return true;
         }
 
-        static bool LoadGame(string filePath, Board *chessBoard, ChessPieceColor whoseMove, stack<MoveContent> *moveHistory, list<OpeningMove> *currentGameBook, list<OpeningMove> *undoGameBook)
+        static bool LoadGame(string filePath, Board *chessBoard, ChessPieceColor whoseMove, list<MoveContent> *moveHistory, list<OpeningMove> *currentGameBook, list<OpeningMove> *undoGameBook)
         {
             if (filePath == "")
             {

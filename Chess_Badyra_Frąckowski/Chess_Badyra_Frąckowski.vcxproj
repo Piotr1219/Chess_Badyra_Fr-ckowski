@@ -155,7 +155,10 @@
     <ClCompile Include="PieceTaken.cpp" />
     <ClCompile Include="PieceValidMoves.cpp" />
     <ClCompile Include="Puzzle.cpp" />
+    <ClCompile Include="ResultBoards.cpp" />
+    <ClCompile Include="Search.cpp" />
     <ClCompile Include="Square.cpp" />
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
@@ -172,7 +175,11 @@
     <ClInclude Include="PieceSquareTable.h" />
     <ClInclude Include="PieceTaken.h" />
     <ClInclude Include="PieceValidMoves.h" />
+    <ClInclude Include="Puzzle.h" />
+    <ClInclude Include="ResultBoards.h" />
+    <ClInclude Include="Search.h" />
     <ClInclude Include="Square.h" />
+    <ClInclude Include="Test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

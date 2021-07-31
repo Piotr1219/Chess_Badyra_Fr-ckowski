@@ -84,7 +84,7 @@ private:
     int EvaluatePieceScore(Square square, byte position, bool endGamePhase,
         byte* knightCount, byte* bishopCount, bool* insufficientMaterial);
 public:
-    static void EvaluateBoardScore(Board board);
+    void EvaluateBoardScore(Board board);
 private:
     int CheckPawnWall(Board board, int pawnPos, int kingPos);
 };

@@ -12,17 +12,6 @@
 
 using namespace std;
 
-class Book
-{
-    list<OpeningMove> LoadOpeningBook();
-
-    list<OpeningMove> PopulateOpeningBook();
-public:
-    static int ValidateOpeningBook(list<OpeningMove> openingBook);
-
-    bool IsValidMove(byte srcPos, byte dstPos, string fen);
-};
-
 class OpeningMove
 {
 public:
@@ -32,3 +21,15 @@ public:
 
     OpeningMove();
 };
+
+class Book
+{
+    static list<OpeningMove> LoadOpeningBook();
+
+    list<OpeningMove> PopulateOpeningBook();
+public:
+    static int ValidateOpeningBook(list<OpeningMove> openingBook);
+
+    bool IsValidMove(byte srcPos, byte dstPos, string fen);
+};
+

@@ -21,7 +21,7 @@ using namespace std;
 class Engine
 {
 public:
-    /*
+    
     enum Difficulty
     {
         Easy,
@@ -29,7 +29,7 @@ public:
         Hard,
         VeryHard
     };
-
+    /*
     enum TimeSettings
     {
         Moves40In5Minutes,
@@ -48,7 +48,7 @@ public:
     //State Variables
     */
     static ChessPieceColor HumanPlayer;
-    /*
+    
     bool Thinking;
     bool TrainingMode;
 
@@ -58,9 +58,9 @@ public:
     byte PlyDepthSearched;
     byte PlyDepthReached;
     byte RootMovesSearched;
-
-    TimeSettings GameTimeSettings;
-    */
+    
+    //TimeSettings GameTimeSettings;
+    
     string FEN();
 
     MoveContent LastMove();
@@ -107,7 +107,7 @@ public:
 
     byte GetHalfMoveClock();
 
-    stack<MoveContent> GetMoveHistory();
+    list<MoveContent> GetMoveHistory();
 
     ChessPieceType GetPieceTypeAt(byte boardColumn, byte boardRow);
 

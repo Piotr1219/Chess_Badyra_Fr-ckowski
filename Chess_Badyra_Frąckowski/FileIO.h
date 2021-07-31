@@ -16,11 +16,12 @@ using namespace std;
 
 class FileIO
 {
-    void SaveCurrentGameMove(Board currentBoard, Board previousBoard, vector<OpeningMove> gameBook, MoveContent bestMove);
+public:
+    static void SaveCurrentGameMove(Board currentBoard, Board previousBoard, list<OpeningMove> gameBook, MoveContent bestMove);
 
-    static bool SaveGame(string filePath, Board chessBoard, ChessPieceColor whoseMove, stack<MoveContent> moveHistory);
+    static bool SaveGame(string filePath, Board chessBoard, ChessPieceColor whoseMove, list<MoveContent> moveHistory);
 
-    static bool LoadGame(string filePath, Board* chessBoard, ChessPieceColor whoseMove, stack<MoveContent>* moveHistory, list<OpeningMove>* currentGameBook, list<OpeningMove>* undoGameBook);
+    static bool LoadGame(string filePath, Board* chessBoard, ChessPieceColor whoseMove, list<MoveContent>* moveHistory, list<OpeningMove>* currentGameBook, list<OpeningMove>* undoGameBook);
 
 public:
     static bool LoadOpeningBook(list<OpeningMove>* openingBook);

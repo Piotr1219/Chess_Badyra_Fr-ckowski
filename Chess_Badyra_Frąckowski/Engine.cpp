@@ -15,6 +15,9 @@
 //#include "PieceSquareTable.h"
 #include "PieceValidMoves.h"
 //#include "Square.h"
+#include "FileIO.h"
+#include "ResultBoards.h"
+#include "Search.h"
 
 
 using namespace std;
@@ -31,7 +34,7 @@ private:
     Board PreviousChessBoard;
     Board UndoChessBoard;
 
-    stack<MoveContent> MoveHistory;
+    list<MoveContent> MoveHistory;
     list<OpeningMove> OpeningBook;
 
     string pvLine;
@@ -201,7 +204,8 @@ public:
         if (fen != "")
         {
             PieceValidMoves::GenerateValidMoves(ChessBoard);
-            Evaluation::EvaluateBoardScore(ChessBoard);
+            Evaluation eva1 = Evaluation();
+            eva1.EvaluateBoardScore(ChessBoard);
         }
     }
 
@@ -209,7 +213,7 @@ public:
     {
         setGameDifficulty(Difficulty::Medium);
 
-        MoveHistory = stack<MoveContent>();
+        MoveHistory = list<MoveContent>();
         HumanPlayer = ChessPieceColor::White;
         OpeningBook = list<OpeningMove>();
         CurrentGameBook = list<OpeningMove>();
@@ -222,19 +226,19 @@ public:
     {
         byte index = GetBoardIndex(boardColumn, boardRow);
 
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType != ChessPieceType::None)
         {
             return;
         }
-        if (ChessBoard.Squares[index].Piece.PieceColor != HumanPlayer)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceColor != HumanPlayer)
         {
             return;
         }
-        if (ChessBoard.Squares[index].Piece.PieceColor != WhoseMove)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceColor != WhoseMove())
         {
             return;
         }
-        ChessBoard.Squares[index].Piece.Selected = selection;
+        ChessBoard.Squares[(short)index].Piece1.Selected = selection;
     }
 
     int ValidateOpeningBook()
@@ -243,10 +247,10 @@ public:
     }
 
     private:
-    bool CheckForMate(ChessPieceColor whosTurn, Board* chessBoard)
+    bool CheckForMate(ChessPieceColor whosTurn, Board chessBoard)
     {
-        Search.SearchForMate(whosTurn, chessBoard, *chessBoard.BlackMate,
-                                *chessBoard.WhiteMate, *chessBoard.StaleMate);
+        Search::SearchForMate(whosTurn, chessBoard, &chessBoard.BlackMate,
+                                &chessBoard.WhiteMate, &chessBoard.StaleMate);
 
         if (chessBoard.BlackMate || chessBoard.WhiteMate || chessBoard.StaleMate)
         {
@@ -259,16 +263,21 @@ public:
     bool FindPlayBookMove(MoveContent* bestMove, Board chessBoard, list<OpeningMove> openingBook)
     {
         //Get the Hash for the current Board;
-        string boardFen = Board.Fen(true, chessBoard);
+        string boardFen = Board::Fen(true, chessBoard);
 
         //Check the Opening Move Book
-        for (OpeningMove move = openingBoook.begin(); move != openingBook.end(); move++)
+        //for (OpeningMove move = openingBook.begin(); move != openingBook.end(); move++)
+        for (OpeningMove & move : openingBook)
         {
-            if (move.StartingFEN.Contains(boardFen))
+            //if (move.StartingFEN.Contains(boardFen))
+            if(move.StartingFEN.find(boardFen) != std::string::npos)
             {
                 int index = 0;
 
-                bestMove = move.Moves[index];
+                //bestMove = move.Moves[(short)index];
+                list<MoveContent>::iterator it = move.Moves.begin();
+                advance(it, index);
+                *bestMove = *it;
                 return true;
             }
         }
@@ -279,16 +288,17 @@ public:
     public:
     void Undo()
     {
-        if (UndoChessBoard != NULL)
+        if (!UndoChessBoard.isEmpty())
         {
             PieceTakenRemove(ChessBoard.LastMove);
             PieceTakenRemove(PreviousChessBoard.LastMove);
 
-            ChessBoard = new Board(UndoChessBoard);
-            CurrentGameBook = new list<OpeningMove>(UndoGameBook);
+            ChessBoard = Board(UndoChessBoard);
+            CurrentGameBook = list<OpeningMove>(UndoGameBook);
 
-            PieceValidMoves.GenerateValidMoves(ChessBoard);
-            Evaluation.EvaluateBoardScore(ChessBoard);
+            PieceValidMoves::GenerateValidMoves(ChessBoard);
+            Evaluation eva1;
+            eva1.EvaluateBoardScore(ChessBoard);
         }
     }
 
@@ -301,22 +311,22 @@ public:
     public:
     byte* GetEnPassantMoves()
     {
-        if (ChessBoard == NULL)
+        if (ChessBoard.isEmpty())
         {
             return NULL;
         }
 
         byte* returnArray = new byte[2];
 
-        returnArray[0] = (byte)(ChessBoard.EnPassantPosition % 8);
-        returnArray[1] = (byte)(ChessBoard.EnPassantPosition / 8);
+        returnArray[0] = (byte)((short)ChessBoard.EnPassantPosition % 8);
+        returnArray[1] = (byte)((short)ChessBoard.EnPassantPosition / 8);
 
         return returnArray;
     }
 
     bool GetBlackMate()
     {
-        if (ChessBoard == NULL)
+        if (ChessBoard.isEmpty())
         {
             return false;
         }
@@ -349,7 +359,7 @@ public:
         return ChessBoard.HalfMoveClock;
     }
 
-    stack<MoveContent> GetMoveHistory()
+    list<MoveContent> GetMoveHistory()
     {
         return MoveHistory;
     }
@@ -358,64 +368,65 @@ public:
     {
         byte index = GetBoardIndex(boardColumn, boardRow);
 
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType == ChessPieceType::None)
         {
-            return ChessPieceType.None;
+            return ChessPieceType::None;
         }
 
-        return ChessBoard.Squares[index].Piece.PieceType;
+        return ChessBoard.Squares[(short)index].Piece1.PieceType;
     }
 
     ChessPieceType GetPieceTypeAt(byte index)
     {
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType == ChessPieceType::None)
         {
-            return ChessPieceType.None;
+            return ChessPieceType::None;
         }
 
-        return ChessBoard.Squares[index].Piece.PieceType;
+        return ChessBoard.Squares[(short)index].Piece1.PieceType;
     }
 
     ChessPieceColor GetPieceColorAt(byte boardColumn, byte boardRow)
     {
         byte index = GetBoardIndex(boardColumn, boardRow);
 
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType == ChessPieceType::None)
         {
-            return ChessPieceColor.White;
+            return ChessPieceColor::White;
         }
-        return ChessBoard.Squares[index].Piece.PieceColor;
+        return ChessBoard.Squares[(short)index].Piece1.PieceColor;
     }
 
     ChessPieceColor GetPieceColorAt(byte index)
     {
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType == ChessPieceType::None)
         {
-            return ChessPieceColor.White;
+            return ChessPieceColor::White;
         }
-        return ChessBoard.Squares[index].Piece.PieceColor;
+        return ChessBoard.Squares[(short)index].Piece1.PieceColor;
     }
 
     bool GetChessPieceSelected(byte boardColumn, byte boardRow)
     {
         byte index = GetBoardIndex(boardColumn, boardRow);
 
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType == ChessPieceType::None)
         {
             return false;
         }
 
-        return ChessBoard.Squares[index].Piece.Selected;
+        return ChessBoard.Squares[(short)index].Piece1.Selected;
     }
 
     void GenerateValidMoves()
     {
-        PieceValidMoves.GenerateValidMoves(ChessBoard);
+        PieceValidMoves::GenerateValidMoves(ChessBoard);
     }
 
     int EvaluateBoardScore()
     {
-        Evaluation.EvaluateBoardScore(ChessBoard);
+        Evaluation eva1;
+        eva1.EvaluateBoardScore(ChessBoard);
         return ChessBoard.Score;
     }
 
@@ -423,20 +434,24 @@ public:
     {
         byte index = GetBoardIndex(boardColumn, boardRow);
 
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType == ChessPieceType::None)
         {
             return NULL;
         }
 
-        byte** returnArray = new byte[ChessBoard.Squares[index].Piece.ValidMoves.Count][];
+        //byte** returnArray = byte[ChessBoard.Squares[(short)index].Piece1.ValidMoves.size()][3];
+        byte** returnArray = new byte* [2]; // each element is a pointer to an array.
+        for (size_t i = 0; i < 2; ++i)
+            returnArray[i] = new byte[ChessBoard.Squares[(short)index].Piece1.ValidMoves.size()]; // build rows
+
         int counter = 0;
 
-        for (auto& square : ChessBoard.Squares[index].Piece.ValidMoves)
+        for (auto& square : ChessBoard.Squares[(short)index].Piece1.ValidMoves)
         //foreach(byte square in ChessBoard.Squares[index].Piece.ValidMoves)
         {
-            returnArray[counter] = new byte[2];
-            returnArray[counter][0] = (byte)(square % 8);
-            returnArray[counter][1] = (byte)(square / 8);
+            //returnArray[counter] = new byte[2];
+            returnArray[0][counter] = (byte)((short)square % 8);
+            returnArray[1][counter] = (byte)((short)square / 8);
             counter++;
         }
 
@@ -452,17 +467,17 @@ public:
     {
         Square square;
 
-        if (dstPosition == ChessBoard.EnPassantPosition && chessPieceType == ChessPieceType.Pawn)
+        if (dstPosition == ChessBoard.EnPassantPosition && chessPieceType == ChessPieceType::Pawn)
         {
-            if (chessPieceColor == ChessPieceColor.White)
+            if (chessPieceColor == ChessPieceColor::White)
             {
                 square = ChessBoard.Squares[(int)dstPosition + 7];
 
-                if (square.Piece != NULL)
+                if (square.Piece1.PieceType != ChessPieceType::None)
                 {
-                    if (square.Piece.PieceType == ChessPieceType.Pawn)
+                    if (square.Piece1.PieceType == ChessPieceType::Pawn)
                     {
-                        if (square.Piece.PieceColor == chessPieceColor)
+                        if (square.Piece1.PieceColor == chessPieceColor)
                         {
                             if (((int)dstPosition + 7) % 8 == forceCol || forceCol == -1)
                             {
@@ -475,11 +490,11 @@ public:
 
                 square = ChessBoard.Squares[(int)dstPosition + 9];
 
-                if (square.Piece != NULL)
+                if (square.Piece1.PieceType != ChessPieceType::None)
                 {
-                    if (square.Piece.PieceType == ChessPieceType.Pawn)
+                    if (square.Piece1.PieceType == ChessPieceType::Pawn)
                     {
-                        if (square.Piece.PieceColor == chessPieceColor)
+                        if (square.Piece1.PieceColor == chessPieceColor)
                         {
                             if (((int)dstPosition + 9) % 8 == forceCol || forceCol == -1)
                             {
@@ -495,11 +510,11 @@ public:
                 {
                     square = ChessBoard.Squares[(int)dstPosition - 7];
 
-                    if (square.Piece != NULL)
+                    if (square.Piece1.PieceType != ChessPieceType::None)
                     {
-                        if (square.Piece.PieceType == ChessPieceType.Pawn)
+                        if (square.Piece1.PieceType == ChessPieceType::Pawn)
                         {
-                            if (square.Piece.PieceColor == chessPieceColor)
+                            if (square.Piece1.PieceColor == chessPieceColor)
                             {
                                 if (((int)dstPosition - 7) % 8 == forceCol || forceCol == -1)
                                 {
@@ -513,11 +528,11 @@ public:
                 {
                     square = ChessBoard.Squares[(int)dstPosition - 9];
 
-                    if (square.Piece != NULL)
+                    if (square.Piece1.PieceType != ChessPieceType::None)
                     {
-                        if (square.Piece.PieceType == ChessPieceType.Pawn)
+                        if (square.Piece1.PieceType == ChessPieceType::Pawn)
                         {
-                            if (square.Piece.PieceColor == chessPieceColor)
+                            if (square.Piece1.PieceColor == chessPieceColor)
                             {
                                 if (((int)dstPosition - 9) % 8 == forceCol || forceCol == -1)
                                 {
@@ -534,15 +549,15 @@ public:
         {
             square = ChessBoard.Squares[x];
 
-            if (square.Piece == NULL)
+            if (square.Piece1.PieceType != ChessPieceType::None)
                 continue;
-            if (square.Piece.PieceType != chessPieceType)
+            if (square.Piece1.PieceType != chessPieceType)
                 continue;
-            if (square.Piece.PieceColor != chessPieceColor)
+            if (square.Piece1.PieceColor != chessPieceColor)
                 continue;
 
             //foreach(byte move in square.Piece.ValidMoves)
-            for (auto& move : square.Piece.ValidMoves)
+            for (auto& move : square.Piece1.ValidMoves)
             {
                 if (move == dstPosition)
                 {
@@ -558,9 +573,9 @@ public:
                     }
 
                     //Capture
-                    if (ChessBoard.Squares[dstPosition].Piece != NULL)
+                    if (ChessBoard.Squares[(short)dstPosition].Piece1.PieceType != ChessPieceType::None)
                     {
-                        if (ChessBoard.Squares[dstPosition].Piece.PieceColor != chessPieceColor)
+                        if (ChessBoard.Squares[(short)dstPosition].Piece1.PieceColor != chessPieceColor)
                         {
                             if (x % 8 == forceCol || forceCol == -1)
                             {
@@ -581,13 +596,13 @@ public:
     bool IsValidMoveAN(string move)
     {
         byte sourceColumn = (byte)0, sourceRow = (byte)0, destinationColumn = (byte)0, destinationRow = (byte)0;
-        MoveContent.ParseAN(move, sourceColumn, sourceRow, destinationColumn, destinationRow);
+        MoveContent::ParseAN(move, &sourceColumn, &sourceRow, &destinationColumn, &destinationRow);
         return IsValidMove(sourceColumn, sourceRow, destinationColumn, destinationRow);
     }
 
     bool IsValidMove(byte srcPosition, byte dstPosition)
     {
-        if (ChessBoard == NULL)
+        if (ChessBoard.isEmpty())
         {
             return false;
         }
@@ -597,13 +612,13 @@ public:
             return false;
         }
 
-        if (ChessBoard.Squares[srcPosition].Piece == NULL)
+        if (ChessBoard.Squares[(short)srcPosition].Piece1.PieceType == ChessPieceType::None)
         {
             return false;
         }
 
         //foreach(byte bs in ChessBoard.Squares[srcPosition].Piece.ValidMoves)
-        for (auto& bs : ChessBoard.Squares[srcPosition].Piece.ValidMoves)
+        for (auto& bs : ChessBoard.Squares[(short)srcPosition].Piece1.ValidMoves)
         {
             if (bs == dstPosition)
             {
@@ -621,7 +636,7 @@ public:
 
     bool IsValidMove(byte sourceColumn, byte sourceRow, byte destinationColumn, byte destinationRow)
     {
-        if (ChessBoard == NULL)
+        if (ChessBoard.isEmpty())
         {
             return false;
         }
@@ -633,17 +648,17 @@ public:
 
         byte index = GetBoardIndex(sourceColumn, sourceRow);
 
-        if (ChessBoard.Squares[index].Piece == NULL)
+        if (ChessBoard.Squares[(short)index].Piece1.PieceType == ChessPieceType::None)
         {
             return false;
         }
 
         //foreach(byte bs in ChessBoard.Squares[index].Piece.ValidMoves)
-        for (auto& bs : ChessBoard.Squares[index].Piece.ValidMoves)
+        for (auto& bs : ChessBoard.Squares[(short)index].Piece1.ValidMoves)
         {
-            if (bs % 8 == destinationColumn)
+            if ((short)bs % 8 == (short)destinationColumn)
             {
-                if ((byte)(bs / 8) == destinationRow)
+                if ((byte)((short)bs / 8) == destinationRow)
                 {
                     return true;
                 }
@@ -670,11 +685,11 @@ public:
         {
             return true;
         }
-        if (ChessBoard.HalfMoveClock >= 100)
+        if ((short)ChessBoard.HalfMoveClock >= 100)
         {
             return true;
         }
-        if (ChessBoard.RepeatedMove >= 3)
+        if ((short)ChessBoard.RepeatedMove >= 3)
         {
             return true;
         }
@@ -693,11 +708,11 @@ public:
             return true;
         }
 
-        if (ChessBoard.HalfMoveClock >= 100)
+        if ((short)ChessBoard.HalfMoveClock >= 100)
         {
             return true;
         }
-        if (ChessBoard.RepeatedMove >= 3)
+        if ((short)ChessBoard.RepeatedMove >= 3)
         {
             return true;
         }
@@ -711,54 +726,55 @@ public:
     }
     bool MovePiece(byte srcPosition, byte dstPosition)
     {
-        Piece piece = ChessBoard.Squares[srcPosition].Piece;
+        Piece piece = ChessBoard.Squares[(short)srcPosition].Piece1;
 
-        PreviousChessBoard = new Board(ChessBoard);
-        UndoChessBoard = new Board(ChessBoard);
-        UndoGameBook = new list<OpeningMove>(CurrentGameBook);
+        PreviousChessBoard = Board(ChessBoard);
+        UndoChessBoard = Board(ChessBoard);
+        UndoGameBook = list<OpeningMove>(CurrentGameBook);
 
-        Board.MovePiece(ChessBoard, srcPosition, dstPosition, PromoteToPieceType);
+        Board::MovePiece(ChessBoard, srcPosition, dstPosition, PromoteToPieceType);
 
         ChessBoard.LastMove.GeneratePGNString(ChessBoard);
 
-        PieceValidMoves.GenerateValidMoves(ChessBoard);
-        Evaluation.EvaluateBoardScore(ChessBoard);
+        PieceValidMoves::GenerateValidMoves(ChessBoard);
+        Evaluation eva1;
+        eva1.EvaluateBoardScore(ChessBoard);
 
         //If there is a check in place, check if this is still true;
-        if (piece.PieceColor == ChessPieceColor.White)
+        if (piece.PieceColor == ChessPieceColor::White)
         {
             if (ChessBoard.WhiteCheck)
             {
                 //Invalid Move
-                ChessBoard = new Board(PreviousChessBoard);
-                PieceValidMoves.GenerateValidMoves(ChessBoard);
+                ChessBoard = Board(PreviousChessBoard);
+                PieceValidMoves::GenerateValidMoves(ChessBoard);
                 return false;
             }
         }
-        else if (piece.PieceColor == ChessPieceColor.Black)
+        else if (piece.PieceColor == ChessPieceColor::Black)
         {
             if (ChessBoard.BlackCheck)
             {
                 //Invalid Move
-                ChessBoard = new Board(PreviousChessBoard);
-                PieceValidMoves.GenerateValidMoves(ChessBoard);
+                ChessBoard = Board(PreviousChessBoard);
+                PieceValidMoves::GenerateValidMoves(ChessBoard);
                 return false;
             }
         }
 
-        MoveHistory.Push(ChessBoard.LastMove);
-        FileIO.SaveCurrentGameMove(ChessBoard, PreviousChessBoard, CurrentGameBook, ChessBoard.LastMove);
+        MoveHistory.push_back(ChessBoard.LastMove);
+        FileIO::SaveCurrentGameMove(ChessBoard, PreviousChessBoard, CurrentGameBook, ChessBoard.LastMove);
 
-        CheckForMate(WhoseMove, *ChessBoard);
+        CheckForMate(WhoseMove(), ChessBoard);
         PieceTakenAdd(ChessBoard.LastMove);
 
         if (ChessBoard.WhiteMate || ChessBoard.BlackMate)
         {
-            LastMove.PgnMove += "#";
+            LastMove().PgnMove += "#";
         }
         else if (ChessBoard.WhiteCheck || ChessBoard.BlackCheck)
         {
-            LastMove.PgnMove += "+";
+            LastMove().PgnMove += "+";
         }
 
         return true;
@@ -767,50 +783,50 @@ public:
     private:
     void PieceTakenAdd(MoveContent lastMove)
     {
-        if (lastMove.TakenPiece.PieceType != ChessPieceType.None)
+        if (lastMove.TakenPiece.PieceType != ChessPieceType::None)
         {
-            if (lastMove.TakenPiece.PieceColor == ChessPieceColor.White)
+            if (lastMove.TakenPiece.PieceColor == ChessPieceColor::White)
             {
-                if (lastMove.TakenPiece.PieceType == ChessPieceType.Queen)
+                if (lastMove.TakenPiece.PieceType == ChessPieceType::Queen)
                 {
                     PiecesTakenCount.WhiteQueen++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Rook)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Rook)
                 {
                     PiecesTakenCount.WhiteRook++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Bishop)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Bishop)
                 {
                     PiecesTakenCount.WhiteBishop++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Knight)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Knight)
                 {
                     PiecesTakenCount.WhiteKnight++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Pawn)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Pawn)
                 {
                     PiecesTakenCount.WhitePawn++;
                 }
             }
-            if (ChessBoard.LastMove.TakenPiece.PieceColor == ChessPieceColor.Black)
+            if (ChessBoard.LastMove.TakenPiece.PieceColor == ChessPieceColor::Black)
             {
-                if (lastMove.TakenPiece.PieceType == ChessPieceType.Queen)
+                if (lastMove.TakenPiece.PieceType == ChessPieceType::Queen)
                 {
                     PiecesTakenCount.BlackQueen++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Rook)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Rook)
                 {
                     PiecesTakenCount.BlackRook++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Bishop)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Bishop)
                 {
                     PiecesTakenCount.BlackBishop++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Knight)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Knight)
                 {
                     PiecesTakenCount.BlackKnight++;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Pawn)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Pawn)
                 {
                     PiecesTakenCount.BlackPawn++;
                 }
@@ -820,50 +836,50 @@ public:
 
     void PieceTakenRemove(MoveContent lastMove)
     {
-        if (lastMove.TakenPiece.PieceType != ChessPieceType.None)
+        if (lastMove.TakenPiece.PieceType != ChessPieceType::None)
         {
-            if (lastMove.TakenPiece.PieceColor == ChessPieceColor.White)
+            if (lastMove.TakenPiece.PieceColor == ChessPieceColor::White)
             {
-                if (lastMove.TakenPiece.PieceType == ChessPieceType.Queen)
+                if (lastMove.TakenPiece.PieceType == ChessPieceType::Queen)
                 {
                     PiecesTakenCount.WhiteQueen--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Rook)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Rook)
                 {
                     PiecesTakenCount.WhiteRook--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Bishop)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Bishop)
                 {
                     PiecesTakenCount.WhiteBishop--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Knight)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Knight)
                 {
                     PiecesTakenCount.WhiteKnight--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Pawn)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Pawn)
                 {
                     PiecesTakenCount.WhitePawn--;
                 }
             }
-            if (lastMove.TakenPiece.PieceColor == ChessPieceColor.Black)
+            if (lastMove.TakenPiece.PieceColor == ChessPieceColor::Black)
             {
-                if (lastMove.TakenPiece.PieceType == ChessPieceType.Queen)
+                if (lastMove.TakenPiece.PieceType == ChessPieceType::Queen)
                 {
                     PiecesTakenCount.BlackQueen--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Rook)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Rook)
                 {
                     PiecesTakenCount.BlackRook--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Bishop)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Bishop)
                 {
                     PiecesTakenCount.BlackBishop--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Knight)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Knight)
                 {
                     PiecesTakenCount.BlackKnight--;
                 }
-                else if (lastMove.TakenPiece.PieceType == ChessPieceType.Pawn)
+                else if (lastMove.TakenPiece.PieceType == ChessPieceType::Pawn)
                 {
                     PiecesTakenCount.BlackPawn--;
                 }
@@ -875,7 +891,7 @@ public:
     bool MovePieceAN(string move)
     {
         byte sourceColumn = (byte)0, sourceRow = (byte)0, destinationColumn = (byte)0, destinationRow = (byte)0;
-        MoveContent.ParseAN(move, sourceColumn, sourceRow, destinationColumn, destinationRow);
+        MoveContent::ParseAN(move, &sourceColumn, &sourceRow, &destinationColumn, &destinationRow);
         return MovePiece(sourceColumn, sourceRow, destinationColumn, destinationRow);
     }
 
@@ -889,7 +905,7 @@ public:
 
     void SetChessPiece(Piece piece, byte index)
     {
-        ChessBoard.Squares[index].Piece = new Piece(piece);
+        ChessBoard.Squares[(short)index].Piece1 = Piece(piece);
 
     }
 
@@ -912,68 +928,69 @@ public:
         */
         ChessBoard.BlackMate = false;
         ChessBoard.WhiteMate = false;
-        PieceValidMoves.GenerateValidMoves(ChessBoard);
+        PieceValidMoves::GenerateValidMoves(ChessBoard);
 
         NodesSearched = 0;
 
-        ResultBoards resultBoards = new ResultBoards();
-        resultBoards.Positions = new list<Board>();
+        ResultBoards resultBoards = ResultBoards();
+        resultBoards.Positions = list<Board>();
 
-        if (CheckForMate(WhoseMove, *ChessBoard))
+        if (CheckForMate(WhoseMove(), ChessBoard))
         {
             Thinking = false;
             return;
         }
 
-        MoveContent bestMove = new MoveContent();
+        MoveContent bestMove = MoveContent();
 
         //If there is no playbook move search for the best move
-        if (FindPlayBookMove(*bestMove, ChessBoard, OpeningBook) == false
-            || ChessBoard.HalfMoveClock > 90 || ChessBoard.RepeatedMove >= 2)
+        if (FindPlayBookMove(&bestMove, ChessBoard, OpeningBook) == false
+            || (short)ChessBoard.HalfMoveClock > 90 || (short)ChessBoard.RepeatedMove >= 2)
         {
-            if (FindPlayBookMove(*bestMove, ChessBoard, CurrentGameBook) == false ||
-                ChessBoard.HalfMoveClock > 90 || ChessBoard.RepeatedMove >= 2)
+            if (FindPlayBookMove(&bestMove, ChessBoard, CurrentGameBook) == false ||
+                (short)ChessBoard.HalfMoveClock > 90 || (short)ChessBoard.RepeatedMove >= 2)
             {
-                bestMove = Search.IterativeSearch(ChessBoard, PlyDepthSearched, NodesSearched, NodesQuiessence, pvLine, PlyDepthReached, RootMovesSearched, CurrentGameBook);
+                bestMove = Search::IterativeSearch(ChessBoard, PlyDepthSearched, &NodesSearched, &NodesQuiessence, pvLine, &PlyDepthReached, &RootMovesSearched, CurrentGameBook);
             }
         }
 
         //Make the move 
-        PreviousChessBoard = new Board(ChessBoard);
+        PreviousChessBoard = Board(ChessBoard);
 
-        RootMovesSearched = (byte)resultBoards.Positions.Count;
+        RootMovesSearched = (byte)resultBoards.Positions.size();
 
-        Board.MovePiece(ChessBoard, bestMove.MovingPiecePrimary.SrcPosition, bestMove.MovingPiecePrimary.DstPosition, ChessPieceType.Queen);
+        Board::MovePiece(ChessBoard, bestMove.MovingPiecePrimary.SrcPosition, bestMove.MovingPiecePrimary.DstPosition, ChessPieceType::Queen);
 
         ChessBoard.LastMove.GeneratePGNString(ChessBoard);
 
-        FileIO.SaveCurrentGameMove(ChessBoard, PreviousChessBoard, CurrentGameBook, bestMove);
+        FileIO::SaveCurrentGameMove(ChessBoard, PreviousChessBoard, CurrentGameBook, bestMove);
 
         for (int x = 0; x < 64; x++)
         {
             Square sqr = ChessBoard.Squares[x];
 
-            if (sqr.Piece == NULL)
+            if (sqr.Piece1.PieceType == ChessPieceType::None)
                 continue;
 
-            sqr.Piece.DefendedValue = 0;
-            sqr.Piece.AttackedValue = 0;
+            sqr.Piece1.DefendedValue = 0;
+            sqr.Piece1.AttackedValue = 0;
         }
 
-        PieceValidMoves.GenerateValidMoves(ChessBoard);
-        Evaluation.EvaluateBoardScore(ChessBoard);
+        PieceValidMoves::GenerateValidMoves(ChessBoard);
+        Evaluation eva1;
+        eva1.EvaluateBoardScore(ChessBoard);
 
         PieceTakenAdd(ChessBoard.LastMove);
 
-        MoveHistory.Push(ChessBoard.LastMove);
+        MoveHistory.push_back(ChessBoard.LastMove);
 
-        if (CheckForMate(WhoseMove, *ChessBoard))
+        if (CheckForMate(WhoseMove(), ChessBoard))
         {
             Thinking = false;
 
             if (ChessBoard.WhiteMate || ChessBoard.BlackMate)
             {
-                LastMove.PgnMove += "#";
+                LastMove().PgnMove += "#";
             }
 
             return;
@@ -981,7 +998,7 @@ public:
 
         if (ChessBoard.WhiteCheck || ChessBoard.BlackCheck)
         {
-            LastMove.PgnMove += "+";
+            LastMove().PgnMove += "+";
         }
 
         Thinking = false;
@@ -989,26 +1006,27 @@ public:
 
     //region test
 
-    public PerformanceTest.PerformanceResult RunPerformanceTest(int depth = 5)
-    {
-        return PerformanceTest.RunPerfTest(depth, ChessBoard);
-    }
+    //public PerformanceTest.PerformanceResult RunPerformanceTest(int depth = 5)
+    //{
+    //    return PerformanceTest.RunPerfTest(depth, ChessBoard);
+    //}
 
     //region file io
 
-    public bool SaveGame(string filePath)
+    public:
+    bool SaveGame(string filePath)
     {
-        return FileIO.SaveGame(filePath, ChessBoard, WhoseMove, MoveHistory);
+        return FileIO::SaveGame(filePath, ChessBoard, WhoseMove(), MoveHistory);
     }
 
-    public bool LoadGame(String filePath)
+    bool LoadGame(string filePath)
     {
-        return FileIO.LoadGame(filePath, ref ChessBoard, WhoseMove, ref MoveHistory, ref CurrentGameBook, ref UndoGameBook);
+        return FileIO::LoadGame(filePath, &ChessBoard, WhoseMove(), &MoveHistory, &CurrentGameBook, &UndoGameBook);
     }
 
-    public bool LoadOpeningBook()
+    bool LoadOpeningBook()
     {
-        OpeningBook = Book.LoadOpeningBook();
+        OpeningBook = Book::LoadOpeningBook();
 
         return true;
     }

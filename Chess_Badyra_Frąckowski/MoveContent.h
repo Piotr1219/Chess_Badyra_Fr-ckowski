@@ -72,7 +72,7 @@ public:
 
     MoveContent(string move);
 
-    bool ParseAN(string move, byte* sourceColumn, byte* sourceRow, byte* destinationColumn, byte* destinationRow);
+    static bool ParseAN(string move, byte* sourceColumn, byte* sourceRow, byte* destinationColumn, byte* destinationRow);
 
     string GetPureCoordinateNotation();
 
@@ -85,7 +85,7 @@ private:
 
     string GetColumnFromInt(int column);
 
-    int GetIntFromColumn(char column);
+    static int GetIntFromColumn(char column);
 
     ChessPieceType GetPieceType(char c);
 

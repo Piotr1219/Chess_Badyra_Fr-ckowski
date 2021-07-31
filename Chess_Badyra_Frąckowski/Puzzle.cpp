@@ -1,19 +1,21 @@
-/*#include <string>
+#include <string>
 #include <list>
 #include <stack>
+#include <ctime>
 #include "Engine.h"
-#include "Board.h"
-#include "Book.h"
-#include "main.h"
-#include "functions.h"
-#include "MoveContent.h"
-#include "Piece.h"
-#include "Evaluations.h"
-#include "PGN.h"
-#include "PieceMoves.h"
+//#include "Board.h"
+//#include "Book.h"
+//#include "main.h"
+//#include "functions.h"
+//#include "MoveContent.h"
+//#include "Piece.h"
+//#include "Evaluations.h"
+//#include "PGN.h"
+//#include "PieceMoves.h"
 //#include "PieceSquareTable.h"
 //#include "PieceValidMoves.h"
 //#include "Square.h"
+#include "Puzzle.h"
 
 
 class Puzzle
@@ -171,4 +173,3 @@ private:
     }
 
 };
-*/

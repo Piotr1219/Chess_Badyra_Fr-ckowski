@@ -113,7 +113,7 @@ private:
 					}
 					if (move == "hard")
 					{
-						engine.GameDifficulty = Engine.Difficulty.Hard;
+						engine.setGameDifficulty(Engine::Difficulty::Hard);
 						continue;
 					}
 					if (move == "easy")
@@ -146,22 +146,22 @@ private:
 					}
 					if (move == "playother")
 					{
-						if (engine.WhoseMove == ChessPieceColor.White)
+						if (engine.WhoseMove() == ChessPieceColor::White)
 						{
-							engine.HumanPlayer = ChessPieceColor.Black;
+							engine.HumanPlayer = ChessPieceColor::Black;
 						}
-						else if (engine.WhoseMove == ChessPieceColor.Black)
+						else if (engine.WhoseMove() == ChessPieceColor::Black)
 						{
-							engine.HumanPlayer = ChessPieceColor.White;
+							engine.HumanPlayer = ChessPieceColor::White;
 						}
 
 						continue;
 					}
 					if (move == "white")
 					{
-						engine.HumanPlayer = ChessPieceColor.Black;
+						engine.HumanPlayer = ChessPieceColor::Black;
 
-						if (engine.WhoseMove != engine.HumanPlayer)
+						if (engine.WhoseMove() != engine.HumanPlayer)
 						{
 							MakeEngineMove(engine);
 						}
@@ -169,9 +169,9 @@ private:
 					}
 					if (move == "black")
 					{
-						engine.HumanPlayer = ChessPieceColor.White;
+						engine.HumanPlayer = ChessPieceColor::White;
 
-						if (engine.WhoseMove != engine.HumanPlayer)
+						if (engine.WhoseMove() != engine.HumanPlayer)
 						{
 							MakeEngineMove(engine);
 						}
@@ -296,17 +296,17 @@ private:
 					MakeEngineMove(engine);
 
 
-					if (engine.StaleMate)
+					if (engine.StaleMate())
 					{
-						if (engine.InsufficientMaterial)
+						if (engine.InsufficientMaterial())
 						{
 							printf("1/2-1/2 {Draw by insufficient material}");
 						}
-						else if (engine.RepeatedMove)
+						else if (engine.RepeatedMove())
 						{
 							printf("1/2-1/2 {Draw by repetition}");
 						}
-						else if (engine.FiftyMove)
+						else if (engine.FiftyMove())
 						{
 							printf("1/2-1/2 {Draw by fifty move rule}");
 						}
@@ -341,32 +341,36 @@ private:
 	void MakeEngineMove(Engine engine)
 	{
 		//DateTime start = DateTime.Now;
-		auto start = std::chrono::system_clock::now();
+		//auto start = std::chrono::system_clock::now();
+		time_t start;
+		time(&start);
 
 		engine.AiPonderMove();
 
-		MoveContent lastMove = engine.GetMoveHistory().ToArray()[0];
+		list<MoveContent>::iterator it = engine.GetMoveHistory().begin();
+		MoveContent lastMove = *it;
+		//MoveContent lastMove = engine.GetMoveHistory().ToArray()[0];
 
 		string tmp = "";
 
-		byte sourceColumn = (byte)(lastMove.MovingPiecePrimary.SrcPosition % 8);
-		byte srcRow = (byte)(8 - (lastMove.MovingPiecePrimary.SrcPosition / 8));
-		byte destinationColumn = (byte)(lastMove.MovingPiecePrimary.DstPosition % 8);
-		byte destinationRow = (byte)(8 - (lastMove.MovingPiecePrimary.DstPosition / 8));
+		byte sourceColumn = (byte)((short)lastMove.MovingPiecePrimary.SrcPosition % 8);
+		byte srcRow = (byte)(8 - ((short)lastMove.MovingPiecePrimary.SrcPosition / 8));
+		byte destinationColumn = (byte)((short)lastMove.MovingPiecePrimary.DstPosition % 8);
+		byte destinationRow = (byte)(8 - ((short)lastMove.MovingPiecePrimary.DstPosition / 8));
 
 		tmp += GetPgnMove(lastMove.MovingPiecePrimary.PieceType);
 
-		if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType.Knight)
+		if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType::Knight)
 		{
 			tmp += GetColumnFromInt((int)sourceColumn + 1);
 			tmp += (char)srcRow;
 		}
-		else if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType.Rook)
+		else if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType::Rook)
 		{
 			tmp += GetColumnFromInt((int)sourceColumn + 1);
 			tmp += (char)srcRow;
 		}
-		else if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType.Pawn)
+		else if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType::Pawn)
 		{
 			if (sourceColumn != destinationColumn)
 			{
@@ -374,7 +378,7 @@ private:
 			}
 		}
 
-		if (lastMove.TakenPiece.PieceType != ChessPieceType.None)
+		if (lastMove.TakenPiece.PieceType != ChessPieceType::None)
 		{
 			tmp += "x";
 		}
@@ -383,30 +387,33 @@ private:
 
 		tmp += (int)destinationRow;
 
-		if (lastMove.PawnPromotedTo == ChessPieceType.Queen)
+		if (lastMove.PawnPromotedTo == ChessPieceType::Queen)
 		{
 			tmp += "=Q";
 		}
-		else if (lastMove.PawnPromotedTo == ChessPieceType.Rook)
+		else if (lastMove.PawnPromotedTo == ChessPieceType::Rook)
 		{
 			tmp += "=R";
 		}
-		else if (lastMove.PawnPromotedTo == ChessPieceType.Knight)
+		else if (lastMove.PawnPromotedTo == ChessPieceType::Knight)
 		{
 			tmp += "=K";
 		}
-		else if (lastMove.PawnPromotedTo == ChessPieceType.Bishop)
+		else if (lastMove.PawnPromotedTo == ChessPieceType::Bishop)
 		{
 			tmp += "=B";
 		}
 
 		time_t now = time(0);
 		//DateTime end = DateTime.Now;
+		time_t end;
+		time(&end);
 
 		int ts = difftime(end, start);		//time difference in seconds
 		//TimeSpan ts = end - start;
 
-		printf(engine.PlyDepthReached + " ");
+		printf("%hhx", engine.PlyDepthReached);
+		printf(" ");
 
 		int score = engine.GetScore();
 
@@ -418,7 +425,7 @@ private:
 		printf(score + " ");
 		printf(ts * 100 + " ");
 		printf(engine.NodesSearched + engine.NodesQuiessence + " ");
-		printf(engine.PvLine);
+		printf("%hhx", engine.PvLine());
 		printf("");
 
 		printf("move ");
@@ -467,23 +474,23 @@ private:
 	{
 		string move = "";
 
-		if (pieceType == ChessPieceType.Bishop)
+		if (pieceType == ChessPieceType::Bishop)
 		{
 			move += "B";
 		}
-		else if (pieceType == ChessPieceType.King)
+		else if (pieceType == ChessPieceType::King)
 		{
 			move += "K";
 		}
-		else if (pieceType == ChessPieceType.Knight)
+		else if (pieceType == ChessPieceType::Knight)
 		{
 			move += "N";
 		}
-		else if (pieceType == ChessPieceType.Queen)
+		else if (pieceType == ChessPieceType::Queen)
 		{
 			move += "Q";
 		}
-		else if (pieceType == ChessPieceType.Rook)
+		else if (pieceType == ChessPieceType::Rook)
 		{
 			move += "R";
 		}
@@ -573,40 +580,40 @@ private:
 				printf("%i", 8 - (i / 8));
 			}
 
-			ChessPieceType PieceType = engine.GetPieceTypeAt(i);
-			ChessPieceColor PieceColor = engine.GetPieceColorAt(i);
+			ChessPieceType PieceType = engine.GetPieceTypeAt((byte)i);
+			ChessPieceColor PieceColor = engine.GetPieceColorAt((byte)i);
 			string str;
 
 			switch (PieceType)
 			{
-			case ChessPieceType.Pawn:
+			case ChessPieceType::Pawn:
 			{
 				str = string("| ") + "P ";
 				break;
 			}
-			case ChessPieceType.Knight:
+			case ChessPieceType::Knight:
 			{
 				str = string("| ") + "N ";
 				break;
 			}
-			case ChessPieceType.Bishop:
+			case ChessPieceType::Bishop:
 			{
 				str = string("| ") + "B ";
 				break;
 			}
-			case ChessPieceType.Rook:
+			case ChessPieceType::Rook:
 			{
 				str = string("| ") + "R ";
 				break;
 			}
 
-			case ChessPieceType.Queen:
+			case ChessPieceType::Queen:
 			{
 				str = string("| ") + "Q ";
 				break;
 			}
 
-			case ChessPieceType.King:
+			case ChessPieceType::King:
 			{
 				str = string("| ") + "K ";
 				break;
@@ -618,7 +625,7 @@ private:
 			}
 			}
 
-			if (PieceColor == ChessPieceColor.Black)
+			if (PieceColor == ChessPieceColor::Black)
 			{
 				transform(str.begin(), str.end(), str.begin(),
 					[](unsigned char c) { return tolower(c); });

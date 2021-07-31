@@ -3,7 +3,7 @@
 #include <stack>
 #include "PieceValidMoves.h"
 //#include "Engine.h"
-//#include "Board.h"
+#include "Board.h"
 //#include "Book.h"
 //#include "main.h"
 //#include "functions.h"
@@ -11,7 +11,7 @@
 //#include "Piece.h"
 //#include "Evaluations.h"
 //#include "PGN.h"
-//#include "PieceMoves.h"
+#include "PieceMoves.h"
 //#include "PieceSquareTable.h"
 //#include "Square.h"
 
@@ -19,7 +19,7 @@ using namespace std;
 
 class PieceValidMoves
 {
-private:
+public:
     static void AnalyzeMovePawn(Board board, byte dstPos, Piece pcMoving)
     {
         //Because Pawns only kill diagonaly we handle the En Passant scenario specialy
@@ -30,7 +30,7 @@ private:
                 if (board.EnPassantPosition == dstPos)
                 {
                     //We have an En Passant Possible
-                    pcMoving.ValidMoves.push(dstPos);
+                    pcMoving.ValidMoves.push_back(dstPos);
 
                     if (pcMoving.PieceColor == ChessPieceColor::White)
                     {
@@ -44,7 +44,7 @@ private:
             }
         }
 
-        Piece pcAttacked = board.Squares[dstPos].Piece;
+        Piece pcAttacked = board.Squares[(short)dstPos].Piece1;
 
         //If there no piece there I can potentialy kill
         Piece* attacked = &pcAttacked;
@@ -74,7 +74,7 @@ private:
             else
             {
                 //Add this as a valid move
-                pcMoving.ValidMoves.push(dstPos);
+                pcMoving.ValidMoves.push_back(dstPos);
             }
         }
         else
@@ -98,7 +98,7 @@ private:
             else
             {
                 //Add this as a valid move
-                pcMoving.ValidMoves.push(dstPos);
+                pcMoving.ValidMoves.push_back(dstPos);
             }
         }
 
@@ -118,14 +118,14 @@ private:
         }
 
         //If there no piece there I can potentialy kill just add the move and exit
-        if (board.Squares[dstPos].Piece == NULL)
+        if (board.Squares[(short)dstPos].Piece1.PieceType == ChessPieceType::None)
         {
-            pcMoving.ValidMoves.push(dstPos);
+            pcMoving.ValidMoves.push_back(dstPos);
 
             return true;
         }
 
-        Piece pcAttacked = board.Squares[dstPos].Piece;
+        Piece pcAttacked = board.Squares[(short)dstPos].Piece1;
 
         //if that piece is a different color
         if (pcAttacked.PieceColor != pcMoving.PieceColor)
@@ -147,7 +147,7 @@ private:
             else
             {
                 //Add this as a valid move
-                pcMoving.ValidMoves.push(dstPos);
+                pcMoving.ValidMoves.push_back(dstPos);
             }
 
 
@@ -187,14 +187,14 @@ private:
                 }
             }
             // if there is something if front pawns can't move there
-            else if (board.Squares[dstPos].Piece != NULL)
+            else if (board.Squares[(short)dstPos].Piece1.PieceType != ChessPieceType::None)
             {
                 return;
             }
             //if there is nothing in front of 
             else
             {
-                pcMoving.ValidMoves.push(dstPos);
+                pcMoving.ValidMoves.push_back(dstPos);
             }
         }
     }
@@ -217,17 +217,17 @@ private:
             if (piece.PieceColor == ChessPieceColor::White)
             {
                 //I can't move where I am being attacked
-                if (board.BlackAttackBoard[dstPos])
+                if (board.BlackAttackBoard[(short)dstPos])
                 {
-                    board.WhiteAttackBoard[dstPos] = true;
+                    board.WhiteAttackBoard[(short)dstPos] = true;
                     continue;
                 }
             }
             else
             {
-                if (board.WhiteAttackBoard[dstPos])
+                if (board.WhiteAttackBoard[(short)dstPos])
                 {
-                    board.BlackAttackBoard[dstPos] = true;
+                    board.BlackAttackBoard[(short)dstPos] = true;
                     continue;
                 }
             }
@@ -241,23 +241,23 @@ private:
         //This code will add the castleling move to the pieces available moves
         if (king.PieceColor == ChessPieceColor::White)
         {
-            if (board.Squares[63].Piece != NULL)
+            if (board.Squares[63].Piece1.PieceType != ChessPieceType::None)
             {
                 //Check if the Right Rook is still in the correct position
-                if (board.Squares[63].Piece.PieceType == ChessPieceType::Rook)
+                if (board.Squares[63].Piece1.PieceType == ChessPieceType::Rook)
                 {
-                    if (board.Squares[63].Piece.PieceColor == king.PieceColor)
+                    if (board.Squares[63].Piece1.PieceColor == king.PieceColor)
                     {
                         //Move one column to right see if its empty
-                        if (board.Squares[62].Piece == NULL)
+                        if (board.Squares[62].Piece1.PieceType == ChessPieceType::None)
                         {
-                            if (board.Squares[61].Piece == NULL)
+                            if (board.Squares[61].Piece1.PieceType == ChessPieceType::None)
                             {
                                 if (board.BlackAttackBoard[61] == false &&
                                     board.BlackAttackBoard[62] == false)
                                 {
                                     //Ok looks like move is valid lets add it
-                                    king.ValidMoves.push((byte)62);
+                                    king.ValidMoves.push_back((byte)62);
                                     board.WhiteAttackBoard[62] = true;
                                 }
                             }
@@ -266,25 +266,25 @@ private:
                 }
             }
 
-            if (board.Squares[56].Piece != NULL)
+            if (board.Squares[56].Piece1.PieceType != ChessPieceType::None)
             {
                 //Check if the Left Rook is still in the correct position
-                if (board.Squares[56].Piece.PieceType == ChessPieceType::Rook)
+                if (board.Squares[56].Piece1.PieceType == ChessPieceType::Rook)
                 {
-                    if (board.Squares[56].Piece.PieceColor == king.PieceColor)
+                    if (board.Squares[56].Piece1.PieceColor == king.PieceColor)
                     {
                         //Move one column to right see if its empty
-                        if (board.Squares[57].Piece == NULL)
+                        if (board.Squares[57].Piece1.PieceType == ChessPieceType::None)
                         {
-                            if (board.Squares[58].Piece == NULL)
+                            if (board.Squares[58].Piece1.PieceType == ChessPieceType::None)
                             {
-                                if (board.Squares[59].Piece == NULL)
+                                if (board.Squares[59].Piece1.PieceType == ChessPieceType::None)
                                 {
                                     if (board.BlackAttackBoard[58] == false &&
                                         board.BlackAttackBoard[59] == false)
                                     {
                                         //Ok looks like move is valid lets add it
-                                        king.ValidMoves.push((byte)58);
+                                        king.ValidMoves.push_back((byte)58);
                                         board.WhiteAttackBoard[58] = true;
                                     }
                                 }
@@ -297,24 +297,24 @@ private:
         else if (king.PieceColor == ChessPieceColor::Black)
         {
             //There are two ways to castle, scenario 1:
-            if (board.Squares[7].Piece != NULL)
+            if (board.Squares[7].Piece1.PieceType != ChessPieceType::None)
             {
                 //Check if the Right Rook is still in the correct position
-                if (board.Squares[7].Piece.PieceType == ChessPieceType::Rook
-                    && !board.Squares[7].Piece.Moved)
+                if (board.Squares[7].Piece1.PieceType == ChessPieceType::Rook
+                    && !board.Squares[7].Piece1.Moved)
                 {
-                    if (board.Squares[7].Piece.PieceColor == king.PieceColor)
+                    if (board.Squares[7].Piece1.PieceColor == king.PieceColor)
                     {
                         //Move one column to right see if its empty
 
-                        if (board.Squares[6].Piece == NULL)
+                        if (board.Squares[6].Piece1.PieceType == ChessPieceType::None)
                         {
-                            if (board.Squares[5].Piece == NULL)
+                            if (board.Squares[5].Piece1.PieceType == ChessPieceType::None)
                             {
                                 if (board.WhiteAttackBoard[5] == false && board.WhiteAttackBoard[6] == false)
                                 {
                                     //Ok looks like move is valid lets add it
-                                    king.ValidMoves.push((byte)6);
+                                    king.ValidMoves.push_back((byte)6);
                                     board.BlackAttackBoard[6] = true;
                                 }
                             }
@@ -323,27 +323,27 @@ private:
                 }
             }
             //There are two ways to castle, scenario 2:
-            if (board.Squares[0].Piece != NULL)
+            if (board.Squares[0].Piece1.PieceType != ChessPieceType::None)
             {
                 //Check if the Left Rook is still in the correct position
-                if (board.Squares[0].Piece.PieceType == ChessPieceType::Rook &&
-                    !board.Squares[0].Piece.Moved)
+                if (board.Squares[0].Piece1.PieceType == ChessPieceType::Rook &&
+                    !board.Squares[0].Piece1.Moved)
                 {
-                    if (board.Squares[0].Piece.PieceColor ==
+                    if (board.Squares[0].Piece1.PieceColor ==
                         king.PieceColor)
                     {
                         //Move one column to right see if its empty
-                        if (board.Squares[1].Piece == NULL)
+                        if (board.Squares[1].Piece1.PieceType == ChessPieceType::None)
                         {
-                            if (board.Squares[2].Piece == NULL)
+                            if (board.Squares[2].Piece1.PieceType == ChessPieceType::None)
                             {
-                                if (board.Squares[3].Piece == NULL)
+                                if (board.Squares[3].Piece1.PieceType == ChessPieceType::None)
                                 {
                                     if (board.WhiteAttackBoard[2] == false &&
                                         board.WhiteAttackBoard[3] == false)
                                     {
                                         //Ok looks like move is valid lets add it
-                                        king.ValidMoves.push((byte)2);
+                                        king.ValidMoves.push_back((byte)2);
                                         board.BlackAttackBoard[2] = true;
                                     }
                                 }
@@ -372,26 +372,26 @@ private:
         {
             Square sqr = board.Squares[x];
 
-            if (sqr.Piece == NULL)
+            if (sqr.Piece1.PieceType == ChessPieceType::None)
                 continue;
 
-            sqr.Piece.ValidMoves = new stack<byte>(sqr.Piece.LastValidMoveCount);
+            sqr.Piece1.ValidMoves = list<byte>(sqr.Piece1.LastValidMoveCount);
 
             remainingPieces++;
 
-            switch (sqr.Piece.PieceType)
+            switch (sqr.Piece1.PieceType)
             {
             case ChessPieceType::Pawn:
                     {
-                        if (sqr.Piece.PieceColor == ChessPieceColor::White)
+                        if (sqr.Piece1.PieceColor == ChessPieceColor::White)
                         {
-                            CheckValidMovesPawn(MoveArrays::WhitePawnMoves[x].Moves, sqr.Piece, x,
+                            CheckValidMovesPawn(MoveArrays::WhitePawnMoves[x].Moves, sqr.Piece1, (byte)x,
                                                 board, MoveArrays::WhitePawnTotalMoves[x]);
                             break;
                         }
-                        if (sqr.Piece.PieceColor == ChessPieceColor::Black)
+                        if (sqr.Piece1.PieceColor == ChessPieceColor::Black)
                         {
-                            CheckValidMovesPawn(MoveArrays::BlackPawnMoves[x].Moves, sqr.Piece, x,
+                            CheckValidMovesPawn(MoveArrays::BlackPawnMoves[x].Moves, sqr.Piece1, (byte)x,
                                                 board, MoveArrays::BlackPawnTotalMoves[x]);
                             break;
                         }
@@ -405,7 +405,7 @@ private:
                             list<byte>::iterator it = MoveArrays::KnightMoves[x].Moves.begin();
                             advance(it, i);
 
-                            AnalyzeMove(board, *it, sqr.Piece);
+                            AnalyzeMove(board, *it, sqr.Piece1);
                         }
 
                         break;
@@ -418,7 +418,7 @@ private:
                             advance(it, i);
                             if (
                                 AnalyzeMove(board, *it,
-                                            sqr.Piece) ==
+                                            sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -430,7 +430,7 @@ private:
                             advance(it, i);
                             if (
                                 AnalyzeMove(board, *it,
-                                            sqr.Piece) ==
+                                            sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -442,7 +442,7 @@ private:
                             advance(it, i);
                             if (
                                 AnalyzeMove(board, *it,
-                                            sqr.Piece) ==
+                                            sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -454,7 +454,7 @@ private:
                             advance(it, i);
                             if (
                                 AnalyzeMove(board, *it,
-                                            sqr.Piece) ==
+                                            sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -465,9 +465,9 @@ private:
                     }
             case ChessPieceType::Rook:
                     {
-                        if (sqr.Piece.Moved)
+                        if (sqr.Piece1.Moved)
                         {
-                            if (sqr.Piece.PieceColor == ChessPieceColor::Black)
+                            if (sqr.Piece1.PieceColor == ChessPieceColor::Black)
                             {
                                 blackRooksMoved++;
                             }
@@ -483,7 +483,7 @@ private:
                             list<byte>::iterator it = MoveArrays::RookMoves1[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -494,7 +494,7 @@ private:
                             list<byte>::iterator it = MoveArrays::RookMoves2[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -505,7 +505,7 @@ private:
                             list<byte>::iterator it = MoveArrays::RookMoves3[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -516,7 +516,7 @@ private:
                             list<byte>::iterator it = MoveArrays::RookMoves4[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -532,7 +532,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves1[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -543,7 +543,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves2[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -554,7 +554,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves3[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -565,7 +565,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves4[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -577,7 +577,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves5[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -588,7 +588,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves6[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -599,7 +599,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves7[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -610,7 +610,7 @@ private:
                             list<byte>::iterator it = MoveArrays::QueenMoves8[x].Moves.begin();
                             advance(it, i);
                             if (
-                                AnalyzeMove(board, *it, sqr.Piece) ==
+                                AnalyzeMove(board, *it, sqr.Piece1) ==
                                 false)
                             {
                                 break;
@@ -621,9 +621,9 @@ private:
                     }
             case ChessPieceType::King:
                     {
-                        if (sqr.Piece.PieceColor == ChessPieceColor::White)
+                        if (sqr.Piece1.PieceColor == ChessPieceColor::White)
                         {
-                            if (sqr.Piece.Moved)
+                            if (sqr.Piece1.Moved)
                             {
                                 board.WhiteCanCastle = false;
                             }
@@ -631,7 +631,7 @@ private:
                         }
                         else
                         {
-                            if (sqr.Piece.Moved)
+                            if (sqr.Piece1.Moved)
                             {
                                 board.BlackCanCastle = false;
                             }
@@ -660,16 +660,16 @@ private:
 
         if (board.WhoseMove == ChessPieceColor::White)
         {
-            GenerateValidMovesKing(board.Squares[board.BlackKingPosition].Piece, board,
+            GenerateValidMovesKing(board.Squares[(short)board.BlackKingPosition].Piece1, board,
                                     board.BlackKingPosition);
-            GenerateValidMovesKing(board.Squares[board.WhiteKingPosition].Piece, board,
+            GenerateValidMovesKing(board.Squares[(short)board.WhiteKingPosition].Piece1, board,
                                     board.WhiteKingPosition);
         }
         else
         {
-            GenerateValidMovesKing(board.Squares[board.WhiteKingPosition].Piece, board,
+            GenerateValidMovesKing(board.Squares[(short)board.WhiteKingPosition].Piece1, board,
                                     board.WhiteKingPosition);
-            GenerateValidMovesKing(board.Squares[board.BlackKingPosition].Piece, board,
+            GenerateValidMovesKing(board.Squares[(short)board.BlackKingPosition].Piece1, board,
                                     board.BlackKingPosition);
         }
 
@@ -677,11 +677,11 @@ private:
         //Now that all the pieces were examined we know if the king is in check
         if (!board.WhiteCastled && board.WhiteCanCastle && !board.WhiteCheck)
         {
-            GenerateValidMovesKingCastle(board, board.Squares[board.WhiteKingPosition].Piece);
+            GenerateValidMovesKingCastle(board, board.Squares[(short)board.WhiteKingPosition].Piece1);
         }
         if (!board.BlackCastled && board.BlackCanCastle && !board.BlackCheck)
         {
-            GenerateValidMovesKingCastle(board, board.Squares[board.BlackKingPosition].Piece);
+            GenerateValidMovesKingCastle(board, board.Squares[(short)board.BlackKingPosition].Piece1);
         }
     }
 };

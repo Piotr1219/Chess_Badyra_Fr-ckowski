@@ -3,7 +3,7 @@
 #include <list>
 #include <stack>
 //#include "Engine.h"
-//#include "Board.h"
+#include "Board.h"
 //#include "Book.h"
 //#include "main.h"
 //#include "functions.h"
@@ -19,7 +19,7 @@ using namespace std;
 
 class PieceValidMoves
 {
-private:
+public:
     static void AnalyzeMovePawn(Board board, byte dstPos, Piece pcMoving);
 
     static bool AnalyzeMove(Board board, byte dstPos, Piece pcMoving);

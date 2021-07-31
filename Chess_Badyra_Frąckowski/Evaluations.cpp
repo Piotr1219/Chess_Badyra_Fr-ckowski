@@ -8,7 +8,7 @@
 //#include "functions.h"
 //#include "MoveContent.h"
 //#include "Piece.h"
-//#include "Evaluations.h"
+#include "Evaluations.h"
 #include "Square.h"
 
 using namespace std;
@@ -19,7 +19,7 @@ private:
     static short blackPawnCount[8];
     static short whitePawnCount[8];
 
-    static const int PawnTable[64] =
+    const int PawnTable[64] =
     {
             0,  0,  0,  0,  0,  0,  0,  0,
         50, 50, 50, 50, 50, 50, 50, 50,
@@ -31,7 +31,7 @@ private:
             0,  0,  0,  0,  0,  0,  0,  0
     };
 
-    static const short KnightTable[64] =
+    const short KnightTable[64] =
     {
         -50,-40,-30,-30,-30,-30,-40,-50,
         -40,-20,  0,  0,  0,  0,-20,-40,
@@ -79,7 +79,7 @@ private:
         -50,-30,-30,-30,-30,-30,-30,-50
     };
 
-    static int EvaluatePieceScore(Square square, byte position, bool endGamePhase,
+    int EvaluatePieceScore(Square square, byte position, bool endGamePhase,
                                             byte *knightCount, byte *bishopCount, bool *insufficientMaterial)
     {
         int score = 0;
@@ -258,7 +258,7 @@ private:
         return score;
     }
 
-    static void EvaluateBoardScore(Board board)
+    void EvaluateBoardScore(Board board)
     {
         //Black Score - 
         //White Score +
@@ -344,7 +344,7 @@ private:
                 board.Score += EvaluatePieceScore(square, (byte)x, board.EndGamePhase,
                     &whiteKnightCount, &whiteBishopCount, &insufficientMaterial);
 
-                if (square.Piece.PieceType == ChessPieceType::King)
+                if (square.Piece1.PieceType == ChessPieceType::King)
                 {
                     if (x != 59 && x != 60)
                     {
@@ -362,13 +362,13 @@ private:
                     }
                 }
             }
-            else if (square.Piece.PieceColor == ChessPieceColor::Black)
+            else if (square.Piece1.PieceColor == ChessPieceColor::Black)
             {
                 board.Score -= EvaluatePieceScore(square, (byte)x, board.EndGamePhase,
                     &blackKnightCount, &blackBishopCount, &insufficientMaterial);
 
 
-                if (square.Piece.PieceType == ChessPieceType::King)
+                if (square.Piece1.PieceType == ChessPieceType::King)
                 {
                     if (x != 3 && x != 4)
                     {
@@ -389,7 +389,7 @@ private:
 
             }
 
-            if (square.Piece.PieceType == ChessPieceType::Knight)
+            if (square.Piece1.PieceType == ChessPieceType::Knight)
             {
                 knightCount = (byte)((int)knightCount+1);
 
@@ -612,11 +612,11 @@ private:
             return 0;
         }
 
-        if (board.Squares[pawnPos].Piece != NULL)
+        if (board.Squares[pawnPos].Piece1.PieceType != ChessPieceType::None)
         {
-            if (board.Squares[pawnPos].Piece.PieceColor == board.Squares[kingPos].Piece.PieceColor)
+            if (board.Squares[pawnPos].Piece1.PieceColor == board.Squares[kingPos].Piece1.PieceColor)
             {
-                if (board.Squares[pawnPos].Piece.PieceType == ChessPieceType::Pawn)
+                if (board.Squares[pawnPos].Piece1.PieceType == ChessPieceType::Pawn)
                 {
                     return 10;
                 }

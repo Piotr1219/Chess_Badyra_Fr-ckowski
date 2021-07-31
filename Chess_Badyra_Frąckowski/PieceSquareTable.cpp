@@ -8,7 +8,7 @@
 //#include "main.h"
 //#include "functions.h"
 //#include "MoveContent.h"
-//#include "Piece.h"
+#include "Piece.h"
 //#include "Evaluations.h"
 //#include "PGN.h"
 //#include "Square.h"

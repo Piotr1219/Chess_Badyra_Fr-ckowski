@@ -75,6 +75,7 @@ struct MoveArrays
 
 class PieceMoves
 {
+public:
     static bool Initiated;
 
     static byte Position(byte col, byte row);

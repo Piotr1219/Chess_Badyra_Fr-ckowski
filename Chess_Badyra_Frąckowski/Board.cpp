@@ -3,7 +3,7 @@
 #include <stack>
 #include <algorithm>
 //#include "Engine.h"
-//#include "Board.h"
+#include "Board.h"
 //#include "Book.h"
 //#include "main.h"
 #include "functions.h"
@@ -479,6 +479,17 @@ public:
 
     }
 
+    bool isEmpty() {
+        bool result = true;
+        for (int i = 0; i < 64; i++)
+        {
+            if (Squares[i].Piece1.PieceType != ChessPieceType::None) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
     Board(Square squares[])
     {
         //Squares = Square[64];
@@ -563,7 +574,7 @@ public:
     //private methods
 
     private:
-    bool PromotePawns(Board board, Piece piece, byte dstPosition, ChessPieceType promoteToPiece)
+    static bool PromotePawns(Board board, Piece piece, byte dstPosition, ChessPieceType promoteToPiece)
     {
         if (piece.PieceType == ChessPieceType::Pawn)
         {
@@ -586,7 +597,7 @@ public:
         return false;
     }
 
-    void RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, byte srcPosition, byte dstPosition)
+    static void RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, byte srcPosition, byte dstPosition)
     {
         //Record En Passant if Pawn Moving
         if (pcType == ChessPieceType::Pawn)
@@ -604,7 +615,7 @@ public:
         }
     }
 
-    bool SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, ChessPieceColor pcColor)
+    static bool SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, ChessPieceColor pcColor)
     {
         if (board.EnPassantPosition != dstPosition)
         {
@@ -643,7 +654,7 @@ public:
 
     }
 
-    void KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosition)
+    static void KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosition)
     {
         if (piece.PieceType != ChessPieceType::King)
         {
@@ -742,7 +753,7 @@ public:
         return clonedBoard;
     }
 
-    MoveContent MovePiece(Board board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece)
+    static MoveContent MovePiece(Board board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece)
     {
         Piece piece = board.Squares[(short)srcPosition].Piece1;
 
