@@ -2,12 +2,9 @@
 #include <string>
 #include <list>
 #include <stack>
-//#include "Engine.h"
-#include "Board.h"
-//#include "Book.h"
-//#include "main.h"
-//#include "functions.h"
+//#include "Board.h"
 #include "Piece.h"
+#include "Square.h"
 
 using namespace std;
 
@@ -78,7 +75,8 @@ public:
 
     string ToString();
 
-    string GeneratePGNString(Board board);
+    //string GeneratePGNString(Board board);
+    string GeneratePGNString(Square squares[]);
 
 private:
     byte GetBoardIndex(int col, int row);

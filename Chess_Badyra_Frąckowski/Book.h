@@ -8,6 +8,7 @@
 //#include "main.h"
 //#include "functions.h"
 #include "MoveContent.h"
+#include "PieceValidMoves.h"
 
 
 using namespace std;
@@ -27,10 +28,10 @@ class Book
 public:
     static list<OpeningMove> LoadOpeningBook();
 private:
-    list<OpeningMove> PopulateOpeningBook();
+    static list<OpeningMove> PopulateOpeningBook();
 public:
     static int ValidateOpeningBook(list<OpeningMove> openingBook);
 
-    bool IsValidMove(byte srcPos, byte dstPos, string fen);
+    static bool IsValidMove(byte srcPos, byte dstPos, string fen);
 };
 

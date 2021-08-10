@@ -11,240 +11,186 @@
 
 using namespace std;
 
-//#region Enums
 
-//#region ChessPieceColor enum
+Piece::Piece() = default;
 
-enum ChessPieceColor
+Piece::Piece(const Piece &piece)
 {
-    White,
-    Black
-};
+    PieceColor = piece.PieceColor;
+    PieceType = piece.PieceType;
+    Moved = piece.Moved;
+    PieceValue = piece.PieceValue;
+    PieceActionValue = piece.PieceActionValue;
 
-//#endregion
+    if (!piece.ValidMoves.empty())
+        LastValidMoveCount = piece.ValidMoves.size();
+}
 
-//#region ChessPieceType enum
-
-enum ChessPieceType
+Piece::Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor)
 {
-    King,
-    Queen,
-    Rook,
-    Bishop,
-    Knight,
-    Pawn,
-    None
-};
+    PieceType = chessPiece;
+    PieceColor = chessPieceColor;
+
+    if (PieceType == ChessPieceType::Pawn || PieceType == ChessPieceType::Knight)
+    {
+        LastValidMoveCount = 2;
+    }
+    else
+    {
+        LastValidMoveCount = 0;
+    }
+
+    list<byte> temp_stack;
+    ValidMoves = temp_stack;
+    ValidMoves.push_back((byte)LastValidMoveCount);
+
+    PieceValue = CalculatePieceValue(PieceType);
+    PieceActionValue = CalculatePieceActionValue(PieceType);
+}
 
 //#endregion
 
+//#region InternalMembers
+
+string Piece::GetPieceTypeShort(ChessPieceType pieceType)
+{
+    switch (pieceType)
+    {
+    case ChessPieceType::Pawn:
+            {
+                return "P";
+            }
+    case ChessPieceType::Knight:
+            {
+                return "N";
+            }
+    case ChessPieceType::Bishop:
+            {
+                return "B";
+            }
+    case ChessPieceType::Rook:
+            {
+                return "R";
+            }
+
+    case ChessPieceType::Queen:
+            {
+                return "Q";
+            }
+
+    case ChessPieceType::King:
+            {
+                return "K";
+            }
+    default:
+            {
+                return "P";
+            }
+    }
+}
+
+short Piece::CalculatePieceValue(ChessPieceType pieceType)
+{
+    switch (pieceType)
+    {
+    case ChessPieceType::Pawn:
+            {
+                return 100;
+
+            }
+    case ChessPieceType::Knight:
+            {
+                return 320;
+            }
+    case ChessPieceType::Bishop:
+            {
+                return 325;
+            }
+    case ChessPieceType::Rook:
+            {
+                return 500;
+            }
+
+    case ChessPieceType::Queen:
+            {
+                return 975;
+            }
+
+    case ChessPieceType::King:
+            {
+                return 32767;
+            }
+    default:
+            {
+                return 0;
+            }
+    }
+}
+
+short Piece::CalculatePieceActionValue(ChessPieceType pieceType)
+{
+    switch (pieceType)
+    {
+    case ChessPieceType::Pawn:
+            {
+                return 6;
+
+            }
+    case ChessPieceType::Knight:
+            {
+                return 3;
+            }
+    case ChessPieceType::Bishop:
+            {
+                return 3;
+            }
+    case ChessPieceType::Rook:
+            {
+                return 2;
+            }
+
+    case ChessPieceType::Queen:
+            {
+                return 1;
+            }
+
+    case ChessPieceType::King:
+            {
+                return 1;
+            }
+    default:
+            {
+                return 0;
+            }
+    }
+}
+
 //#endregion
-
-class Piece
-{public:
-    //#region InternalMembers
-
-    ChessPieceColor PieceColor;
-    ChessPieceType PieceType;
-
-    short PieceValue;
-    short PieceActionValue;
-
-    short AttackedValue;
-    short DefendedValue;
-
-    int LastValidMoveCount;
-    bool Moved;
-
-    bool Selected;
-
-    list<byte> ValidMoves;
-
-    //#endregion
-
-    //#region Constructors
-
-    // pusty konstruktor zeby tworzyc obiekt jedynie do wywolania metod z klasy
-
-    Piece() = default;
-
-    Piece(const Piece &piece)
+string Piece::ChessPieceType_to_string(ChessPieceType c) {
+    switch (c)
     {
-        PieceColor = piece.PieceColor;
-        PieceType = piece.PieceType;
-        Moved = piece.Moved;
-        PieceValue = piece.PieceValue;
-        PieceActionValue = piece.PieceActionValue;
-
-        if (!piece.ValidMoves.empty())
-            LastValidMoveCount = piece.ValidMoves.size();
+        case King: return "King";
+        case Queen: return "Queen";
+        case Rook: return "Rook";
+        case Bishop: return "Bishop";
+        case Knight: return "Knight";
+        case Pawn: return "Pawn";
+        case None: return "None";
     }
+}
 
-    Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor)
+string Piece::ChessPieceColor_to_string(ChessPieceColor c) {
+    switch (c)
     {
-        PieceType = chessPiece;
-        PieceColor = chessPieceColor;
-
-        if (PieceType == ChessPieceType::Pawn || PieceType == ChessPieceType::Knight)
-        {
-            LastValidMoveCount = 2;
-        }
-        else
-        {
-            LastValidMoveCount = 0;
-        }
-
-        list<byte> temp_stack;
-        ValidMoves = temp_stack;
-        ValidMoves.push_back((byte)LastValidMoveCount);
-
-        PieceValue = CalculatePieceValue(PieceType);
-        PieceActionValue = CalculatePieceActionValue(PieceType);
+        case White: return "White";
+        case Black: return "Black";
     }
+}
 
-    //#endregion
+string Piece::ToString()
+{
+    return ChessPieceType_to_string(PieceType) + " " + ChessPieceColor_to_string(PieceColor) + " " + to_string(PieceValue) + " " + to_string(PieceActionValue) + " " + to_string(ValidMoves.size()) + " " + to_string(AttackedValue) + " " + to_string(DefendedValue);
 
-    //#region InternalMembers
+}
 
-    static string GetPieceTypeShort(ChessPieceType pieceType)
-    {
-        switch (pieceType)
-        {
-        case ChessPieceType::Pawn:
-                {
-                    return "P";
-                }
-        case ChessPieceType::Knight:
-                {
-                    return "N";
-                }
-        case ChessPieceType::Bishop:
-                {
-                    return "B";
-                }
-        case ChessPieceType::Rook:
-                {
-                    return "R";
-                }
 
-        case ChessPieceType::Queen:
-                {
-                    return "Q";
-                }
-
-        case ChessPieceType::King:
-                {
-                    return "K";
-                }
-        default:
-                {
-                    return "P";
-                }
-        }
-    }
-
-    short CalculatePieceValue(ChessPieceType pieceType)
-    {
-        switch (pieceType)
-        {
-        case ChessPieceType::Pawn:
-                {
-                    return 100;
-
-                }
-        case ChessPieceType::Knight:
-                {
-                    return 320;
-                }
-        case ChessPieceType::Bishop:
-                {
-                    return 325;
-                }
-        case ChessPieceType::Rook:
-                {
-                    return 500;
-                }
-
-        case ChessPieceType::Queen:
-                {
-                    return 975;
-                }
-
-        case ChessPieceType::King:
-                {
-                    return 32767;
-                }
-        default:
-                {
-                    return 0;
-                }
-        }
-    }
-
-    short CalculatePieceActionValue(ChessPieceType pieceType)
-    {
-        switch (pieceType)
-        {
-        case ChessPieceType::Pawn:
-                {
-                    return 6;
-
-                }
-        case ChessPieceType::Knight:
-                {
-                    return 3;
-                }
-        case ChessPieceType::Bishop:
-                {
-                    return 3;
-                }
-        case ChessPieceType::Rook:
-                {
-                    return 2;
-                }
-
-        case ChessPieceType::Queen:
-                {
-                    return 1;
-                }
-
-        case ChessPieceType::King:
-                {
-                    return 1;
-                }
-        default:
-                {
-                    return 0;
-                }
-        }
-    }
-
-    //#endregion
-    string ChessPieceType_to_string(ChessPieceType c) {
-        switch (c)
-        {
-            case King: return "King";
-            case Queen: return "Queen";
-            case Rook: return "Rook";
-            case Bishop: return "Bishop";
-            case Knight: return "Knight";
-            case Pawn: return "Pawn";
-            case None: return "None";
-        }
-    }
-
-    string ChessPieceColor_to_string(ChessPieceColor c) {
-        switch (c)
-        {
-            case White: return "White";
-            case Black: return "Black";
-        }
-    }
-
-    string ToString()
-    {
-        return ChessPieceType_to_string(PieceType) + " " + ChessPieceColor_to_string(PieceColor) + " " + to_string(PieceValue) + " " + to_string(PieceActionValue) + " " + to_string(ValidMoves.size()) + " " + to_string(AttackedValue) + " " + to_string(DefendedValue);
-
-    }
-
-};

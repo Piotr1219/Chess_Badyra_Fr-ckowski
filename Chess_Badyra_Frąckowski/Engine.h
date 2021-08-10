@@ -14,15 +14,29 @@
 #include "PieceTaken.h"
 //#include "PieceSquareTable.h"
 //#include "PieceValidMoves.h"
-//#include "Square.h"
+#include "Square.h"
+#include "FileIO.h"
 #include "Test.h"
+#include "Search.h"
 
 using namespace std;
 
 class Engine
 {
 public:
-    
+    list<OpeningMove> CurrentGameBook;
+    list<OpeningMove> UndoGameBook;
+
+private:
+    static Board ChessBoard;
+    Board PreviousChessBoard;
+    Board UndoChessBoard;
+
+    list<MoveContent> MoveHistory;
+    list<OpeningMove> OpeningBook;
+
+    string pvLine;
+public:
     enum Difficulty
     {
         Easy,
@@ -30,7 +44,7 @@ public:
         Hard,
         VeryHard
     };
-    /*
+
     enum TimeSettings
     {
         Moves40In5Minutes,
@@ -42,14 +56,13 @@ public:
         Moves40In90Minutes,
     };
 
-    ChessPieceType PromoteToPieceType = ChessPieceType.Queen;
+public:
+    ChessPieceType PromoteToPieceType = ChessPieceType::Queen;
 
-    PiecesTaken PiecesTakenCount = new PiecesTaken();
+    PiecesTaken PiecesTakenCount = PiecesTaken();
 
     //State Variables
-    */
     static ChessPieceColor HumanPlayer;
-    
     bool Thinking;
     bool TrainingMode;
 
@@ -59,8 +72,8 @@ public:
     byte PlyDepthSearched;
     byte PlyDepthReached;
     byte RootMovesSearched;
-    
-    //TimeSettings GameTimeSettings;
+
+    TimeSettings GameTimeSettings;
     
     string FEN();
 
@@ -70,8 +83,10 @@ public:
     void setGameDifficulty(Difficulty value);
 
     ChessPieceColor WhoseMove();
+    void setWhoseMove(ChessPieceColor value);
 
     bool StaleMate();
+    void setStaleMate(bool value);
     bool RepeatedMove();
 
     string PvLine();
@@ -94,7 +109,7 @@ public:
 
     void Undo();
 
-    byte GetEnPassantMoves();
+    byte* GetEnPassantMoves();
 
     bool GetBlackMate();
 
@@ -159,7 +174,7 @@ public:
 
     private:
     void InitiateEngine();
-    bool CheckForMate(ChessPieceColor whosTurn, Board* chessBoard);
+    bool CheckForMate(ChessPieceColor whosTurn, Board chessBoard);
     bool FindPlayBookMove(MoveContent* bestMove, Board chessBoard, list<OpeningMove> openingBook);
     byte GetBoardIndex(byte boardColumn, byte boardRow);
     void PieceTakenAdd(MoveContent lastMove);

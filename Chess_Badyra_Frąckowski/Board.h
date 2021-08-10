@@ -99,6 +99,7 @@ private:
 
 public:
     string ToString();
+    bool isSlash(char c);
 
     static string Fen(bool boardOnly, Board board);
 

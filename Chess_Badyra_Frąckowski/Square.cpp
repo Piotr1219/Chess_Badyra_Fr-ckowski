@@ -7,23 +7,19 @@
 //#include "main.h"
 //#include "functions.h"
 //#include "MoveContent.h"
-#include "Piece.h"
+//#include "Piece.h"
 //#include "Evaluations.h"
 //#include "PGN.h"
 //#include "PieceMoves.h"
 //#include "PieceSquareTable.h"
 #include "Square.h"
 
-struct Square
+
+Square::Square(Piece piece)
 {
-    Piece Piece1;
+    Piece1 = Piece(piece);
+}
+Square::Square() {
+    ;
+}
 
-    Square(Piece piece)
-    {
-        Piece1 = Piece(piece);
-    }
-    Square() {
-        ;
-    }
-
-};

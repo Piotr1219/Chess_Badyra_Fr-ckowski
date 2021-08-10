@@ -2,7 +2,7 @@
 #include <string>
 #include <list>
 #include <stack>
-//#include "Engine.h"
+#include "Engine.h"
 #include "Board.h"
 //#include "Book.h"
 //#include "main.h"

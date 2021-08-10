@@ -2,7 +2,7 @@
 #include <list>
 #include <stack>
 #include <ctime>
-#include "Engine.h"
+//#include "Engine.h"
 //#include "Board.h"
 //#include "Book.h"
 //#include "main.h"
@@ -18,158 +18,153 @@
 #include "Puzzle.h"
 
 
-class Puzzle
+Engine Puzzle::NewPuzzleKnightBishopKing()
 {
-public:
-    static Engine NewPuzzleKnightBishopKing()
+    Engine engine;
+
+    do
     {
-        Engine engine;
+        engine = PuzzleKnightBishopCandidate();
+    } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+    return engine;
+}
 
-        do
-        {
-            engine = PuzzleKnightBishopCandidate();
-        } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
-        return engine;
-    }
+Engine Puzzle::NewPuzzleRookKing()
+{
+    Engine engine;
 
-    static Engine NewPuzzleRookKing()
+    do
     {
-        Engine engine;
+        engine = PuzzleRookCandidate();
+    } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+    return engine;
+}
 
-        do
-        {
-            engine = PuzzleRookCandidate();
-        } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
-        return engine;
-    }
+Engine Puzzle::NewPuzzlePawnKing()
+{
+    Engine engine;
 
-    static Engine NewPuzzlePawnKing()
+    do
     {
-        Engine engine;
+        engine = PuzzleKingPawnCandidate();
+    } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
+    return engine;
+}
 
-        do
-        {
-            engine = PuzzleKingPawnCandidate();
-        } while (engine.IsGameOver() || engine.GetBlackCheck() || engine.GetWhiteCheck());
-        return engine;
-    }
+Engine Puzzle::PuzzleKnightBishopCandidate()
+{
+    Engine engine = Engine("");
 
-private:
-    static Engine PuzzleKnightBishopCandidate()
+    //Random random = new Random(DateTime.Now.Second);
+    srand(time(NULL));
+
+    byte whiteKingIndex;
+    byte blackKingIndex;
+    byte whiteKnightIndex;
+    byte whiteBishopIndex;
+
+    do
     {
-        Engine engine = Engine("");
+        whiteKingIndex = (byte)(rand()%64);
+        blackKingIndex = (byte)(rand() % 64);
+        whiteKnightIndex = (byte)(rand() % 64);
+        whiteBishopIndex = (byte)(rand() % 64);
+    } while (
+        whiteKingIndex == blackKingIndex ||
+        whiteKingIndex == whiteBishopIndex ||
+        whiteKingIndex == whiteKnightIndex ||
+        whiteKnightIndex == whiteBishopIndex ||
+        blackKingIndex == whiteBishopIndex ||
+        blackKingIndex == whiteKingIndex
+        );
 
-        //Random random = new Random(DateTime.Now.Second);
-        srand(time(NULL));
+    Piece whiteKing = Piece(ChessPieceType::King, ChessPieceColor::White);
+    Piece whiteBishop = Piece(ChessPieceType::Bishop, ChessPieceColor::White);
+    Piece whiteKnight = Piece(ChessPieceType::Knight, ChessPieceColor::White);
+    Piece blackKing = Piece(ChessPieceType::King, ChessPieceColor::Black);
 
-        byte whiteKingIndex;
-        byte blackKingIndex;
-        byte whiteKnightIndex;
-        byte whiteBishopIndex;
+    engine.SetChessPiece(whiteKing, whiteKingIndex);
+    engine.SetChessPiece(blackKing, blackKingIndex);
+    engine.SetChessPiece(whiteKnight, whiteKnightIndex);
+    engine.SetChessPiece(whiteBishop, whiteBishopIndex);
 
-        do
-        {
-            whiteKingIndex = (byte)(rand()%64);
-            blackKingIndex = (byte)(rand() % 64);
-            whiteKnightIndex = (byte)(rand() % 64);
-            whiteBishopIndex = (byte)(rand() % 64);
-        } while (
-            whiteKingIndex == blackKingIndex ||
-            whiteKingIndex == whiteBishopIndex ||
-            whiteKingIndex == whiteKnightIndex ||
-            whiteKnightIndex == whiteBishopIndex ||
-            blackKingIndex == whiteBishopIndex ||
-            blackKingIndex == whiteKingIndex
-            );
+    engine.GenerateValidMoves();
+    engine.EvaluateBoardScore();
 
-        Piece whiteKing = Piece(ChessPieceType::King, ChessPieceColor::White);
-        Piece whiteBishop = Piece(ChessPieceType::Bishop, ChessPieceColor::White);
-        Piece whiteKnight = Piece(ChessPieceType::Knight, ChessPieceColor::White);
-        Piece blackKing = Piece(ChessPieceType::King, ChessPieceColor::Black);
+    return engine;
+}
 
-        engine.SetChessPiece(whiteKing, whiteKingIndex);
-        engine.SetChessPiece(blackKing, blackKingIndex);
-        engine.SetChessPiece(whiteKnight, whiteKnightIndex);
-        engine.SetChessPiece(whiteBishop, whiteBishopIndex);
+Engine Puzzle::PuzzleRookCandidate()
+{
+    Engine engine = Engine("");
 
-        engine.GenerateValidMoves();
-        engine.EvaluateBoardScore();
+    //Random random = new Random(DateTime.Now.Second);
+    srand(time(NULL));
 
-        return engine;
-    }
+    byte whiteKingIndex;
+    byte blackKingIndex;
+    byte whiteRookIndex;
 
-    static Engine PuzzleRookCandidate()
+    do
     {
-        Engine engine = Engine("");
+        whiteKingIndex = (byte)(rand() % 64);
+        blackKingIndex = (byte)(rand() % 64);
+        whiteRookIndex = (byte)(rand() % 64);
+    } while (
+        whiteKingIndex == blackKingIndex ||
+        whiteKingIndex == whiteRookIndex ||
+        blackKingIndex == whiteKingIndex
+        );
 
-        //Random random = new Random(DateTime.Now.Second);
-        srand(time(NULL));
+    Piece whiteKing = Piece(ChessPieceType::King, ChessPieceColor::White);
+    Piece whiteRook = Piece(ChessPieceType::Rook, ChessPieceColor::White);
+    Piece blackKing = Piece(ChessPieceType::King, ChessPieceColor::Black);
 
-        byte whiteKingIndex;
-        byte blackKingIndex;
-        byte whiteRookIndex;
+    engine.SetChessPiece(whiteKing, whiteKingIndex);
+    engine.SetChessPiece(blackKing, blackKingIndex);
+    engine.SetChessPiece(whiteRook, whiteRookIndex);
 
-        do
-        {
-            whiteKingIndex = (byte)(rand() % 64);
-            blackKingIndex = (byte)(rand() % 64);
-            whiteRookIndex = (byte)(rand() % 64);
-        } while (
-            whiteKingIndex == blackKingIndex ||
-            whiteKingIndex == whiteRookIndex ||
-            blackKingIndex == whiteKingIndex
-            );
+    engine.GenerateValidMoves();
+    engine.EvaluateBoardScore();
 
-        Piece whiteKing = Piece(ChessPieceType::King, ChessPieceColor::White);
-        Piece whiteRook = Piece(ChessPieceType::Rook, ChessPieceColor::White);
-        Piece blackKing = Piece(ChessPieceType::King, ChessPieceColor::Black);
+    return engine;
+}
 
-        engine.SetChessPiece(whiteKing, whiteKingIndex);
-        engine.SetChessPiece(blackKing, blackKingIndex);
-        engine.SetChessPiece(whiteRook, whiteRookIndex);
+Engine Puzzle::PuzzleKingPawnCandidate()
+{
+    Engine engine = Engine("");
 
-        engine.GenerateValidMoves();
-        engine.EvaluateBoardScore();
+    //Random random = new Random(DateTime.Now.Second);
+    srand(time(NULL));
 
-        return engine;
-    }
+    byte whiteKingIndex;
+    byte blackKingIndex;
+    byte whitePawnIndex;
 
-    static Engine PuzzleKingPawnCandidate()
+    do
     {
-        Engine engine = Engine("");
+        whiteKingIndex = (byte)(rand() % 64);
+        blackKingIndex = (byte)(rand() % 64);
+        whitePawnIndex = (byte)(rand() % 64);
+    } while (
+        whiteKingIndex == blackKingIndex ||
+        whiteKingIndex == whitePawnIndex ||
+        blackKingIndex == whiteKingIndex ||
+        (short)whitePawnIndex <= 8 || (short)whitePawnIndex >= 56 ||
+        whitePawnIndex < blackKingIndex
+        );
 
-        //Random random = new Random(DateTime.Now.Second);
-        srand(time(NULL));
+    Piece whiteKing = Piece(ChessPieceType::King, ChessPieceColor::White);
+    Piece whitePawn = Piece(ChessPieceType::Pawn, ChessPieceColor::White);
+    Piece blackKing = Piece(ChessPieceType::King, ChessPieceColor::Black);
 
-        byte whiteKingIndex;
-        byte blackKingIndex;
-        byte whitePawnIndex;
+    engine.SetChessPiece(whiteKing, whiteKingIndex);
+    engine.SetChessPiece(blackKing, blackKingIndex);
+    engine.SetChessPiece(whitePawn, whitePawnIndex);
 
-        do
-        {
-            whiteKingIndex = (byte)(rand() % 64);
-            blackKingIndex = (byte)(rand() % 64);
-            whitePawnIndex = (byte)(rand() % 64);
-        } while (
-            whiteKingIndex == blackKingIndex ||
-            whiteKingIndex == whitePawnIndex ||
-            blackKingIndex == whiteKingIndex ||
-            (short)whitePawnIndex <= 8 || (short)whitePawnIndex >= 56 ||
-            whitePawnIndex < blackKingIndex
-            );
+    engine.GenerateValidMoves();
+    engine.EvaluateBoardScore();
 
-        Piece whiteKing = Piece(ChessPieceType::King, ChessPieceColor::White);
-        Piece whitePawn = Piece(ChessPieceType::Pawn, ChessPieceColor::White);
-        Piece blackKing = Piece(ChessPieceType::King, ChessPieceColor::Black);
+    return engine;
+}
 
-        engine.SetChessPiece(whiteKing, whiteKingIndex);
-        engine.SetChessPiece(blackKing, blackKingIndex);
-        engine.SetChessPiece(whitePawn, whitePawnIndex);
-
-        engine.GenerateValidMoves();
-        engine.EvaluateBoardScore();
-
-        return engine;
-    }
-
-};

@@ -1,19 +1,18 @@
 #pragma once
+#include "Book.h"
 #include <string>
 #include <list>
 #include <stack>
 //#include "Engine.h"
-#include "Board.h"
-#include "Book.h"
+///#include "Board.h"
 //#include "main.h"
 //#include "functions.h"
-#include "MoveContent.h"
+///#include "MoveContent.h"
 //#include "Piece.h"
-#include "Evaluations.h"
+///#include "Evaluations.h"
 //#include "Square.h"
-#include "ResultBoards.h"
+///#include "ResultBoards.h"
 #include "PieceValidMoves.h"
-#include "Search.h"
 
 using namespace std;
 
@@ -25,10 +24,7 @@ struct Position
     //internal bool TopSort;
     string Move;
 public:
-    string ToString()
-    {
-        return Move;
-    }
+    string ToString();
 };
 
 bool Sort(Position s2, Position s1);

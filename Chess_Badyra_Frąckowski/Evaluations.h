@@ -3,7 +3,7 @@
 #include <list>
 #include <stack>
 //#include "Engine.h"
-//#include "Board.h"
+#include "Board.h"
 //#include "Book.h"
 //#include "main.h"
 //#include "functions.h"
@@ -15,7 +15,7 @@ using namespace std;
 
 class Evaluation
 {
-    /*
+    
     private:
         short blackPawnCount[8];
         short whitePawnCount[8];
@@ -79,7 +79,7 @@ class Evaluation
             -30,-30,  0,  0,  0,  0,-30,-30,
             -50,-30,-30,-30,-30,-30,-30,-50
         };
-    */
+    
 private:
     int EvaluatePieceScore(Square square, byte position, bool endGamePhase,
         byte* knightCount, byte* bishopCount, bool* insufficientMaterial);

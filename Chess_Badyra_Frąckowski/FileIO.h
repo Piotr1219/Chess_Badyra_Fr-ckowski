@@ -5,7 +5,7 @@
 #include <vector>
 //#include "Engine.h"
 #include "Board.h"
-//#include "Book.h"
+#include "Book.h"
 //#include "main.h"
 //#include "functions.h"
 //#include "MoveContent.h"
@@ -13,6 +13,8 @@
 //#include "Evaluations.h"
 
 using namespace std;
+
+/*
 
 class FileIO
 {
@@ -25,8 +27,11 @@ public:
 
 public:
     static bool LoadOpeningBook(list<OpeningMove>* openingBook);
-    /*
-    private static void RegisterPiece(byte boardColumn, byte boardRow, XMLBoard.XMLChessPiece piece, Board chessBoard);
-    */
+    
+    //private static void RegisterPiece(byte boardColumn, byte boardRow, XMLBoard.XMLChessPiece piece, Board chessBoard);
+    
 };
+
+
+*/
 

@@ -14,32 +14,18 @@
 
 using namespace std;
 
-class PiecesTaken
+PiecesTaken::PiecesTaken()
 {
-public:
-    int WhiteQueen;
-    int WhiteRook;
-    int WhiteBishop;
-    int WhiteKnight;
-    int WhitePawn;
-    int BlackQueen;
-    int BlackRook;
-    int BlackBishop;
-    int BlackKnight;
-    int BlackPawn;
+    WhiteQueen = 0;
+    WhiteRook = 0;
+    WhiteBishop = 0;
+    WhiteKnight = 0;
+    WhitePawn = 0;
+    BlackQueen = 0;
+    BlackRook = 0;
+    BlackBishop = 0;
+    BlackKnight = 0;
+    BlackPawn = 0;
+}
 
-    PiecesTaken()
-    {
-        WhiteQueen = 0;
-        WhiteRook = 0;
-        WhiteBishop = 0;
-        WhiteKnight = 0;
-        WhitePawn = 0;
-        BlackQueen = 0;
-        BlackRook = 0;
-        BlackBishop = 0;
-        BlackKnight = 0;
-        BlackPawn = 0;
-    }
-};
 
