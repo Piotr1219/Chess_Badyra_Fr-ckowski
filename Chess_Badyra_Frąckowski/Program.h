@@ -16,9 +16,9 @@ class Program
 {
 	void Main(std::string args[]);
 
-private:
+public:
 	void RunEngine();
-
+private:
 	void MakeEngineMove(Engine engine);
 
 public:

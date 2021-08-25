@@ -147,6 +147,7 @@
     <ClCompile Include="FileIO.cpp" />
     <ClCompile Include="functions.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Program.cpp" />
     <ClCompile Include="MoveContent.cpp" />
     <ClCompile Include="PGN.cpp" />
     <ClCompile Include="Piece.cpp" />
@@ -167,7 +168,7 @@
     <ClInclude Include="Evaluations.h" />
     <ClInclude Include="FileIO.h" />
     <ClInclude Include="functions.h" />
-    <ClInclude Include="main.h" />
+    <ClInclude Include="Program.h" />
     <ClInclude Include="MoveContent.h" />
     <ClInclude Include="PGN.h" />
     <ClInclude Include="Piece.h" />

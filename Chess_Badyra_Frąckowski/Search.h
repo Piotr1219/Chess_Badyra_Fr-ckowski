@@ -31,18 +31,18 @@ bool Sort(Position s2, Position s1);
 
 static class Search
 {
-    static int progress;
+    inline static int progress;
 
 private:
-    static int piecesRemaining;
+    inline static int piecesRemaining;
 
 
 
 
 private:
     //static Position KillerMove[][] = Position[3,20];
-    static Position KillerMove[3][20];
-    static int kIndex;
+    inline static Position KillerMove[3][20];
+    inline static int kIndex;
 
 //    struct sortComparator {
   //      bool operator () (Board& s2, Board& s1);

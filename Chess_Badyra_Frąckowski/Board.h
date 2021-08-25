@@ -54,7 +54,7 @@ public:
     //Positions liable to En Passant
     byte EnPassantPosition;
 
-    static ChessPieceColor WhoseMove;
+    inline static ChessPieceColor WhoseMove;
 
     int MoveCount;
 

@@ -19,7 +19,9 @@ PieceMoveSet::PieceMoveSet(list<byte> moves)
 {
     Moves = moves;
 }
-//PieceMoveSet() {    }
+PieceMoveSet::PieceMoveSet()
+{
+}
 
 
 byte PieceMoves::Position(byte col, byte row)

@@ -16,7 +16,7 @@
 //#include "PieceValidMoves.h"
 #include "Square.h"
 #include "FileIO.h"
-#include "Test.h"
+//#include "Test.h"
 #include "Search.h"
 
 using namespace std;
@@ -28,7 +28,7 @@ public:
     list<OpeningMove> UndoGameBook;
 
 private:
-    static Board ChessBoard;
+    inline static Board ChessBoard;
     Board PreviousChessBoard;
     Board UndoChessBoard;
 
@@ -62,7 +62,7 @@ public:
     PiecesTaken PiecesTakenCount = PiecesTaken();
 
     //State Variables
-    static ChessPieceColor HumanPlayer;
+    inline static ChessPieceColor HumanPlayer;
     bool Thinking;
     bool TrainingMode;
 
