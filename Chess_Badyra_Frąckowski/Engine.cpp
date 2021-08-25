@@ -949,11 +949,13 @@ void Engine::AiPonderMove()
 bool Engine::SaveGame(string filePath)
 {
     //return FileIO::SaveGame(filePath, ChessBoard, WhoseMove(), MoveHistory);
+    return true;
 }
 
 bool Engine::LoadGame(string filePath)
 {
     //return FileIO::LoadGame(filePath, &ChessBoard, WhoseMove(), &MoveHistory, &CurrentGameBook, &UndoGameBook);
+    return true;
 }
 
 bool Engine::LoadOpeningBook()

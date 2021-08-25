@@ -18,10 +18,23 @@ string Position::ToString()
 }
 
 
-bool Search::Sort(Board s2, Board s1)
-{
-    return (((s1.Score) - (s2.Score)) > 0);
-}
+//bool Search::sortComparator::operator() (Board & s2, Board & s1)
+//{
+//    return (((s1.Score) - (s2.Score)) > 0);
+//}
+struct sortComparator {
+    bool operator () (Board& s2, Board& s1)
+    {
+        return (((s1.Score) - (s2.Score)) > 0);
+    }
+};
+
+struct sortComparatorPosition {
+    bool operator () (Position& s2, Position& s1)
+    {
+        return (((s1.Score) - (s2.Score)) > 0);
+    }
+};
 
 int Search::SideToMoveScore(int score, ChessPieceColor color)
 {
@@ -44,7 +57,7 @@ MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSe
     //We are going to store our result boards here           
     ResultBoards succ = GetSortValidMoves(examineBoard);
 
-    byte rootMovesSearched = (byte)succ.Positions.size();
+    *rootMovesSearched = (byte)succ.Positions.size();
 
     if ((short)rootMovesSearched == 1)
     {
@@ -71,7 +84,7 @@ MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSe
 
     alpha = -400000000;
 
-    succ.Positions.sort(Sort);
+    succ.Positions.sort(sortComparator());
 
     depth = byte((short)depth - 1);
 
@@ -186,7 +199,7 @@ ResultBoards Search::GetSortValidMoves(Board examineBoard)
         }
     }
 
-    succ.Positions.sort(Sort);
+    succ.Positions.sort(sortComparator());
     return succ;
 }
 
@@ -238,7 +251,7 @@ int Search::AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, int* 
         }
     }
 
-    positions.sort(Sort);
+    positions.sort(sortComparatorPosition());
 
     for(Position move : positions)
     {
@@ -337,7 +350,7 @@ int Search::Quiescence(Board examineBoard, int alpha, int beta, int* nodesSearch
         return examineBoard.Score;
     }
 
-    positions.sort(Sort);
+    positions.sort(sortComparatorPosition());
 
     for(Position move : positions)
     {

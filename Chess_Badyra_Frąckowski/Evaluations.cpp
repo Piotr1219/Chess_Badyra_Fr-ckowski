@@ -38,7 +38,7 @@ int Evaluation::EvaluatePieceScore(Square square, byte position, bool endGamePha
 
     if (square.Piece1.PieceType == ChessPieceType::Pawn)
     {
-        insufficientMaterial = false;
+        *insufficientMaterial = false;
 
         if ((int)position % 8 == 0 || (int)position % 8 == 7)
         {

@@ -310,7 +310,8 @@ void PieceMoves::SetMovesBishop()
             }
 
             MoveArrays::BishopMoves1[index] = moveset;
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            // PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
 
             row = x;
             col = y;
@@ -326,7 +327,7 @@ void PieceMoves::SetMovesBishop()
             }
 
             MoveArrays::BishopMoves2[index] = moveset;
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
 
             row = x;
             col = y;
@@ -342,7 +343,7 @@ void PieceMoves::SetMovesBishop()
             }
 
             MoveArrays::BishopMoves3[index] = moveset;
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
 
             row = x;
             col = y;
@@ -387,7 +388,7 @@ void PieceMoves::SetMovesRook()
 
             MoveArrays::RookMoves1[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -402,7 +403,7 @@ void PieceMoves::SetMovesRook()
 
             MoveArrays::RookMoves2[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -417,7 +418,7 @@ void PieceMoves::SetMovesRook()
 
             MoveArrays::RookMoves3[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -460,7 +461,7 @@ void PieceMoves::SetMovesQueen()
 
             MoveArrays::QueenMoves1[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -475,7 +476,7 @@ void PieceMoves::SetMovesQueen()
 
             MoveArrays::QueenMoves2[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -490,7 +491,7 @@ void PieceMoves::SetMovesQueen()
 
             MoveArrays::QueenMoves3[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -505,7 +506,7 @@ void PieceMoves::SetMovesQueen()
 
             MoveArrays::QueenMoves4[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -521,7 +522,7 @@ void PieceMoves::SetMovesQueen()
 
             MoveArrays::QueenMoves5[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -537,7 +538,7 @@ void PieceMoves::SetMovesQueen()
 
             MoveArrays::QueenMoves6[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 
@@ -553,7 +554,7 @@ void PieceMoves::SetMovesQueen()
 
             MoveArrays::QueenMoves7[index] = moveset;
 
-            PieceMoveSet moveset = PieceMoveSet(list<byte>());
+            moveset = PieceMoveSet(list<byte>());
             row = x;
             col = y;
 

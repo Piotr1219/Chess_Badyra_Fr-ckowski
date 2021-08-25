@@ -9,9 +9,9 @@
 //#include "functions.h"
 ///#include "MoveContent.h"
 //#include "Piece.h"
-///#include "Evaluations.h"
+#include "Evaluations.h"
 //#include "Square.h"
-///#include "ResultBoards.h"
+#include "ResultBoards.h"
 #include "PieceValidMoves.h"
 
 using namespace std;
@@ -44,7 +44,10 @@ private:
     static Position KillerMove[3][20];
     static int kIndex;
 
-    bool Sort(Board s2, Board s1);
+//    struct sortComparator {
+  //      bool operator () (Board& s2, Board& s1);
+    //};
+    //bool Sort(Board & s2, Board & s1);
 
     static int SideToMoveScore(int score, ChessPieceColor color);
 public:
