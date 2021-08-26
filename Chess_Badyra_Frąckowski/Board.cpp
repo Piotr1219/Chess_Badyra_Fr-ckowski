@@ -109,11 +109,11 @@ Board::Board(string fen)
         EnPassantPosition = (byte)23;
     }
 
-    if (fen.find("w") != std::string::npos)
+    if (fen.find(" w ") != std::string::npos)
     {
         WhoseMove = ChessPieceColor::White;
     }
-    if (fen.find("b") != std::string::npos)
+    if (fen.find(" b ") != std::string::npos)
     {
         WhoseMove = ChessPieceColor::Black;
     }
@@ -406,12 +406,12 @@ Board::Board(string fen)
                 MoveCount = ((MoveCount * 10) + 0);
             }
 
-
-
         }
     }
-
+    
+    
 }
+
 
 Board::Board()
 {

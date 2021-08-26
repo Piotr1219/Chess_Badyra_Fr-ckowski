@@ -365,14 +365,17 @@ void PieceValidMoves::GenerateValidMoves(Board board)
     int remainingPieces = 0;
 
     //Generate Moves
+
     for (short x = 0; x < 64; x++)
     {
         Square sqr = board.Squares[x];
 
-        if (sqr.Piece1.PieceType == ChessPieceType::None)
+        if (sqr.Piece1.PieceType == ChessPieceType::None) {
             continue;
+        }
 
-        sqr.Piece1.ValidMoves = list<byte>(sqr.Piece1.LastValidMoveCount);
+        //sqr.Piece1.ValidMoves = list<byte>(sqr.Piece1.LastValidMoveCount);
+        sqr.Piece1.ValidMoves.clear();
 
         remainingPieces++;
 
@@ -639,6 +642,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                 }
         }
     }
+
 
     if (blackRooksMoved > 1)
     {

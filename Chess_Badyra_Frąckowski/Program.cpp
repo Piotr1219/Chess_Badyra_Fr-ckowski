@@ -3,6 +3,7 @@
 #include <ctime>
 #include <algorithm>
 #include <cctype>
+#include <iostream>
 ///#include "Engine.h"
 #include "Program.h"
 ///#include "functions.h"
@@ -22,20 +23,19 @@ void Program::RunEngine()
 {
 	bool ShowBoard = false;
 
-	Engine engine = Engine();
+	//Engine engine = Engine();
+	Engine engine;
 
 
+	printf("Chess Core\n");
+	printf("Version: 1.0.1\n");
+	printf("\n");
+	printf("Type quit to exit\n");
+	printf("Type show to show board\n");
+	printf("\n");
+	printf("feature setboard=1\n");
 
-	printf("Chess Core");
-	printf("Created by Adam Berent");
-	printf("Version: 1.0.1");
-	printf("");
-	printf("Type quit to exit");
-	printf("Type show to show board");
-	printf("");
-	printf("feature setboard=1");
-
-
+	
 	while (true)
 	{
 		try
@@ -51,17 +51,20 @@ void Program::RunEngine()
 			}
 			else
 			{
-				printf("");
+				printf("\n");
 
 				string move;
-				scanf_s("%s", &move);
+				//scanf_s("%s", move, 4);
+				cin >> move;
+
+				printf("wpisano: %s \n", move.c_str());
 
 				if (move.empty())
 				{
 					continue;
 				}
 
-				move = trim(move);
+				//move = trim(move);
 
 
 				if (move == "new")
@@ -250,13 +253,14 @@ void Program::RunEngine()
 
 				if (move.length() < 4)
 				{
-					continue;
+					//continue;
 				}
 
 				if (move.length() > 5)
 				{
-					continue;
+					//continue;
 				}
+				//printf("%i", move.length());
 
 				string src = move.substr(0, 2);
 				string dst = move.substr(2, 2);
@@ -281,7 +285,7 @@ void Program::RunEngine()
 					printf("Error");
 					continue;
 				}
-
+				cout << " " << (short)srcCol << " " << (short)srcRow << " " << (short)dstCol << " " << (short)dstRow << endl;
 				if (!engine.IsValidMove(srcCol, srcRow, dstCol, dstRow))
 				{
 					printf("Invalid Move");
@@ -333,6 +337,7 @@ void Program::RunEngine()
 			return;
 		}
 	}
+	
 }
 
 void Program::MakeEngineMove(Engine engine)
@@ -501,9 +506,12 @@ byte Program::GetRow(string move)
 	{
 		if (move.length() == 2)
 		{
-			transform((move.substr(1, 1)).begin(), (move.substr(1, 1)).end(), (move.substr(1, 1)).begin(),
-				[](unsigned char c) { return tolower(c); });
-			return (byte)(8 - stoi(move));
+			string row;
+			//transform((move.substr(1, 1)).begin(), (move.substr(1, 1)).end(), (move.substr(1, 1)).begin(), [](unsigned char c) { return tolower(c); });
+			row = tolower(move[1]);
+			//cout << row << endl;
+			return (byte)(8 - stoi(row));
+			//return (byte)(stoi(row));
 		}
 	}
 
@@ -517,9 +525,9 @@ byte Program::GetColumn(string move)
 		if (move.length() == 2)
 		{
 			string col = move;
-			transform((col.substr(0, 1)).begin(), (col.substr(0, 1)).end(), (col.substr(0, 1)).begin(),
-				[](unsigned char c) { return tolower(c); });
-
+			//transform((col.substr(0, 1)).begin(), (col.substr(0, 1)).end(), (col.substr(0, 1)).begin(), [](unsigned char c) { return tolower(c); });
+			col = tolower(move[0]);
+			//cout << col << endl;
 			//switch (col)
 			//{
 			if(col == "a")
@@ -572,8 +580,8 @@ void Program::DrawBoard(Engine engine)
 	{
 		if (i % 8 == 0)
 		{
-			printf("");
-			printf(" ---------------------------------");
+			printf("\n");
+			printf(" ---------------------------------\n");
 			printf("%i", 8 - (i / 8));
 		}
 
@@ -636,9 +644,9 @@ void Program::DrawBoard(Engine engine)
 		}
 	}
 
-	printf("");
-	printf(" ---------------------------------");
-	printf("   A   B   C   D   E   F   G   H");
+	printf("\n");
+	printf(" ---------------------------------\n");
+	printf("   A   B   C   D   E   F   G   H\n");
 
 }
 

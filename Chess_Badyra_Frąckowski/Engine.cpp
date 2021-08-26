@@ -1,6 +1,7 @@
 #include <string>
 #include <list>
 #include <stack>
+#include <iostream>
 #include "Engine.h"
 //#include "Book.h"
 //#include "Evaluations.h"
@@ -591,6 +592,7 @@ bool Engine::IsValidMove(byte sourceColumn, byte sourceRow, byte destinationColu
     //foreach(byte bs in ChessBoard.Squares[index].Piece.ValidMoves)
     for (auto& bs : ChessBoard.Squares[(short)index].Piece1.ValidMoves)
     {
+        //cout << "proba valid moves" << (short)bs << endl;
         if ((short)bs % 8 == (short)destinationColumn)
         {
             if ((byte)((short)bs / 8) == destinationRow)
