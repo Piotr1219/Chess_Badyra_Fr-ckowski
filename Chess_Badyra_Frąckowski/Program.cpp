@@ -49,6 +49,8 @@ void Program::RunEngine()
 			if (engine.WhoseMove() != engine.HumanPlayer)
 			{
 				MakeEngineMove(engine);
+				//to dodalem bo chyba nigdzie nie ustawia
+				engine.setWhoseMove(engine.HumanPlayer);
 			}
 			else
 			{
@@ -349,7 +351,10 @@ void Program::MakeEngineMove(Engine engine)
 
 	engine.AiPonderMove();
 
-	list<MoveContent>::iterator it = engine.GetMoveHistory().begin();
+	auto Moves = engine.GetMoveHistory();
+	list<MoveContent>::iterator it = Moves.begin();
+	//list<MoveContent>::iterator it = engine.GetMoveHistory().begin();
+	cout << "rozmiar listy " << engine.GetMoveHistory().size() << endl;
 	MoveContent lastMove = *it;
 
 	//MoveContent lastMove = engine.GetMoveHistory().ToArray()[0];
@@ -418,6 +423,7 @@ void Program::MakeEngineMove(Engine engine)
 	printf("%hhx", engine.PlyDepthReached);
 	printf(" ");
 
+	cout << engine.ChessBoard.ToString() << endl;
 	int score = engine.GetScore();
 
 	if (score > 0)
@@ -425,7 +431,7 @@ void Program::MakeEngineMove(Engine engine)
 		score = score / 10;
 	}
 
-	printf(score + " ");
+	cout << "score: " << score << " " << endl;
 	printf(ts * 100 + " ");
 	printf(engine.NodesSearched + engine.NodesQuiessence + " ");
 	printf("%hhx", engine.PvLine());

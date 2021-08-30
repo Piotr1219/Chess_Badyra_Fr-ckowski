@@ -27,8 +27,9 @@ public:
     list<OpeningMove> CurrentGameBook;
     list<OpeningMove> UndoGameBook;
 
-private:
+//private:
     inline static Board ChessBoard;
+private:
     Board PreviousChessBoard;
     Board UndoChessBoard;
 

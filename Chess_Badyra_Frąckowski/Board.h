@@ -17,7 +17,7 @@ class Board
 public:
     Square Squares[64];
 
-    bool InsufficientMaterial;
+    bool InsufficientMaterial = false;
 
     int Score;
 
@@ -28,10 +28,10 @@ public:
     bool BlackMate;
     bool WhiteCheck;
     bool WhiteMate;
-    bool StaleMate;
+    bool StaleMate = false;
 
-    byte HalfMoveClock;
-    byte RepeatedMove;
+    byte HalfMoveClock = (byte)0;
+    byte RepeatedMove = (byte)0;
 
     bool BlackCastled;
     bool WhiteCastled;
@@ -101,6 +101,6 @@ public:
     string ToString();
     bool isSlash(char c);
 
-    static string Fen(bool boardOnly, Board board);
+    static string Fen(bool boardOnly, Board& board);
 
 };

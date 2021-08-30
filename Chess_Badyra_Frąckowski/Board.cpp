@@ -847,7 +847,7 @@ bool Board::isSlash(char c)
 {
     return c == ':';
 }
-string Board::Fen(bool boardOnly, Board board)
+string Board::Fen(bool boardOnly, Board& board)
 {
     string output = "";
     byte blankSquares = (byte)0;
@@ -855,6 +855,7 @@ string Board::Fen(bool boardOnly, Board board)
     for (int x = 0; x < 64; x++)
     {
         byte index = (byte)x;
+        cout << "figura" << board.Squares[(short)index].Piece1.PieceType << endl;
 
         if (board.Squares[(short)index].Piece1.PieceType != ChessPieceType::None)
         {

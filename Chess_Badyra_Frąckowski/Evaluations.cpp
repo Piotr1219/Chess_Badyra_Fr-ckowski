@@ -8,7 +8,7 @@
 using namespace std;
 
 int Evaluation::EvaluatePieceScore(Square square, byte position, bool endGamePhase,
-                                        byte *knightCount, byte *bishopCount, bool *insufficientMaterial)
+                                        byte *knightCount, byte *bishopCount, bool& insufficientMaterial)
 {
     int score = 0;
 
@@ -38,7 +38,7 @@ int Evaluation::EvaluatePieceScore(Square square, byte position, bool endGamePha
 
     if (square.Piece1.PieceType == ChessPieceType::Pawn)
     {
-        *insufficientMaterial = false;
+        insufficientMaterial = false;
 
         if ((int)position % 8 == 0 || (int)position % 8 == 7)
         {
@@ -148,11 +148,11 @@ int Evaluation::EvaluatePieceScore(Square square, byte position, bool endGamePha
     }
     else if (square.Piece1.PieceType == ChessPieceType::Rook)
     {
-        *insufficientMaterial = false;
+        insufficientMaterial = false;
     }
     else if (square.Piece1.PieceType == ChessPieceType::Queen)
     {
-        *insufficientMaterial = false;
+        insufficientMaterial = false;
 
         if (square.Piece1.Moved && !endGamePhase)
         {
@@ -186,7 +186,7 @@ int Evaluation::EvaluatePieceScore(Square square, byte position, bool endGamePha
     return score;
 }
 
-void Evaluation::EvaluateBoardScore(Board board)
+void Evaluation::EvaluateBoardScore(Board& board)
 {
     //Black Score - 
     //White Score +
@@ -270,7 +270,7 @@ void Evaluation::EvaluateBoardScore(Board board)
         if (square.Piece1.PieceColor == ChessPieceColor::White)
         {
             board.Score += EvaluatePieceScore(square, (byte)x, board.EndGamePhase,
-                &whiteKnightCount, &whiteBishopCount, &insufficientMaterial);
+                &whiteKnightCount, &whiteBishopCount, insufficientMaterial);
 
             if (square.Piece1.PieceType == ChessPieceType::King)
             {
@@ -293,7 +293,7 @@ void Evaluation::EvaluateBoardScore(Board board)
         else if (square.Piece1.PieceColor == ChessPieceColor::Black)
         {
             board.Score -= EvaluatePieceScore(square, (byte)x, board.EndGamePhase,
-                &blackKnightCount, &blackBishopCount, &insufficientMaterial);
+                &blackKnightCount, &blackBishopCount, insufficientMaterial);
 
 
             if (square.Piece1.PieceType == ChessPieceType::King)
