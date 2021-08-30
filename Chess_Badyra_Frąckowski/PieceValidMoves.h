@@ -16,12 +16,12 @@ public:
 
     static bool AnalyzeMove(Board board, byte dstPos, Piece pcMoving);
 
-    static void CheckValidMovesPawn(list<byte> moves, Piece pcMoving, byte srcPosition,
-        Board board, byte count);
+    static void CheckValidMovesPawn(list<byte> moves, Piece& pcMoving, byte srcPosition,
+        Board& board, byte count);
 
     static void GenerateValidMovesKing(Piece piece, Board board, byte srcPosition);
 
     static void GenerateValidMovesKingCastle(Board board, Piece king);
 
-    static void GenerateValidMoves(Board board);
+    static void GenerateValidMoves(Board& board);
 };

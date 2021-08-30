@@ -2,6 +2,7 @@
 #include <list>
 #include <stack>
 #include <algorithm>
+#include <iostream>
 //#include "Engine.h"
 #include "Board.h"
 //#include "Book.h"
@@ -126,34 +127,58 @@ Board::Board(string fen)
         {
             if (c == '1' && (int)index < 63)
             {
+                for (int i = 0; i < 1; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index+1);
             }
             else if (c == '2' && (int)index < 62)
             {
+                for (int i = 0; i < 2; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index + 2);
             }
             else if (c == '3' && (int)index < 61)
             {
+                for (int i = 0; i < 3; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index + 3);
             }
             else if (c == '4' && (int)index < 60)
             {
+                for (int i = 0; i < 4; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index + 4);
             }
             else if (c == '5' && (int)index < 59)
             {
+                for (int i = 0; i < 5; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index + 5);
             }
             else if (c == '6' && (int)index < 58)
             {
+                for (int i = 0; i < 6; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index + 6);
             }
             else if (c == '7' && (int)index < 57)
             {
+                for (int i = 0; i < 7; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index + 7);
             }
             else if (c == '8' && (int)index < 56)
             {
+                for (int i = 0; i < 8; i++) {
+                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                }
                 index = (byte)((int)index + 8);
             }
             else if (c == 'P')
@@ -408,7 +433,6 @@ Board::Board(string fen)
 
         }
     }
-    
     
 }
 

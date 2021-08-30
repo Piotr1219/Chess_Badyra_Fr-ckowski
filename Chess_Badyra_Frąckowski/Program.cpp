@@ -25,7 +25,8 @@ void Program::RunEngine()
 
 	//Engine engine = Engine();
 	Engine engine;
-
+	DrawBoard(engine);
+	cout << engine.FEN() << endl;
 
 	printf("Chess Core\n");
 	printf("Version: 1.0.1\n");
@@ -265,7 +266,6 @@ void Program::RunEngine()
 				string src = move.substr(0, 2);
 				string dst = move.substr(2, 2);
 
-
 				byte srcCol;
 				byte srcRow;
 				byte dstRow;
@@ -351,6 +351,7 @@ void Program::MakeEngineMove(Engine engine)
 
 	list<MoveContent>::iterator it = engine.GetMoveHistory().begin();
 	MoveContent lastMove = *it;
+
 	//MoveContent lastMove = engine.GetMoveHistory().ToArray()[0];
 
 	string tmp = "";

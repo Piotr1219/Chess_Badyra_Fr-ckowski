@@ -1,6 +1,7 @@
 #include <string>
 #include <list>
 #include <stack>
+#include <iostream>
 #include "PieceValidMoves.h"
 //#include "Engine.h"
 //#include "Board.h"
@@ -158,8 +159,8 @@ bool PieceValidMoves::AnalyzeMove(Board board, byte dstPos, Piece pcMoving)
     return false;
 }
 
-void PieceValidMoves::CheckValidMovesPawn(list<byte> moves, Piece pcMoving, byte srcPosition,
-                                        Board board, byte count)
+void PieceValidMoves::CheckValidMovesPawn(list<byte> moves, Piece& pcMoving, byte srcPosition,
+                                        Board& board, byte count)
 {
     for (short i = 0; i < (short)count; i++)
     {
@@ -194,6 +195,9 @@ void PieceValidMoves::CheckValidMovesPawn(list<byte> moves, Piece pcMoving, byte
             pcMoving.ValidMoves.push_back(dstPos);
         }
     }
+    //for (auto const& i : pcMoving.ValidMoves) {
+    //    cout << "valid in pawn checking" << (short)i << std::endl;
+    //}
 }
 
 void PieceValidMoves::GenerateValidMovesKing(Piece piece, Board board, byte srcPosition)
@@ -352,7 +356,7 @@ void PieceValidMoves::GenerateValidMovesKingCastle(Board board, Piece king)
     }
 }
 
-void PieceValidMoves::GenerateValidMoves(Board board)
+void PieceValidMoves::GenerateValidMoves(Board& board)
 {
     // Reset Board
     board.BlackCheck = false;
@@ -370,28 +374,34 @@ void PieceValidMoves::GenerateValidMoves(Board board)
     {
         Square sqr = board.Squares[x];
 
-        if (sqr.Piece1.PieceType == ChessPieceType::None) {
+        if (board.Squares[x].Piece1.PieceType == ChessPieceType::None) {
             continue;
         }
 
-        //sqr.Piece1.ValidMoves = list<byte>(sqr.Piece1.LastValidMoveCount);
-        sqr.Piece1.ValidMoves.clear();
+        //board.Squares[x].Piece1.ValidMoves = list<byte>(board.Squares[x].Piece1.LastValidMoveCount);
+        board.Squares[x].Piece1.ValidMoves.clear();
 
         remainingPieces++;
 
-        switch (sqr.Piece1.PieceType)
+        switch (board.Squares[x].Piece1.PieceType)
         {
         case ChessPieceType::Pawn:
                 {
-                    if (sqr.Piece1.PieceColor == ChessPieceColor::White)
+                    if (board.Squares[x].Piece1.PieceColor == ChessPieceColor::White)
                     {
-                        CheckValidMovesPawn(MoveArrays::WhitePawnMoves[x].Moves, sqr.Piece1, (byte)x,
+                        //for (auto const& i : MoveArrays::WhitePawnMoves[x].Moves) {
+                        //    cout << "white pawn moves" << (short)i << std::endl;
+                        //}
+                        CheckValidMovesPawn(MoveArrays::WhitePawnMoves[x].Moves, board.Squares[x].Piece1, (byte)x,
                                             board, MoveArrays::WhitePawnTotalMoves[x]);
+                        //for (auto const& i : board.Squares[x].Piece1.ValidMoves) {
+                        //    cout << "white pawn valid moves" << (short)i << std::endl;
+                        //}
                         break;
                     }
-                    if (sqr.Piece1.PieceColor == ChessPieceColor::Black)
+                    if (board.Squares[x].Piece1.PieceColor == ChessPieceColor::Black)
                     {
-                        CheckValidMovesPawn(MoveArrays::BlackPawnMoves[x].Moves, sqr.Piece1, (byte)x,
+                        CheckValidMovesPawn(MoveArrays::BlackPawnMoves[x].Moves, board.Squares[x].Piece1, (byte)x,
                                             board, MoveArrays::BlackPawnTotalMoves[x]);
                         break;
                     }
@@ -405,7 +415,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::KnightMoves[x].Moves.begin();
                         advance(it, i);
 
-                        AnalyzeMove(board, *it, sqr.Piece1);
+                        AnalyzeMove(board, *it, board.Squares[x].Piece1);
                     }
 
                     break;
@@ -418,7 +428,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         advance(it, i);
                         if (
                             AnalyzeMove(board, *it,
-                                        sqr.Piece1) ==
+                                        board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -430,7 +440,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         advance(it, i);
                         if (
                             AnalyzeMove(board, *it,
-                                        sqr.Piece1) ==
+                                        board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -442,7 +452,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         advance(it, i);
                         if (
                             AnalyzeMove(board, *it,
-                                        sqr.Piece1) ==
+                                        board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -454,7 +464,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         advance(it, i);
                         if (
                             AnalyzeMove(board, *it,
-                                        sqr.Piece1) ==
+                                        board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -465,9 +475,9 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                 }
         case ChessPieceType::Rook:
                 {
-                    if (sqr.Piece1.Moved)
+                    if (board.Squares[x].Piece1.Moved)
                     {
-                        if (sqr.Piece1.PieceColor == ChessPieceColor::Black)
+                        if (board.Squares[x].Piece1.PieceColor == ChessPieceColor::Black)
                         {
                             blackRooksMoved++;
                         }
@@ -483,7 +493,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::RookMoves1[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -494,7 +504,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::RookMoves2[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -505,7 +515,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::RookMoves3[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -516,7 +526,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::RookMoves4[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -532,7 +542,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves1[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -543,7 +553,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves2[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -554,7 +564,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves3[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -565,7 +575,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves4[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -577,7 +587,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves5[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -588,7 +598,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves6[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -599,7 +609,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves7[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -610,7 +620,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                         list<byte>::iterator it = MoveArrays::QueenMoves8[x].Moves.begin();
                         advance(it, i);
                         if (
-                            AnalyzeMove(board, *it, sqr.Piece1) ==
+                            AnalyzeMove(board, *it, board.Squares[x].Piece1) ==
                             false)
                         {
                             break;
@@ -621,9 +631,9 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                 }
         case ChessPieceType::King:
                 {
-                    if (sqr.Piece1.PieceColor == ChessPieceColor::White)
+                    if (board.Squares[x].Piece1.PieceColor == ChessPieceColor::White)
                     {
-                        if (sqr.Piece1.Moved)
+                        if (board.Squares[x].Piece1.Moved)
                         {
                             board.WhiteCanCastle = false;
                         }
@@ -631,7 +641,7 @@ void PieceValidMoves::GenerateValidMoves(Board board)
                     }
                     else
                     {
-                        if (sqr.Piece1.Moved)
+                        if (board.Squares[x].Piece1.Moved)
                         {
                             board.BlackCanCastle = false;
                         }
