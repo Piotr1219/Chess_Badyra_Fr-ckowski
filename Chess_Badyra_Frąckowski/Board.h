@@ -52,11 +52,11 @@ public:
     //Who initated En Passant
     ChessPieceColor EnPassantColor;
     //Positions liable to En Passant
-    byte EnPassantPosition;
+    byte EnPassantPosition = (byte)0;
 
     inline static ChessPieceColor WhoseMove;
 
-    int MoveCount;
+    int MoveCount = 1;
 
     //constructors
 
@@ -92,7 +92,7 @@ private:
 public:
     Board FastCopy();
 
-    static MoveContent MovePiece(Board board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece);
+    static MoveContent MovePiece(Board& board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece);
 
 private:
     static string GetColumnFromByte(byte column);

@@ -58,6 +58,7 @@ void Program::RunEngine()
 
 				string move;
 				//scanf_s("%s", move, 4);
+				cout << "wpisz sowj ruch:" << endl;
 				cin >> move;
 
 				printf("wpisano: %s \n", move.c_str());
@@ -287,6 +288,7 @@ void Program::RunEngine()
 					printf("Error");
 					continue;
 				}
+				//pomocnicze wypisanie rzedow i kolumn
 				cout << " " << (short)srcCol << " " << (short)srcRow << " " << (short)dstCol << " " << (short)dstRow << endl;
 				if (!engine.IsValidMove(srcCol, srcRow, dstCol, dstRow))
 				{
@@ -295,6 +297,9 @@ void Program::RunEngine()
 				}
 
 				engine.MovePiece(srcCol, srcRow, dstCol, dstRow);
+
+				cout << "wypisanie tablicy tylko po ruchu czlowieka" << endl;
+				DrawBoard(engine);
 
 				MakeEngineMove(engine);
 

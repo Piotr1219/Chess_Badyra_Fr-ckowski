@@ -27,6 +27,9 @@ Board::Board(string fen)
 
     WhoseMove = ChessPieceColor::White;
 
+    HalfMoveClock = (byte)0;
+    MoveCount = 0;
+
     if (fen.find("a3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
@@ -264,7 +267,6 @@ Board::Board(string fen)
         }
         else
         {
-
             if (c == 'K')
             {
                 if (Squares[60].Piece1.PieceType != ChessPieceType::None)
@@ -386,7 +388,7 @@ Board::Board(string fen)
             {
                 HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 9);
             }
-            else if (c == '0' && spacers == (byte)4)
+            else if (c == '0' && spacers == (byte)5)
             {
                 MoveCount = ((MoveCount * 10) + 0);
             }
@@ -730,7 +732,7 @@ Board Board::FastCopy()
     return clonedBoard;
 }
 
-MoveContent Board::MovePiece(Board board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece)
+MoveContent Board::MovePiece(Board& board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece)
 {
     Piece piece = board.Squares[(short)srcPosition].Piece1;
 
@@ -852,7 +854,7 @@ string Board::Fen(bool boardOnly, Board& board)
     string output = "";
     byte blankSquares = (byte)0;
 
-    for (int x = 0; x < 64; x++)
+    for (int x = 0; x < 65; x++)
     {
         byte index = (byte)x;
         cout << "figura" << board.Squares[(short)index].Piece1.PieceType << endl;
@@ -967,7 +969,7 @@ string Board::Fen(bool boardOnly, Board& board)
 
     if (castle != "-")
     {
-        while (castle.at(0) == '-' || castle.at(0) == '-') {
+        while (castle.at(0) == '-') {
             castle.erase(0, 1);
         }
         //castle = castle.TrimStart('-');
@@ -985,8 +987,10 @@ string Board::Fen(bool boardOnly, Board& board)
 
     if (!boardOnly)
     {
-        output += (char)board.HalfMoveClock + " ";
-        output += (char)board.MoveCount;
+        output += to_string((int)board.HalfMoveClock);
+        output += " ";
+        output += to_string(board.MoveCount);
+        cout << board.MoveCount << endl;
     }
     //return output.Trim();
     return trim(output);
