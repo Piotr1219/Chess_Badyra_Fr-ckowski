@@ -18,7 +18,7 @@
 
 using namespace std;
 
-void PieceValidMoves::AnalyzeMovePawn(Board board, byte dstPos, Piece pcMoving)
+void PieceValidMoves::AnalyzeMovePawn(Board& board, byte dstPos, Piece pcMoving)
 {
     //Because Pawns only kill diagonaly we handle the En Passant scenario specialy
     if ((short)board.EnPassantPosition > 0)
@@ -103,7 +103,7 @@ void PieceValidMoves::AnalyzeMovePawn(Board board, byte dstPos, Piece pcMoving)
     return;
 }
 
-bool PieceValidMoves::AnalyzeMove(Board board, byte dstPos, Piece pcMoving)
+bool PieceValidMoves::AnalyzeMove(Board& board, byte dstPos, Piece pcMoving)
 {
     //If I am not a pawn everywhere I move I can attack
     if (pcMoving.PieceColor == ChessPieceColor::White)
@@ -200,7 +200,7 @@ void PieceValidMoves::CheckValidMovesPawn(list<byte> moves, Piece& pcMoving, byt
     //}
 }
 
-void PieceValidMoves::GenerateValidMovesKing(Piece piece, Board board, byte srcPosition)
+void PieceValidMoves::GenerateValidMovesKing(Piece piece, Board& board, byte srcPosition)
 {
     Piece* attacked = &piece;
     //if (pcAttacked == NULL)
@@ -237,7 +237,7 @@ void PieceValidMoves::GenerateValidMovesKing(Piece piece, Board board, byte srcP
     }
 }
 
-void PieceValidMoves::GenerateValidMovesKingCastle(Board board, Piece king)
+void PieceValidMoves::GenerateValidMovesKingCastle(Board& board, Piece king)
 {
     //This code will add the castleling move to the pieces available moves
     if (king.PieceColor == ChessPieceColor::White)
@@ -377,7 +377,7 @@ void PieceValidMoves::GenerateValidMoves(Board& board)
         if (board.Squares[x].Piece1.PieceType == ChessPieceType::None) {
             continue;
         }
-
+        //cout << "analizowany ruch " << board.Squares[x].Piece1.PieceType << endl;
         //board.Squares[x].Piece1.ValidMoves = list<byte>(board.Squares[x].Piece1.LastValidMoveCount);
         board.Squares[x].Piece1.ValidMoves.clear();
 

@@ -2,6 +2,7 @@
 #include <string>
 #include <list>
 #include <stack>
+#include <iostream>
 //#include "Board.h"
 //#include "Book.h"
 //#include "MoveContent.h"
@@ -45,7 +46,7 @@ int Search::SideToMoveScore(int score, ChessPieceColor color)
 }
 
 
-MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSearched, int* nodesQuiessence, string pvLine, byte* plyDepthReached, byte* rootMovesSearched, list<OpeningMove> currentGameBook)
+MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesSearched, int* nodesQuiessence, string pvLine, byte* plyDepthReached, byte* rootMovesSearched, list<OpeningMove> currentGameBook)
 {
     list<Position> pvChild = list<Position>();
     int alpha = -400000000;
@@ -69,13 +70,26 @@ MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSe
         //return succ.Positions[0].LastMove;
     }
 
+    cout << "ilosc mozliwych pozycji " << succ.Positions.size() << endl;
+
     //Can I make an instant mate?
-    for(Board &pos : succ.Positions)
+    for (list<Board>::iterator it = succ.Positions.begin(); it != succ.Positions.end(); ++it)
+    //for(Board &pos : succ.Positions)
     {
+        Board pos = *it;
+        for (int i = 0; i < 64; i++) {
+            if (i % 8 == 0) {
+                cout << endl;
+            }
+            cout << pos.Squares[i].Piece1.PieceType << " ";
+        }
+
         int value = -AlphaBeta(pos, (byte)1, -beta, -alpha, nodesSearched, nodesQuiessence, &pvChild, true);
+        //cout << "petla w pozycjach  " << value << endl;
 
         if (value >= 32767)
         {
+            cout << "iterative search wartosc > 32767 1" << endl;
             return pos.LastMove;
         }
     }
@@ -90,8 +104,11 @@ MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSe
 
     *plyDepthReached = ModifyDepth(depth, succ.Positions.size());
 
-    for(Board pos : succ.Positions)
+    //for(Board pos : succ.Positions)
+    for (list<Board>::iterator it = succ.Positions.begin(); it != succ.Positions.end(); ++it)
     {
+        Board pos = *it;
+        //cout << "przejrzane succ" << endl;
         currentBoard++;
 
         progress = (int)((currentBoard / (float)succ.Positions.size()) * 100);
@@ -102,6 +119,7 @@ MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSe
 
         if (value >= 32767)
         {
+            cout << "iterative search wartosc > 32767 2" << endl;
             return pos.LastMove;
         }
 
@@ -134,6 +152,7 @@ MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSe
 
             alpha = value;
             bestMove = pos.LastMove;
+            //cout << "src pos w search " << (int)pos.LastMove.MovingPiecePrimary.SrcPosition << endl;
         }
     }
 
@@ -143,32 +162,42 @@ MoveContent Search::IterativeSearch(Board examineBoard, byte depth, int* nodesSe
     return bestMove;
 }
 
-ResultBoards Search::GetSortValidMoves(Board examineBoard)
+ResultBoards Search::GetSortValidMoves(Board& examineBoard)
 {
     ResultBoards succ;
-    succ.Positions = list<Board>(30);
+    //succ.Positions = list<Board>(30);
 
     piecesRemaining = 0;
 
+    cout << "    poczatek valid moves" << endl;
+
     for (short x = 0; x < 64; x++)
     {
-        Square sqr = examineBoard.Squares[x];
+        Square& sqr = examineBoard.Squares[x];
 
         //Make sure there is a piece on the square
         if (sqr.Piece1.PieceType == ChessPieceType::None)
+        {
             continue;
+        }
 
         piecesRemaining++;
 
         //Make sure the color is the same color as the one we are moving.
         if (sqr.Piece1.PieceColor != examineBoard.WhoseMove)
+        {
             continue;
+        }
 
         //For each valid move for this piece
-        for(byte dst : sqr.Piece1.ValidMoves)
+        //for(byte dst : sqr.Piece1.ValidMoves)
+        for (list<byte>::iterator it = sqr.Piece1.ValidMoves.begin(); it != sqr.Piece1.ValidMoves.end(); ++it)
         {
+            byte dst = *it;
+            //cout << "kazda pozycja w valid moves" << endl;
             //We make copies of the board and move so that we can move it without effecting the parent board
-            Board board = examineBoard.FastCopy();
+            //Board board = examineBoard.FastCopy();
+            Board board = examineBoard;
 
             //Make move so we can examine it
             Board::MovePiece(board, (byte)x, dst, ChessPieceType::Queen);
@@ -196,6 +225,15 @@ ResultBoards Search::GetSortValidMoves(Board examineBoard)
             board.Score = SideToMoveScore(board.Score, board.WhoseMove);
 
             succ.Positions.push_back(board);
+
+            /*cout << "wypisanie jeszcze w valid moves" << endl;
+            for (int i = 0; i < 64; i++) {
+                if (i % 8 == 0) {
+                    cout << endl;
+                }
+                cout << board.Squares[i].Piece1.PieceType << " ";
+            }
+            cout << "koniec wypiania w valid moves" << endl;*/
         }
     }
 
@@ -203,7 +241,7 @@ ResultBoards Search::GetSortValidMoves(Board examineBoard)
     return succ;
 }
 
-int Search::AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, int* nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended)
+int Search::AlphaBeta(Board& examineBoard, byte depth, int alpha, int beta, int* nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended)
 {
     nodesSearched++;
 
@@ -221,7 +259,7 @@ int Search::AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, int* 
         else
         {
             //Perform a Quiessence Search
-            return Quiescence(examineBoard, alpha, beta, nodesQuiessence);
+            return Quiescence(examineBoard, alpha, beta, *nodesQuiessence);
         }
     }
 
@@ -231,6 +269,13 @@ int Search::AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, int* 
     {
         if (SearchForMate(examineBoard.WhoseMove, examineBoard, &examineBoard.BlackMate, &examineBoard.WhiteMate, &examineBoard.StaleMate))
         {
+            cout << "mate found in alpha beta search in board: " << examineBoard.BlackMate << " " << examineBoard.WhiteMate << " " << examineBoard.StaleMate << endl;
+            for (int i = 0; i < 64; i++) {
+                if (i % 8 == 0) {
+                    cout << endl;
+                }
+                cout << examineBoard.Squares[i].Piece1.PieceType << " ";
+            }
             if (examineBoard.BlackMate)
             {
                 if (examineBoard.WhoseMove == ChessPieceColor::Black)
@@ -315,7 +360,7 @@ int Search::AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, int* 
     return alpha;
 }
 
-int Search::Quiescence(Board examineBoard, int alpha, int beta, int* nodesSearched)
+int Search::Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearched)
 {
     nodesSearched++;
 
@@ -404,7 +449,7 @@ int Search::Quiescence(Board examineBoard, int alpha, int beta, int* nodesSearch
     return alpha;
 }
 
-list<Position> Search::EvaluateMoves(Board examineBoard, byte depth)
+list<Position> Search::EvaluateMoves(Board& examineBoard, byte depth)
 {
 
     //We are going to store our result boards here           
@@ -515,7 +560,7 @@ list<Position> Search::EvaluateMoves(Board examineBoard, byte depth)
     return positions;
 }
 
-list<Position> Search::EvaluateMovesQ(Board examineBoard)
+list<Position> Search::EvaluateMovesQ(Board& examineBoard)
 {
     //We are going to store our result boards here           
     list<Position> positions = list<Position>();
@@ -572,31 +617,45 @@ list<Position> Search::EvaluateMovesQ(Board examineBoard)
     return positions;
 }
 
-bool Search::SearchForMate(ChessPieceColor movingSide, Board examineBoard, bool* blackMate, bool* whiteMate, bool* staleMate)
+bool Search::SearchForMate(ChessPieceColor movingSide, Board& examineBoard, bool* blackMate, bool* whiteMate, bool* staleMate)
 {
     bool foundNonCheckBlack = false;
     bool foundNonCheckWhite = false;
+
+    cout << "rozmiar valid moves " << examineBoard.Squares[10].Piece1.ValidMoves.size() << endl;
+    for (auto const& i : examineBoard.Squares[10].Piece1.ValidMoves) {
+        cout << "white pawn valid moves w searchformate " << (short)i << std::endl;
+    }
 
     for (short x = 0; x < 64; x++)
     {
         Square sqr = examineBoard.Squares[x];
 
         //Make sure there is a piece on the square
-        if (sqr.Piece1.PieceType != ChessPieceType::None)
+        //if (sqr.Piece1.PieceType == ChessPieceType::None)
+        if (examineBoard.Squares[x].Piece1.PieceType == ChessPieceType::None)
+        {
             continue;
+        }
 
         //Make sure the color is the same color as the one we are moving.
-        if (sqr.Piece1.PieceColor != movingSide)
+        //if (sqr.Piece1.PieceColor != movingSide)
+        if (examineBoard.Squares[x].Piece1.PieceColor != movingSide)
+        {
             continue;
-
+        }
+        cout << "przed petla valid moves " <<  sqr.Piece1.ValidMoves.size() << " numer " << x << endl;
+        cout << "przed petla valid moves bezposrednio " << examineBoard.Squares[x].Piece1.ValidMoves.size() << " numer " << x << endl;
         //For each valid move for this piece
-        for(byte dst : sqr.Piece1.ValidMoves)
+        //for(byte dst : sqr.Piece1.ValidMoves)
+        for (byte dst : examineBoard.Squares[x].Piece1.ValidMoves)
         {
 
             //We make copies of the board and move so that we can move it without effecting the parent board
             Board board = examineBoard.FastCopy();
 
             //Make move so we can examine it
+            cout << "test move from " << x << " to " << (int)dst << endl;
             Board::MovePiece(board, (byte)x, dst, ChessPieceType::Queen);
 
             //We Generate Valid Moves for Board
@@ -632,6 +691,7 @@ bool Search::SearchForMate(ChessPieceColor movingSide, Board examineBoard, bool*
         if (!examineBoard.WhiteMate && movingSide != ChessPieceColor::White)
         {
             *staleMate = true;
+            cout << "search for mate zwroci true white" << endl;
             return true;
         }
     }
@@ -646,10 +706,10 @@ bool Search::SearchForMate(ChessPieceColor movingSide, Board examineBoard, bool*
         if (!examineBoard.BlackMate && movingSide != ChessPieceColor::Black)
         {
             *staleMate = true;
+            cout << "search for mate zwroci true black" << endl;
             return true;
         }
     }
-
     return false;
 
 }

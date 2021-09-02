@@ -19,7 +19,5 @@ Square::Square(Piece piece)
 {
     Piece1 = Piece(piece);
 }
-Square::Square() {
-    ;
-}
+Square::Square() = default;
 

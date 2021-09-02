@@ -24,6 +24,8 @@ Piece::Piece(const Piece &piece)
 
     if (!piece.ValidMoves.empty())
         LastValidMoveCount = piece.ValidMoves.size();
+
+    ValidMoves = piece.ValidMoves;
 }
 
 Piece::Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor)
@@ -192,5 +194,3 @@ string Piece::ToString()
     return ChessPieceType_to_string(PieceType) + " " + ChessPieceColor_to_string(PieceColor) + " " + to_string(PieceValue) + " " + to_string(PieceActionValue) + " " + to_string(ValidMoves.size()) + " " + to_string(AttackedValue) + " " + to_string(DefendedValue);
 
 }
-
-

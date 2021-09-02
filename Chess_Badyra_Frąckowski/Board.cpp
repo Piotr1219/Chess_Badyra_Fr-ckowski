@@ -17,6 +17,8 @@
 
 Board::Board(string fen)
 {
+    Score = 0;
+
     byte index = (byte)0;
     byte spc = (byte)0;
 
@@ -442,6 +444,7 @@ Board::Board(string fen)
 Board::Board()
 {
     //Squares = new Square[64];
+    Score = 0;
 
     for (int i = 0; i < 64; i++)
     {
@@ -472,13 +475,15 @@ bool Board::isEmpty() {
 Board::Board(Square squares[])
 {
     //Squares = Square[64];
+    Score = 0;
 
     for (int x = 0; x < 64; x++)
     {
-        if (squares[x].Piece1.PieceType != ChessPieceType::None)
-        {
-            Squares[x].Piece1 = Piece(squares[x].Piece1);
-        }
+        //if (squares[x].Piece1.PieceType != ChessPieceType::None)
+        //{
+        //    Squares[x].Piece1 = Piece(squares[x].Piece1);
+        //}
+        Squares[x].Piece1 = Piece(squares[x].Piece1);
     }
 
     //WhiteAttackBoard = new bool[64];
@@ -503,10 +508,11 @@ Board::Board(const Board &board)
 
     for (int x = 0; x < 64; x++)
     {
-        if (board.Squares[x].Piece1.PieceType != ChessPieceType::None)
-        {
-            Squares[x] = Square(board.Squares[x].Piece1);
-        }
+        //if (board.Squares[x].Piece1.PieceType != ChessPieceType::None)
+        //{
+        //    Squares[x] = Square(board.Squares[x].Piece1);
+        //}
+        Squares[x] = Square(board.Squares[x].Piece1);
     }
 
     //WhiteAttackBoard = new bool[64];
@@ -726,6 +732,12 @@ Board Board::FastCopy()
     clonedBoard.WhiteCanCastle = WhiteCanCastle;
     clonedBoard.BlackCanCastle = BlackCanCastle;
 
+    clonedBoard.BlackCheck = BlackCheck;
+    clonedBoard.BlackMate = BlackMate;
+    clonedBoard.WhiteCheck = WhiteCheck;
+    clonedBoard.WhiteMate = WhiteMate;
+    clonedBoard.StaleMate = StaleMate;
+
     //WhiteAttackBoard = new bool[64];
     //BlackAttackBoard = new bool[64];
 
@@ -775,6 +787,7 @@ MoveContent Board::MovePiece(Board& board, byte srcPosition, byte dstPosition, C
     board.LastMove.MovingPiecePrimary = PieceMoving(piece.PieceColor, piece.PieceType, piece.Moved, srcPosition, dstPosition);
 
     //Delete the piece in its source position
+    //cout << "piece type przed bledem " << board.Squares[(short)srcPosition].Piece1.PieceType << " index " << (short)srcPosition << endl;
     board.Squares[(short)srcPosition].Piece1.PieceType = ChessPieceType::None;
 
     //Add the piece to its new position
@@ -854,10 +867,10 @@ string Board::Fen(bool boardOnly, Board& board)
     string output = "";
     byte blankSquares = (byte)0;
 
-    for (int x = 0; x < 65; x++)
+    for (int x = 0; x < 64; x++)
     {
         byte index = (byte)x;
-        cout << "figura" << board.Squares[(short)index].Piece1.PieceType << endl;
+        //cout << "figura" << board.Squares[(short)index].Piece1.PieceType << endl;
 
         if (board.Squares[(short)index].Piece1.PieceType != ChessPieceType::None)
         {
@@ -905,7 +918,7 @@ string Board::Fen(bool boardOnly, Board& board)
     if (output.compare(output.length() - end.length(), end.length(), end))
     {
         //output = output.TrimEnd('/');
-        output = output.substr(0, output.size() - 1);
+        output = output.substr(0, output.size());
     }
 
     if (board.WhoseMove == ChessPieceColor::White)

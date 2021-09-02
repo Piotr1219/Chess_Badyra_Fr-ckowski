@@ -175,8 +175,8 @@ public:
 
     private:
     void InitiateEngine();
-    bool CheckForMate(ChessPieceColor whosTurn, Board chessBoard);
-    bool FindPlayBookMove(MoveContent* bestMove, Board chessBoard, list<OpeningMove> openingBook);
+    bool CheckForMate(ChessPieceColor whosTurn, Board& chessBoard);
+    bool FindPlayBookMove(MoveContent* bestMove, Board& chessBoard, list<OpeningMove> openingBook);
     byte GetBoardIndex(byte boardColumn, byte boardRow);
     void PieceTakenAdd(MoveContent lastMove);
 

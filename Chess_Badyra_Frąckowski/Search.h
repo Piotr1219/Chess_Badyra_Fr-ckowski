@@ -51,20 +51,20 @@ private:
 
     static int SideToMoveScore(int score, ChessPieceColor color);
 public:
-    static MoveContent IterativeSearch(Board examineBoard, byte depth, int* nodesSearched, int* nodesQuiessence, string pvLine, byte* plyDepthReached, byte* rootMovesSearched, list<OpeningMove> currentGameBook);
+    static MoveContent IterativeSearch(Board& examineBoard, byte depth, int* nodesSearched, int* nodesQuiessence, string pvLine, byte* plyDepthReached, byte* rootMovesSearched, list<OpeningMove> currentGameBook);
 
 private:
-    static ResultBoards GetSortValidMoves(Board examineBoard);
+    static ResultBoards GetSortValidMoves(Board& examineBoard);
 
-    static int AlphaBeta(Board examineBoard, byte depth, int alpha, int beta, int* nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended);
+    static int AlphaBeta(Board& examineBoard, byte depth, int alpha, int beta, int* nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended);
 
-    static int Quiescence(Board examineBoard, int alpha, int beta, int* nodesSearched);
+    static int Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearched);
 
-    static list<Position> EvaluateMoves(Board examineBoard, byte depth);
+    static list<Position> EvaluateMoves(Board& examineBoard, byte depth);
 
-    static list<Position> EvaluateMovesQ(Board examineBoard);
+    static list<Position> EvaluateMovesQ(Board& examineBoard);
 public:
-    static bool SearchForMate(ChessPieceColor movingSide, Board examineBoard, bool* blackMate, bool* whiteMate, bool* staleMate);
+    static bool SearchForMate(ChessPieceColor movingSide, Board& examineBoard, bool* blackMate, bool* whiteMate, bool* staleMate);
 private:
     static byte ModifyDepth(byte depth, int possibleMoves);
 

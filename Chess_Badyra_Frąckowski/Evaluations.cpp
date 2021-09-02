@@ -263,8 +263,10 @@ void Evaluation::EvaluateBoardScore(Board& board)
     {
         Square square = board.Squares[x];
 
-        if (square.Piece1.PieceType != ChessPieceType::None)
+        if (square.Piece1.PieceType == ChessPieceType::None)
+        {
             continue;
+        }
 
 
         if (square.Piece1.PieceColor == ChessPieceColor::White)

@@ -186,11 +186,12 @@ int Engine::ValidateOpeningBook()
     return Book::ValidateOpeningBook(OpeningBook);
 }
 
-bool Engine::CheckForMate(ChessPieceColor whosTurn, Board chessBoard)
+bool Engine::CheckForMate(ChessPieceColor whosTurn, Board& chessBoard)
 {
     Search::SearchForMate(whosTurn, chessBoard, &chessBoard.BlackMate,
                             &chessBoard.WhiteMate, &chessBoard.StaleMate);
 
+    cout << "mates" << chessBoard.BlackMate << chessBoard.WhiteMate << chessBoard.StaleMate << endl;
     if (chessBoard.BlackMate || chessBoard.WhiteMate || chessBoard.StaleMate)
     {
         return true;
@@ -199,7 +200,7 @@ bool Engine::CheckForMate(ChessPieceColor whosTurn, Board chessBoard)
     return false;
 }
 
-bool Engine::FindPlayBookMove(MoveContent* bestMove, Board chessBoard, list<OpeningMove> openingBook)
+bool Engine::FindPlayBookMove(MoveContent* bestMove, Board& chessBoard, list<OpeningMove> openingBook)
 {
     //Get the Hash for the current Board;
     string boardFen = Board::Fen(true, chessBoard);
@@ -870,8 +871,10 @@ void Engine::AiPonderMove()
     ResultBoards resultBoards = ResultBoards();
     resultBoards.Positions = list<Board>();
 
+    //cout << "przed szukaniem mata " << endl;
     if (CheckForMate(WhoseMove(), ChessBoard))
     {
+        cout << "znaleziony mat" << endl;
         Thinking = false;
         return;
     }
@@ -886,6 +889,7 @@ void Engine::AiPonderMove()
             (short)ChessBoard.HalfMoveClock > 90 || (short)ChessBoard.RepeatedMove >= 2)
         {
             bestMove = Search::IterativeSearch(ChessBoard, PlyDepthSearched, &NodesSearched, &NodesQuiessence, pvLine, &PlyDepthReached, &RootMovesSearched, CurrentGameBook);
+            cout << "przed ruchem komputera " << (int)bestMove.MovingPiecePrimary.SrcPosition << "   " << (int)bestMove.MovingPiecePrimary.DstPosition << endl;
         }
     }
 
@@ -894,6 +898,7 @@ void Engine::AiPonderMove()
 
     RootMovesSearched = (byte)resultBoards.Positions.size();
 
+    cout << "ruch komputera " << (int)bestMove.MovingPiecePrimary.SrcPosition << "   " << (int)bestMove.MovingPiecePrimary.DstPosition << endl;
     Board::MovePiece(ChessBoard, bestMove.MovingPiecePrimary.SrcPosition, bestMove.MovingPiecePrimary.DstPosition, ChessPieceType::Queen);
 
     ChessBoard.LastMove.GeneratePGNString(ChessBoard.Squares);
