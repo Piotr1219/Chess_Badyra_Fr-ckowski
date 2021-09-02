@@ -76,13 +76,19 @@ MoveContent::MoveContent()
 
 MoveContent::MoveContent(const MoveContent &moveContent)
 {
-    PieceMoving MovingPiecePrimary(moveContent.MovingPiecePrimary);
-    PieceMoving MovingPieceSecondary(moveContent.MovingPieceSecondary);
+    //PieceMoving MovingPiecePrimary(moveContent.MovingPiecePrimary);
+    MovingPiecePrimary = moveContent.MovingPiecePrimary;
+    //PieceMoving MovingPieceSecondary(moveContent.MovingPieceSecondary);
+    MovingPieceSecondary = moveContent.MovingPieceSecondary;
 
-    PieceTaken TakenPiece(moveContent.TakenPiece.PieceColor,
-                                moveContent.TakenPiece.PieceType,
-                                moveContent.TakenPiece.Moved,
-                                moveContent.TakenPiece.Position);
+    //PieceTaken TakenPiece(moveContent.TakenPiece.PieceColor,
+     //                           moveContent.TakenPiece.PieceType,
+     //                           moveContent.TakenPiece.Moved,
+     //                           moveContent.TakenPiece.Position);
+    TakenPiece.PieceColor = moveContent.TakenPiece.PieceColor;
+    TakenPiece.PieceType = moveContent.TakenPiece.PieceType;
+    TakenPiece.Moved = moveContent.TakenPiece.Moved;
+    TakenPiece.Position = moveContent.TakenPiece.Position;
 
     EnPassantOccured = moveContent.EnPassantOccured;
     PawnPromotedTo = moveContent.PawnPromotedTo;

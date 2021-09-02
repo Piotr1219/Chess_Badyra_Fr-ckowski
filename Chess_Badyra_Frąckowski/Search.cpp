@@ -152,6 +152,7 @@ MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesS
 
             alpha = value;
             bestMove = pos.LastMove;
+            cout << " " << endl;
             //cout << "src pos w search " << (int)pos.LastMove.MovingPiecePrimary.SrcPosition << endl;
         }
     }
