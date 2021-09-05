@@ -30,10 +30,10 @@ struct sortComparator {
     }
 };
 
-struct sortComparatorPosition {
-    bool operator () (Position& s2, Position& s1)
+struct PositionComparator {
+    bool operator () (const Position& s2, const Position& s1)
     {
-        return (((s1.Score) - (s2.Score)) > 0);
+        return s1.Score < s2.Score;
     }
 };
 
@@ -46,7 +46,7 @@ int Search::SideToMoveScore(int score, ChessPieceColor color)
 }
 
 
-MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesSearched, int* nodesQuiessence, string pvLine, byte* plyDepthReached, byte* rootMovesSearched, list<OpeningMove> currentGameBook)
+MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesSearched, int* nodesQuiessence, string pvLine, char* plyDepthReached, char* rootMovesSearched, list<OpeningMove> currentGameBook)
 {
     list<Position> pvChild = list<Position>();
     int alpha = -400000000;
@@ -58,9 +58,9 @@ MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesS
     //We are going to store our result boards here           
     ResultBoards succ = GetSortValidMoves(examineBoard);
 
-    *rootMovesSearched = (byte)succ.Positions.size();
+    *rootMovesSearched = succ.Positions.size();
 
-    if ((short)rootMovesSearched == 1)
+    if (*rootMovesSearched == 1)
     {
         //I only have one move
         list<Board>::iterator it = succ.Positions.begin();
@@ -70,26 +70,25 @@ MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesS
         //return succ.Positions[0].LastMove;
     }
 
-    cout << "ilosc mozliwych pozycji " << succ.Positions.size() << endl;
+    //cout << "ilosc mozliwych pozycji " << succ.Positions.size() << endl;
 
     //Can I make an instant mate?
     for (list<Board>::iterator it = succ.Positions.begin(); it != succ.Positions.end(); ++it)
     //for(Board &pos : succ.Positions)
     {
         Board pos = *it;
-        for (int i = 0; i < 64; i++) {
-            if (i % 8 == 0) {
-                cout << endl;
-            }
-            cout << pos.Squares[i].Piece1.PieceType << " ";
-        }
+        //for (int i = 0; i < 64; i++) {
+        //    if (i % 8 == 0) {
+        //        cout << endl;
+        //    }
+        //    cout << pos.Squares[i].Piece1.PieceType << " ";
+        //}
 
-        int value = -AlphaBeta(pos, (byte)1, -beta, -alpha, nodesSearched, nodesQuiessence, &pvChild, true);
-        //cout << "petla w pozycjach  " << value << endl;
+        int value = -AlphaBeta(pos, 1, -beta, -alpha, *nodesSearched, nodesQuiessence, &pvChild, true);
 
         if (value >= 32767)
         {
-            cout << "iterative search wartosc > 32767 1" << endl;
+            //cout << "iterative search wartosc > 32767 1" << endl;
             return pos.LastMove;
         }
     }
@@ -100,7 +99,7 @@ MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesS
 
     succ.Positions.sort(sortComparator());
 
-    depth = byte((short)depth - 1);
+    depth = depth - 1;
 
     *plyDepthReached = ModifyDepth(depth, succ.Positions.size());
 
@@ -111,19 +110,21 @@ MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesS
         //cout << "przejrzane succ" << endl;
         currentBoard++;
 
-        progress = (int)((currentBoard / (float)succ.Positions.size()) * 100);
+        progress = ((currentBoard / (float)succ.Positions.size()) * 100);
 
         pvChild = list<Position>();
 
-        int value = -AlphaBeta(pos, depth, -beta, -alpha, nodesSearched, nodesQuiessence, &pvChild, false);
+        cout << "search glebsze przegladanie" << endl;
+        int value = -AlphaBeta(pos, depth, -beta, -alpha, *nodesSearched, nodesQuiessence, &pvChild, false);
+        cout << "petla w pozycjach  " << value << endl;
 
         if (value >= 32767)
         {
-            cout << "iterative search wartosc > 32767 2" << endl;
+            //cout << "iterative search wartosc > 32767 2" << endl;
             return pos.LastMove;
         }
 
-        if ((short)examineBoard.RepeatedMove == 2)
+        if (examineBoard.RepeatedMove == 2)
         {
             string fen = Board::Fen(true, pos);
 
@@ -152,8 +153,8 @@ MoveContent Search::IterativeSearch(Board& examineBoard, byte depth, int* nodesS
 
             alpha = value;
             bestMove = pos.LastMove;
-            cout << " " << endl;
-            //cout << "src pos w search " << (int)pos.LastMove.MovingPiecePrimary.SrcPosition << endl;
+            //cout << " " << endl;
+            //cout << "src pos w search " << pos.LastMove.MovingPiecePrimary.SrcPosition << endl;
         }
     }
 
@@ -170,7 +171,7 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
 
     piecesRemaining = 0;
 
-    cout << "    poczatek valid moves" << endl;
+    //cout << "    poczatek valid moves" << endl;
 
     for (short x = 0; x < 64; x++)
     {
@@ -191,17 +192,17 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
         }
 
         //For each valid move for this piece
-        //for(byte dst : sqr.Piece1.ValidMoves)
-        for (list<byte>::iterator it = sqr.Piece1.ValidMoves.begin(); it != sqr.Piece1.ValidMoves.end(); ++it)
+        //for(char dst : sqr.Piece1.ValidMoves)
+        for (list<char>::iterator it = sqr.Piece1.ValidMoves.begin(); it != sqr.Piece1.ValidMoves.end(); ++it)
         {
-            byte dst = *it;
+            char dst = *it;
             //cout << "kazda pozycja w valid moves" << endl;
             //We make copies of the board and move so that we can move it without effecting the parent board
             //Board board = examineBoard.FastCopy();
             Board board = examineBoard;
 
             //Make move so we can examine it
-            Board::MovePiece(board, (byte)x, dst, ChessPieceType::Queen);
+            Board::MovePiece(board, x, dst, ChessPieceType::Queen);
 
             //We Generate Valid Moves for Board
             PieceValidMoves::GenerateValidMoves(board);
@@ -219,8 +220,8 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
             }
 
             //We calculate the board score
-            Evaluation eva1;
-            eva1.EvaluateBoardScore(board);
+            //Evaluation eva1;
+            EvaluateBoardScore2(board);
 
             //Invert Score to support Negamax
             board.Score = SideToMoveScore(board.Score, board.WhoseMove);
@@ -242,19 +243,21 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
     return succ;
 }
 
-int Search::AlphaBeta(Board& examineBoard, byte depth, int alpha, int beta, int* nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended)
+int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int& nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended)
+
 {
+    //printf("alphabeta\n");
     nodesSearched++;
 
-    if ((short)examineBoard.HalfMoveClock >= 100 || (short)examineBoard.RepeatedMove >= 3)
+    if (examineBoard.HalfMoveClock >= 100 || examineBoard.RepeatedMove >= 3)
         return 0;
 
     //End Main Search with Quiescence
-    if ((short)depth == 0)
+    if (depth == 0)
     {
         if (!extended && examineBoard.BlackCheck || examineBoard.WhiteCheck)
         {
-            depth = (byte)((short)depth+1);
+            depth++;
             extended = true;
         }
         else
@@ -270,26 +273,26 @@ int Search::AlphaBeta(Board& examineBoard, byte depth, int alpha, int beta, int*
     {
         if (SearchForMate(examineBoard.WhoseMove, examineBoard, &examineBoard.BlackMate, &examineBoard.WhiteMate, &examineBoard.StaleMate))
         {
-            cout << "mate found in alpha beta search in board: " << examineBoard.BlackMate << " " << examineBoard.WhiteMate << " " << examineBoard.StaleMate << endl;
+            /*cout << "mate found in alpha beta search in board: " << examineBoard.BlackMate << " " << examineBoard.WhiteMate << " " << examineBoard.StaleMate << endl;
             for (int i = 0; i < 64; i++) {
                 if (i % 8 == 0) {
                     cout << endl;
                 }
                 cout << examineBoard.Squares[i].Piece1.PieceType << " ";
-            }
+            }*/
             if (examineBoard.BlackMate)
             {
                 if (examineBoard.WhoseMove == ChessPieceColor::Black)
-                    return -32767 - (short)depth;
+                    return -32767 - depth;
 
-                return 32767 + (short)depth;
+                return 32767 + depth;
             }
             if (examineBoard.WhiteMate)
             {
                 if (examineBoard.WhoseMove == ChessPieceColor::Black)
-                    return 32767 + (short)depth;
+                    return 32767 + depth;
 
-                return -32767 - (short)depth;
+                return -32767 - depth;
             }
 
             //If Not Mate then StaleMate
@@ -297,7 +300,7 @@ int Search::AlphaBeta(Board& examineBoard, byte depth, int alpha, int beta, int*
         }
     }
 
-    positions.sort(sortComparatorPosition());
+    positions.sort(PositionComparator());
 
     for(Position move : positions)
     {
@@ -330,12 +333,12 @@ int Search::AlphaBeta(Board& examineBoard, byte depth, int alpha, int beta, int*
             }
         }
 
-        int value = -AlphaBeta(board, (byte)((short)depth - 1), -beta, -alpha, nodesSearched, nodesQuiessence, &pvChild, extended);
+        int value = -AlphaBeta(board, depth - 1, -beta, -alpha, nodesSearched, nodesQuiessence, &pvChild, extended);
 
         if (value >= beta)
         {
-            KillerMove[kIndex][(short)depth].SrcPosition = move.SrcPosition;
-            KillerMove[kIndex][(short)depth].DstPosition = move.DstPosition;
+            KillerMove[kIndex][depth].SrcPosition = move.SrcPosition;
+            KillerMove[kIndex][depth].DstPosition = move.DstPosition;
 
             kIndex = ((kIndex + 1) % 2);
 
@@ -354,7 +357,7 @@ int Search::AlphaBeta(Board& examineBoard, byte depth, int alpha, int beta, int*
 
             *pvLine = pvChild;
 
-            alpha = (int)value;
+            alpha = value;
         }
     }
 
@@ -366,8 +369,8 @@ int Search::Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearc
     nodesSearched++;
 
     //Evaluate Score
-    Evaluation eva1;
-    eva1.EvaluateBoardScore(examineBoard);
+    //Evaluation eva1;
+    EvaluateBoardScore2(examineBoard);
 
     //Invert Score to support Negamax
     examineBoard.Score = SideToMoveScore(examineBoard.Score, examineBoard.WhoseMove);
@@ -384,7 +387,7 @@ int Search::Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearc
 
     if (examineBoard.WhiteCheck || examineBoard.BlackCheck)
     {
-        positions = EvaluateMoves(examineBoard, (byte)0);
+        positions = EvaluateMoves(examineBoard, 0);
     }
     else
     {
@@ -396,11 +399,11 @@ int Search::Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearc
         return examineBoard.Score;
     }
 
-    positions.sort(sortComparatorPosition());
+    positions.sort(PositionComparator());
 
     for(Position move : positions)
     {
-        if (StaticExchangeEvaluation(examineBoard.Squares[(short)move.DstPosition]) >= 0)
+        if (StaticExchangeEvaluation(examineBoard.Squares[move.DstPosition]) >= 0)
         {
             continue;
         }
@@ -450,7 +453,7 @@ int Search::Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearc
     return alpha;
 }
 
-list<Position> Search::EvaluateMoves(Board& examineBoard, byte depth)
+list<Position> Search::EvaluateMoves(Board& examineBoard, char depth)
 {
 
     //We are going to store our result boards here           
@@ -472,21 +475,21 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, byte depth)
             continue;
 
         //For each valid move for this piece
-        for(byte dst : piece.ValidMoves)
+        for(char dst : piece.ValidMoves)
         {
             Position move = Position();
 
-            move.SrcPosition = (byte)x;
+            move.SrcPosition = x;
             move.DstPosition = dst;
 
-            if (move.SrcPosition == KillerMove[0][(short)depth].SrcPosition && move.DstPosition == KillerMove[0][(short)depth].DstPosition)
+            if (move.SrcPosition == KillerMove[0][depth].SrcPosition && move.DstPosition == KillerMove[0][depth].DstPosition)
             {
                 //move.TopSort = true;
                 move.Score += 5000;
                 positions.push_back(move);
                 continue;
             }
-            if (move.SrcPosition == KillerMove[1][(short)depth].SrcPosition && move.DstPosition == KillerMove[1][(short)depth].DstPosition)
+            if (move.SrcPosition == KillerMove[1][depth].SrcPosition && move.DstPosition == KillerMove[1][depth].DstPosition)
             {
                 //move.TopSort = true;
                 move.Score += 5000;
@@ -494,7 +497,7 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, byte depth)
                 continue;
             }
 
-            Piece pieceAttacked = examineBoard.Squares[(short)move.DstPosition].Piece1;
+            Piece pieceAttacked = examineBoard.Squares[move.DstPosition].Piece1;
 
             //If the move is a capture add it's value to the score
             if (pieceAttacked.PieceType != ChessPieceType::None)
@@ -520,7 +523,7 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, byte depth)
 
                 if (piece.PieceType == ChessPieceType::King)
                 {
-                    if ((short)move.DstPosition != 62 && (short)move.DstPosition != 58)
+                    if (move.DstPosition != 62 && move.DstPosition != 58)
                     {
                         move.Score -= 40;
                     }
@@ -539,7 +542,7 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, byte depth)
             {
                 if (piece.PieceType == ChessPieceType::King)
                 {
-                    if ((short)move.DstPosition != 6 && (short)move.DstPosition != 2)
+                    if (move.DstPosition != 6 && move.DstPosition != 2)
                     {
                         move.Score -= 40;
                     }
@@ -579,17 +582,17 @@ list<Position> Search::EvaluateMovesQ(Board& examineBoard)
             continue;
 
         //For each valid move for this piece
-        for(byte dst : piece.ValidMoves)
+        for(char dst : piece.ValidMoves)
         {
-            if (examineBoard.Squares[(short)dst].Piece1.PieceType == ChessPieceType::None)
+            if (examineBoard.Squares[dst].Piece1.PieceType == ChessPieceType::None)
             {
                 continue;
             }
 
             Position move = Position();
 
-            move.SrcPosition = (byte)x;
-            move.DstPosition = (byte)dst;
+            move.SrcPosition = x;
+            move.DstPosition = dst;
 
             if (move.SrcPosition == KillerMove[2][0].SrcPosition && move.DstPosition == KillerMove[2][0].DstPosition)
             {
@@ -599,7 +602,7 @@ list<Position> Search::EvaluateMovesQ(Board& examineBoard)
                 continue;
             }
 
-            Piece pieceAttacked = examineBoard.Squares[(short)move.DstPosition].Piece1;
+            Piece pieceAttacked = examineBoard.Squares[move.DstPosition].Piece1;
 
             move.Score += pieceAttacked.PieceValue;
 
@@ -623,10 +626,10 @@ bool Search::SearchForMate(ChessPieceColor movingSide, Board& examineBoard, bool
     bool foundNonCheckBlack = false;
     bool foundNonCheckWhite = false;
 
-    cout << "rozmiar valid moves " << examineBoard.Squares[10].Piece1.ValidMoves.size() << endl;
-    for (auto const& i : examineBoard.Squares[10].Piece1.ValidMoves) {
-        cout << "white pawn valid moves w searchformate " << (short)i << std::endl;
-    }
+    //cout << "rozmiar valid moves " << examineBoard.Squares[10].Piece1.ValidMoves.size() << endl;
+    //for (auto const& i : examineBoard.Squares[10].Piece1.ValidMoves) {
+    //    cout << "white pawn valid moves w searchformate " << i << std::endl;
+    //}
 
     for (short x = 0; x < 64; x++)
     {
@@ -645,19 +648,21 @@ bool Search::SearchForMate(ChessPieceColor movingSide, Board& examineBoard, bool
         {
             continue;
         }
-        cout << "przed petla valid moves " <<  sqr.Piece1.ValidMoves.size() << " numer " << x << endl;
-        cout << "przed petla valid moves bezposrednio " << examineBoard.Squares[x].Piece1.ValidMoves.size() << " numer " << x << endl;
+        //cout << "przed petla valid moves " <<  sqr.Piece1.ValidMoves.size() << " numer " << x << endl;
+        //cout << "przed petla valid moves bezposrednio " << examineBoard.Squares[x].Piece1.ValidMoves.size() << " numer " << x << endl;
+        
         //For each valid move for this piece
-        //for(byte dst : sqr.Piece1.ValidMoves)
-        for (byte dst : examineBoard.Squares[x].Piece1.ValidMoves)
+        //for(char dst : sqr.Piece1.ValidMoves)
+        for (char dst : examineBoard.Squares[x].Piece1.ValidMoves)
         {
 
             //We make copies of the board and move so that we can move it without effecting the parent board
-            Board board = examineBoard.FastCopy();
+            //Board board = examineBoard.FastCopy();
+            Board board = examineBoard;
 
             //Make move so we can examine it
-            cout << "test move from " << x << " to " << (int)dst << endl;
-            Board::MovePiece(board, (byte)x, dst, ChessPieceType::Queen);
+            //cout << "test move from " << x << " to " << (int)dst << endl;
+            Board::MovePiece(board, x, dst, ChessPieceType::Queen);
 
             //We Generate Valid Moves for Board
             PieceValidMoves::GenerateValidMoves(board);
@@ -714,16 +719,16 @@ bool Search::SearchForMate(ChessPieceColor movingSide, Board& examineBoard, bool
     return false;
 
 }
-byte Search::ModifyDepth(byte depth, int possibleMoves)
+char Search::ModifyDepth(char depth, int possibleMoves)
 {
     if (possibleMoves <= 20 || piecesRemaining < 14)
     {
         if (possibleMoves <= 10 || piecesRemaining < 6)
         {
-            depth = (byte)((short)depth+1);
+            depth = depth+1;
         }
 
-        depth = (byte)((short)depth + 1);
+        depth = depth + 1;
     }
 
     return depth;

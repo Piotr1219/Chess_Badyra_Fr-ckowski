@@ -14,6 +14,8 @@
 
 using namespace std;
 
+void SaveCurrentGameMove(Board& currentBoard, Board& previousBoard, list<OpeningMove>& gameBook, MoveContent bestMove);
+
 /*
 
 class FileIO

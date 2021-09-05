@@ -19,100 +19,128 @@ Board::Board(string fen)
 {
     Score = 0;
 
-    byte index = (byte)0;
-    byte spc = (byte)0;
+    char index = 0;
+    char spc = 0;
 
-    WhiteCastled = true;
-    BlackCastled = true;
+    WhiteCastled = false;
+    BlackCastled = false;
+    WhiteCanCastle = true;
+    BlackCanCastle = true;
 
-    byte spacers = (byte)0;
+    WhiteCheck = false;
+    BlackCheck = false;
+    WhiteMate = false;
+    BlackMate = false;
+    StaleMate = false;
+
+    BlackKingPosition = 0;
+    WhiteKingPosition = 0;
+
+    EnPassantColor = ChessPieceColor::White;
+    EnPassantPosition = 0;
+    EndGamePhase = false;
+
+    InsufficientMaterial = false;
+
+
+    char spacers = 0;
 
     WhoseMove = ChessPieceColor::White;
 
-    HalfMoveClock = (byte)0;
-    MoveCount = 0;
+    ZobristHash = 0;
+    HalfMoveClock = 0;
+    MoveCount = 0;  //moze 1
+    RepeatedMove = 0;
+
+    for (int i = 0; i < 64; i++) {
+        WhiteAttackBoard[i] = false;
+        BlackAttackBoard[i] = false;
+
+        //Squares[i].Piece1.DefendedValue = 0;
+        //Squares[i].Piece1.AttackedValue = 0;
+    }
 
     if (fen.find("a3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)40;
+        EnPassantPosition = 40;
     }
     else if (fen.find("b3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)41;
+        EnPassantPosition = 41;
     }
     else if (fen.find("c3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)42;
+        EnPassantPosition = 42;
     }
     else if (fen.find("d3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)43;
+        EnPassantPosition = 43;
     }
     else if (fen.find("e3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)44;
+        EnPassantPosition = 44;
     }
     else if (fen.find("f3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)45;
+        EnPassantPosition = 45;
     }
     else if (fen.find("g3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)46;
+        EnPassantPosition = 46;
     }
     else if (fen.find("h3") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::White;
-        EnPassantPosition = (byte)47;
+        EnPassantPosition = 47;
     }
 
 
     if (fen.find("a6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)16;
+        EnPassantPosition = 16;
     }
     else if (fen.find("b6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)17;
+        EnPassantPosition = 17;
     }
     else if (fen.find("c6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)18;
+        EnPassantPosition = 18;
     }
     else if (fen.find("d6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)19;
+        EnPassantPosition = 19;
     }
     else if (fen.find("e6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)20;
+        EnPassantPosition = 20;
     }
     else if (fen.find("f6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)21;
+        EnPassantPosition = 21;
     }
     else if (fen.find("g6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)22;
+        EnPassantPosition = 22;
     }
     else if (fen.find("h6") != std::string::npos)
     {
         EnPassantColor = ChessPieceColor::Black;
-        EnPassantPosition = (byte)23;
+        EnPassantPosition = 23;
     }
 
     if (fen.find(" w ") != std::string::npos)
@@ -128,135 +156,135 @@ Board::Board(string fen)
     for (auto& c : fen)
     {
 
-        if ((int)index < 64 && (int)spc == 0)
+        if (index < 64 && spc == 0)
         {
-            if (c == '1' && (int)index < 63)
+            if (c == '1' && index < 63)
             {
                 for (int i = 0; i < 1; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index+1);
+                index = (index+1);
             }
-            else if (c == '2' && (int)index < 62)
+            else if (c == '2' && index < 62)
             {
                 for (int i = 0; i < 2; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index + 2);
+                index = (index + 2);
             }
-            else if (c == '3' && (int)index < 61)
+            else if (c == '3' && index < 61)
             {
                 for (int i = 0; i < 3; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index + 3);
+                index = (index + 3);
             }
-            else if (c == '4' && (int)index < 60)
+            else if (c == '4' && index < 60)
             {
                 for (int i = 0; i < 4; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index + 4);
+                index = (index + 4);
             }
-            else if (c == '5' && (int)index < 59)
+            else if (c == '5' && index < 59)
             {
                 for (int i = 0; i < 5; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index + 5);
+                index = (index + 5);
             }
-            else if (c == '6' && (int)index < 58)
+            else if (c == '6' && index < 58)
             {
                 for (int i = 0; i < 6; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index + 6);
+                index = (index + 6);
             }
-            else if (c == '7' && (int)index < 57)
+            else if (c == '7' && index < 57)
             {
                 for (int i = 0; i < 7; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index + 7);
+                index = (index + 7);
             }
-            else if (c == '8' && (int)index < 56)
+            else if (c == '8' && index < 56)
             {
                 for (int i = 0; i < 8; i++) {
-                    Squares[(short)index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
+                    Squares[index + i].Piece1 = Piece(ChessPieceType::None, ChessPieceColor::White);
                 }
-                index = (byte)((int)index + 8);
+                index = (index + 8);
             }
             else if (c == 'P')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Pawn, ChessPieceColor::White);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Pawn, ChessPieceColor::White);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'N')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Knight, ChessPieceColor::White);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Knight, ChessPieceColor::White);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'B')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Bishop, ChessPieceColor::White);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Bishop, ChessPieceColor::White);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'R')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Rook, ChessPieceColor::White);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Rook, ChessPieceColor::White);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'Q')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Queen, ChessPieceColor::White);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Queen, ChessPieceColor::White);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'K')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::King, ChessPieceColor::White);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::King, ChessPieceColor::White);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'p')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Pawn, ChessPieceColor::Black);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Pawn, ChessPieceColor::Black);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'n')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Knight, ChessPieceColor::Black);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Knight, ChessPieceColor::Black);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'b')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Bishop, ChessPieceColor::Black);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Bishop, ChessPieceColor::Black);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'r')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Rook, ChessPieceColor::Black);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Rook, ChessPieceColor::Black);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'q')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::Queen, ChessPieceColor::Black);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::Queen, ChessPieceColor::Black);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == 'k')
             {
-                Squares[(short)index].Piece1 = Piece(ChessPieceType::King, ChessPieceColor::Black);
-                Squares[(short)index].Piece1.Moved = true;
-                index = (byte)((int)index + 1);
+                Squares[index].Piece1 = Piece(ChessPieceType::King, ChessPieceColor::Black);
+                Squares[index].Piece1.Moved = true;
+                index = (index + 1);
             }
             else if (c == '/')
             {
@@ -264,7 +292,7 @@ Board::Board(string fen)
             }
             else if (c == ' ')
             {
-                spc = (byte)((int)spc + 1);
+                spc = (spc + 1);
             }
         }
         else
@@ -352,85 +380,85 @@ Board::Board(string fen)
             }
             else if (c == ' ')
             {
-                spacers = (byte)((int)spacers + 1);
+                spacers = (spacers + 1);
             }
-            else if (c == '1' && spacers == (byte)4)
+            else if (c == '1' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 1);
+                HalfMoveClock = ((HalfMoveClock * 10) + 1);
             }
-            else if (c == '2' && spacers == (byte)4)
+            else if (c == '2' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 2);
+                HalfMoveClock = ((HalfMoveClock * 10) + 2);
             }
-            else if (c == '3' && spacers == (byte)4)
+            else if (c == '3' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 3);
+                HalfMoveClock = ((HalfMoveClock * 10) + 3);
             }
-            else if (c == '4' && spacers == (byte)4)
+            else if (c == '4' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 4);
+                HalfMoveClock = ((HalfMoveClock * 10) + 4);
             }
-            else if (c == '5' && spacers == (byte)4)
+            else if (c == '5' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 5);
+                HalfMoveClock = ((HalfMoveClock * 10) + 5);
             }
-            else if (c == '6' && spacers == (byte)4)
+            else if (c == '6' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 6);
+                HalfMoveClock = ((HalfMoveClock * 10) + 6);
             }
-            else if (c == '7' && spacers == (byte)4)
+            else if (c == '7' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 7);
+                HalfMoveClock = ((HalfMoveClock * 10) + 7);
             }
-            else if (c == '8' && spacers == (byte)4)
+            else if (c == '8' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 8);
+                HalfMoveClock = ((HalfMoveClock * 10) + 8);
             }
-            else if (c == '9' && spacers == (byte)4)
+            else if (c == '9' && spacers == 4)
             {
-                HalfMoveClock = (byte)(((int)HalfMoveClock * 10) + 9);
+                HalfMoveClock = ((HalfMoveClock * 10) + 9);
             }
-            else if (c == '0' && spacers == (byte)5)
+            else if (c == '0' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 0);
             }
-            else if (c == '1' && spacers == (byte)5)
+            else if (c == '1' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 1);
             }
-            else if (c == '2' && spacers == (byte)5)
+            else if (c == '2' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 2);
             }
-            else if (c == '3' && spacers == (byte)5)
+            else if (c == '3' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 3);
             }
-            else if (c == '4' && spacers == (byte)5)
+            else if (c == '4' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 4);
             }
-            else if (c == '5' && spacers == (byte)5)
+            else if (c == '5' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 5);
             }
-            else if (c == '6' && spacers == (byte)5)
+            else if (c == '6' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 6);
             }
-            else if (c == '7' && spacers == (byte)5)
+            else if (c == '7' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 7);
             }
-            else if (c == '8' && spacers == (byte)5)
+            else if (c == '8' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 8);
             }
-            else if (c == '9' && spacers == (byte)5)
+            else if (c == '9' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 9);
             }
-            else if (c == '0' && spacers == (byte)5)
+            else if (c == '0' && spacers == 5)
             {
                 MoveCount = ((MoveCount * 10) + 0);
             }
@@ -443,22 +471,46 @@ Board::Board(string fen)
 
 Board::Board()
 {
-    //Squares = new Square[64];
     Score = 0;
-
-    for (int i = 0; i < 64; i++)
-    {
-        Squares[i] = Square();
-    }
 
     LastMove = MoveContent();
 
-    BlackCanCastle = true;
+    WhiteCastled = false;
+    BlackCastled = false;
     WhiteCanCastle = true;
+    BlackCanCastle = true;
 
-    //WhiteAttackBoard = new bool[64];
-    //BlackAttackBoard = new bool[64];
+    WhiteCheck = false;
+    BlackCheck = false;
+    WhiteMate = false;
+    BlackMate = false;
+    StaleMate = false;
 
+    BlackKingPosition = 0;
+    WhiteKingPosition = 0;
+
+    EnPassantColor = ChessPieceColor::White;
+    EnPassantPosition = 0;
+    EndGamePhase = false;
+
+    InsufficientMaterial = false;
+
+    WhoseMove = ChessPieceColor::White;
+
+    ZobristHash = 0;
+    HalfMoveClock = 0;
+    MoveCount = 0;  //moze 1
+    RepeatedMove = 0;
+
+    for (int i = 0; i < 64; i++) {
+        Squares[i] = Square();
+
+        WhiteAttackBoard[i] = false;
+        BlackAttackBoard[i] = false;
+
+        Squares[i].Piece1.DefendedValue = 0;
+        Squares[i].Piece1.AttackedValue = 0;
+    }
 }
 
 bool Board::isEmpty() {
@@ -559,22 +611,22 @@ Board::Board(const Board &board)
     //private methods
 
     //private:
-bool Board::PromotePawns(Board board, Piece piece, byte dstPosition, ChessPieceType promoteToPiece)
+bool Board::PromotePawns(Board board, Piece piece, char dstPosition, ChessPieceType promoteToPiece)
 {
     if (piece.PieceType == ChessPieceType::Pawn)
     {
-        if (dstPosition < (byte)8)
+        if (dstPosition < 8)
         {
-            board.Squares[(short)dstPosition].Piece1.PieceType = promoteToPiece;
-            board.Squares[(short)dstPosition].Piece1.PieceValue = piece.CalculatePieceValue(promoteToPiece);
-            board.Squares[(short)dstPosition].Piece1.PieceActionValue = piece.CalculatePieceActionValue(promoteToPiece);
+            board.Squares[dstPosition].Piece1.PieceType = promoteToPiece;
+            board.Squares[dstPosition].Piece1.PieceValue = piece.CalculatePieceValue(promoteToPiece);
+            board.Squares[dstPosition].Piece1.PieceActionValue = piece.CalculatePieceActionValue(promoteToPiece);
             return true;
         }
-        if (dstPosition > (byte)55)
+        if (dstPosition > 55)
         {
-            board.Squares[(short)dstPosition].Piece1.PieceType = promoteToPiece;
-            board.Squares[(short)dstPosition].Piece1.PieceValue = piece.CalculatePieceValue(promoteToPiece);
-            board.Squares[(short)dstPosition].Piece1.PieceActionValue = piece.CalculatePieceActionValue(promoteToPiece);
+            board.Squares[dstPosition].Piece1.PieceType = promoteToPiece;
+            board.Squares[dstPosition].Piece1.PieceValue = piece.CalculatePieceValue(promoteToPiece);
+            board.Squares[dstPosition].Piece1.PieceActionValue = piece.CalculatePieceActionValue(promoteToPiece);
             return true;
         }
     }
@@ -582,25 +634,25 @@ bool Board::PromotePawns(Board board, Piece piece, byte dstPosition, ChessPieceT
     return false;
 }
 
-void Board::RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, byte srcPosition, byte dstPosition)
+void Board::RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, char srcPosition, char dstPosition)
 {
     //Record En Passant if Pawn Moving
     if (pcType == ChessPieceType::Pawn)
     {
         //Reset HalfMoveClockCount if pawn moved
-        board.HalfMoveClock = (byte)0;
+        board.HalfMoveClock = 0;
 
-        int difference = (int)srcPosition - (int)dstPosition;
+        int difference = srcPosition - dstPosition;
 
         if (difference == 16 || difference == -16)
         {
-            board.EnPassantPosition = (byte)((int)dstPosition + (difference / 2));
+            board.EnPassantPosition = (dstPosition + (difference / 2));
             board.EnPassantColor = pcColor;
         }
     }
 }
 
-bool Board::SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, ChessPieceColor pcColor)
+bool Board::SetEnpassantMove(Board board, char srcPosition, char dstPosition, ChessPieceColor pcColor)
 {
     if (board.EnPassantPosition != dstPosition)
     {
@@ -612,7 +664,7 @@ bool Board::SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, Ch
         return false;
     }
 
-    if (board.Squares[(short)srcPosition].Piece1.PieceType != ChessPieceType::Pawn)
+    if (board.Squares[srcPosition].Piece1.PieceType != ChessPieceType::Pawn)
     {
         return false;
     }
@@ -624,22 +676,22 @@ bool Board::SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, Ch
         pieceLocationOffset = -8;
     }
 
-    dstPosition = (byte)((int)dstPosition + pieceLocationOffset);
+    dstPosition = (dstPosition + pieceLocationOffset);
 
-    Square sqr = board.Squares[(short)dstPosition];
+    Square sqr = board.Squares[dstPosition];
 
     board.LastMove.TakenPiece = PieceTaken(sqr.Piece1.PieceColor, sqr.Piece1.PieceType, sqr.Piece1.Moved, dstPosition);
 
-    board.Squares[(short)dstPosition].Piece1.PieceType = ChessPieceType::None;
+    board.Squares[dstPosition].Piece1.PieceType = ChessPieceType::None;
 
     //Reset HalfMoveClockCount if capture
-    board.HalfMoveClock = (byte)0;
+    board.HalfMoveClock = 0;
 
     return true;
 
 }
 
-void Board::KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosition)
+void Board::KingCastle(Board board, Piece piece, char srcPosition, char dstPosition)
 {
     if (piece.PieceType != ChessPieceType::King)
     {
@@ -647,10 +699,10 @@ void Board::KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosit
     }
 
     //Lets see if this is a casteling move.
-    if (piece.PieceColor == ChessPieceColor::White && srcPosition == (byte)60)
+    if (piece.PieceColor == ChessPieceColor::White && srcPosition == 60)
     {
         //Castle Right
-        if (dstPosition == (byte)62)
+        if (dstPosition == 62)
         {
             //Ok we are casteling we need to move the Rook
             if (board.Squares[63].Piece1.PieceType != ChessPieceType::None)
@@ -658,13 +710,13 @@ void Board::KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosit
                 board.Squares[61].Piece1 = board.Squares[63].Piece1;
                 board.Squares[63].Piece1.PieceType = ChessPieceType::None;
                 board.WhiteCastled = true;
-                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[61].Piece1.PieceColor, board.Squares[61].Piece1.PieceType, board.Squares[61].Piece1.Moved, (byte)63, (byte)61);
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[61].Piece1.PieceColor, board.Squares[61].Piece1.PieceType, board.Squares[61].Piece1.Moved, 63, 61);
                 board.Squares[61].Piece1.Moved = true;
                 return;
             }
         }
         //Castle Left
-        else if (dstPosition == (byte)58)
+        else if (dstPosition == 58)
         {
             //Ok we are casteling we need to move the Rook
             if (board.Squares[56].Piece1.PieceType != ChessPieceType::None)
@@ -672,15 +724,15 @@ void Board::KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosit
                 board.Squares[59].Piece1 = board.Squares[56].Piece1;
                 board.Squares[56].Piece1.PieceType = ChessPieceType::None;
                 board.WhiteCastled = true;
-                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[59].Piece1.PieceColor, board.Squares[59].Piece1.PieceType, board.Squares[59].Piece1.Moved, (byte)56, (byte)59);
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[59].Piece1.PieceColor, board.Squares[59].Piece1.PieceType, board.Squares[59].Piece1.Moved, 56, 59);
                 board.Squares[59].Piece1.Moved = true;
                 return;
             }
         }
     }
-    else if (piece.PieceColor == ChessPieceColor::Black && srcPosition == (byte)4)
+    else if (piece.PieceColor == ChessPieceColor::Black && srcPosition == 4)
     {
-        if (dstPosition == (byte)6)
+        if (dstPosition == 6)
         {
             //Ok we are casteling we need to move the Rook
             if (board.Squares[7].Piece1.PieceType != ChessPieceType::None)
@@ -688,13 +740,13 @@ void Board::KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosit
                 board.Squares[5].Piece1 = board.Squares[7].Piece1;
                 board.Squares[7].Piece1.PieceType = ChessPieceType::None;
                 board.BlackCastled = true;
-                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[5].Piece1.PieceColor, board.Squares[5].Piece1.PieceType, board.Squares[5].Piece1.Moved, (byte)7, (byte)5);
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[5].Piece1.PieceColor, board.Squares[5].Piece1.PieceType, board.Squares[5].Piece1.Moved, 7, 5);
                 board.Squares[5].Piece1.Moved = true;
                 return;
             }
         }
         //Castle Left
-    else if (dstPosition == (byte)2)
+    else if (dstPosition == 2)
     {
             //Ok we are casteling we need to move the Rook
             if (board.Squares[0].Piece1.PieceType != ChessPieceType::None)
@@ -702,7 +754,7 @@ void Board::KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosit
                 board.Squares[3].Piece1 = board.Squares[0].Piece1;
                 board.Squares[0].Piece1.PieceType = ChessPieceType::None;
                 board.BlackCastled = true;
-                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[3].Piece1.PieceColor, board.Squares[3].Piece1.PieceType, board.Squares[3].Piece1.Moved, (byte)0, (byte)3);
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[3].Piece1.PieceColor, board.Squares[3].Piece1.PieceType, board.Squares[3].Piece1.Moved, 0, 3);
                 board.Squares[3].Piece1.Moved = true;
                 return;
             }
@@ -744,9 +796,9 @@ Board Board::FastCopy()
     return clonedBoard;
 }
 
-MoveContent Board::MovePiece(Board& board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece)
+MoveContent Board::MovePiece(Board& board, char srcPosition, char dstPosition, ChessPieceType promoteToPiece)
 {
-    Piece piece = board.Squares[(short)srcPosition].Piece1;
+    Piece piece = board.Squares[srcPosition].Piece1;
 
     //Record my last move
     board.LastMove = MoveContent();
@@ -758,23 +810,23 @@ MoveContent Board::MovePiece(Board& board, byte srcPosition, byte dstPosition, C
         board.MoveCount++;
     }
     //Add One to HalfMoveClockCount to check for 50 move limit.
-    board.HalfMoveClock = (byte)((int)board.HalfMoveClock+1);
+    board.HalfMoveClock = (board.HalfMoveClock+1);
 
     //En Passant
-    if (board.EnPassantPosition > (byte)0)
+    if (board.EnPassantPosition > 0)
     {
         board.LastMove.EnPassantOccured = SetEnpassantMove(board, srcPosition, dstPosition, piece.PieceColor);
     }
 
     if (!board.LastMove.EnPassantOccured)
     {
-        Square sqr = board.Squares[(short)dstPosition];
+        Square sqr = board.Squares[dstPosition];
 
         if (sqr.Piece1.PieceType != ChessPieceType::None)
         {
             board.LastMove.TakenPiece = PieceTaken(sqr.Piece1.PieceColor, sqr.Piece1.PieceType,
                                                         sqr.Piece1.Moved, dstPosition);
-            board.HalfMoveClock = (byte)0;
+            board.HalfMoveClock = 0;
         }
         else
         {
@@ -787,21 +839,21 @@ MoveContent Board::MovePiece(Board& board, byte srcPosition, byte dstPosition, C
     board.LastMove.MovingPiecePrimary = PieceMoving(piece.PieceColor, piece.PieceType, piece.Moved, srcPosition, dstPosition);
 
     //Delete the piece in its source position
-    //cout << "piece type przed bledem " << board.Squares[(short)srcPosition].Piece1.PieceType << " index " << (short)srcPosition << endl;
-    board.Squares[(short)srcPosition].Piece1.PieceType = ChessPieceType::None;
+    //cout << "piece type przed bledem " << board.Squares[srcPosition].Piece1.PieceType << " index " << srcPosition << endl;
+    board.Squares[srcPosition].Piece1.PieceType = ChessPieceType::None;
 
     //Add the piece to its new position
     piece.Moved = true;
     piece.Selected = false;
-    board.Squares[(short)dstPosition].Piece1 = piece;
+    board.Squares[dstPosition].Piece1 = piece;
 
     //Reset EnPassantPosition
-    board.EnPassantPosition = (byte)0;
+    board.EnPassantPosition = 0;
 
     //Record En Passant if Pawn Moving
     if (piece.PieceType == ChessPieceType::Pawn)
     {
-        board.HalfMoveClock = (byte)0;
+        board.HalfMoveClock = 0;
         RecordEnPassant(piece.PieceColor, piece.PieceType, board, srcPosition, dstPosition);
     }
 
@@ -819,7 +871,7 @@ MoveContent Board::MovePiece(Board& board, byte srcPosition, byte dstPosition, C
         board.LastMove.PawnPromotedTo = ChessPieceType::None;
     }
 
-    if (board.HalfMoveClock >= (byte)100)
+    if (board.HalfMoveClock >= 100)
     {
         board.StaleMate = true;
     }
@@ -828,25 +880,25 @@ MoveContent Board::MovePiece(Board& board, byte srcPosition, byte dstPosition, C
 }
 
 //private:
-string Board::GetColumnFromByte(byte column)
+string Board::GetColumnFromByte(char column)
 {
     switch (column)
     {
-        case (byte)0:
+        case 0:
             return "a";
-        case (byte)1:
+        case 1:
             return "b";
-        case (byte)2:
+        case 2:
             return "c";
-        case (byte)3:
+        case 3:
             return "d";
-        case (byte)4:
+        case 4:
             return "e";
-        case (byte)5:
+        case 5:
             return "f";
-        case (byte)6:
+        case 6:
             return "g";
-        case (byte)7:
+        case 7:
             return "h";
         default:
             return "a";
@@ -865,23 +917,23 @@ bool Board::isSlash(char c)
 string Board::Fen(bool boardOnly, Board& board)
 {
     string output = "";
-    byte blankSquares = (byte)0;
+    char blankSquares = 0;
 
     for (int x = 0; x < 64; x++)
     {
-        byte index = (byte)x;
-        //cout << "figura" << board.Squares[(short)index].Piece1.PieceType << endl;
+        char index = x;
+        //cout << "figura" << board.Squares[index].Piece1.PieceType << endl;
 
-        if (board.Squares[(short)index].Piece1.PieceType != ChessPieceType::None)
+        if (board.Squares[index].Piece1.PieceType != ChessPieceType::None)
         {
-            if (blankSquares > (byte)0)
+            if (blankSquares > 0)
             {
-                output += std::to_string((int)blankSquares);
-                blankSquares = (byte)0;
+                output += std::to_string(blankSquares);
+                blankSquares = 0;
             }
-            if (board.Squares[(short)index].Piece1.PieceColor == ChessPieceColor::Black)
+            if (board.Squares[index].Piece1.PieceColor == ChessPieceColor::Black)
             {
-                string p = Piece::GetPieceTypeShort(board.Squares[(short)index].Piece1.PieceType);
+                string p = Piece::GetPieceTypeShort(board.Squares[index].Piece1.PieceType);
                 for_each(p.begin(), p.end(), [](char& c) {
                     c = ::tolower(c);
                 });
@@ -889,21 +941,21 @@ string Board::Fen(bool boardOnly, Board& board)
             }
             else
             {
-                output += Piece::GetPieceTypeShort(board.Squares[(short)index].Piece1.PieceType);
+                output += Piece::GetPieceTypeShort(board.Squares[index].Piece1.PieceType);
             }
         }
         else
         {
-            blankSquares = (byte)((int)blankSquares + 1);
+            blankSquares = (blankSquares + 1);
         }
 
         if (x % 8 == 7)
         {
-            if (blankSquares > (byte)0)
+            if (blankSquares > 0)
             {
-                output += std::to_string((int)blankSquares);
+                output += std::to_string(blankSquares);
                 output += "/";
-                blankSquares = (byte)0;
+                blankSquares = 0;
             }
             else
             {
@@ -989,9 +1041,9 @@ string Board::Fen(bool boardOnly, Board& board)
     }
     output += castle;
 
-    if (board.EnPassantPosition != (byte)0)
+    if (board.EnPassantPosition != 0)
     {
-        output += " " + Board::GetColumnFromByte((byte)((int)board.EnPassantPosition % 8)) + "" + to_string((8 - ((int)board.EnPassantPosition / 8))) + " ";
+        output += " " + Board::GetColumnFromByte((board.EnPassantPosition % 8)) + "" + to_string((8 - (board.EnPassantPosition / 8))) + " ";
     }
     else
     {
@@ -1000,10 +1052,10 @@ string Board::Fen(bool boardOnly, Board& board)
 
     if (!boardOnly)
     {
-        output += to_string((int)board.HalfMoveClock);
+        output += to_string(board.HalfMoveClock);
         output += " ";
         output += to_string(board.MoveCount);
-        cout << board.MoveCount << endl;
+        //cout << board.MoveCount << endl;
     }
     //return output.Trim();
     return trim(output);

@@ -12,14 +12,14 @@ using namespace std;
 class PieceMoving
 {
 public:
-    byte DstPosition;
+    char DstPosition;
     bool Moved;
     ChessPieceColor PieceColor;
     ChessPieceType PieceType;
-    byte SrcPosition;
+    char SrcPosition;
 
     PieceMoving(ChessPieceColor pieceColor, ChessPieceType pieceType, bool moved,
-        byte srcPosition, byte dstPosition);
+        char srcPosition, char dstPosition);
 
     PieceMoving(const PieceMoving &pieceMoving);
 
@@ -33,10 +33,10 @@ public:
     bool Moved;
     ChessPieceColor PieceColor;
     ChessPieceType PieceType;
-    byte Position;
+    char Position;
 
     PieceTaken(ChessPieceColor pieceColor, ChessPieceType pieceType, bool moved,
-        byte position);
+        char position);
 
     PieceTaken(ChessPieceType pieceType);
     PieceTaken();
@@ -69,7 +69,7 @@ public:
 
     MoveContent(string move);
 
-    static bool ParseAN(string move, byte* sourceColumn, byte* sourceRow, byte* destinationColumn, byte* destinationRow);
+    static bool ParseAN(string move, char* sourceColumn, char* sourceRow, char* destinationColumn, char* destinationRow);
 
     string GetPureCoordinateNotation();
 
@@ -79,7 +79,7 @@ public:
     string GeneratePGNString(Square squares[]);
 
 private:
-    byte GetBoardIndex(int col, int row);
+    char GetBoardIndex(int col, int row);
 
     string GetColumnFromInt(int column);
 

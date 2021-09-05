@@ -13,7 +13,7 @@ using namespace std;
 
 
 PieceMoving::PieceMoving(ChessPieceColor pieceColor, ChessPieceType pieceType, bool moved,
-    byte srcPosition, byte dstPosition)
+    char srcPosition, char dstPosition)
 {
     PieceColor = pieceColor;
     PieceType = pieceType;
@@ -35,8 +35,8 @@ PieceMoving::PieceMoving(ChessPieceType pieceType)
 {
     PieceType = pieceType;
     PieceColor = ChessPieceColor::White;
-    SrcPosition = (byte)0;
-    DstPosition = (byte)0;
+    SrcPosition = 0;
+    DstPosition = 0;
     Moved = false;
 }
 
@@ -47,7 +47,7 @@ PieceMoving::PieceMoving() {
 
 
 PieceTaken::PieceTaken(ChessPieceColor pieceColor, ChessPieceType pieceType, bool moved,
-    byte position)
+    char position)
 {
     PieceColor = pieceColor;
     PieceType = pieceType;
@@ -59,7 +59,7 @@ PieceTaken::PieceTaken(ChessPieceType pieceType)
 {
     PieceColor = ChessPieceColor::White;
     PieceType = pieceType;
-    Position = (byte)0;
+    Position = 0;
     Moved = false;
 }
 PieceTaken::PieceTaken() {
@@ -177,22 +177,22 @@ MoveContent::MoveContent(string move) : MoveContent()
     }
 }
 
-bool MoveContent::ParseAN(string move, byte* sourceColumn, byte* sourceRow, byte* destinationColumn, byte* destinationRow)
+bool MoveContent::ParseAN(string move, char* sourceColumn, char* sourceRow, char* destinationColumn, char* destinationRow)
 {
     if (move.length() != 4) return false;
-    *sourceColumn = (byte)GetIntFromColumn(move[0]);
-    *sourceRow = (byte)(8 - stoi("" + move[1]));
-    *destinationColumn = (byte)GetIntFromColumn(move[2]);
-    *destinationRow = (byte)(8 - stoi("" + move[3]));
+    *sourceColumn = GetIntFromColumn(move[0]);
+    *sourceRow = (8 - stoi("" + move[1]));
+    *destinationColumn = GetIntFromColumn(move[2]);
+    *destinationRow = (8 - stoi("" + move[3]));
     return true;
 }
 
 string MoveContent::GetPureCoordinateNotation()
 {
-    byte srcCol = (byte)((int)MovingPiecePrimary.SrcPosition % 8);
-    byte srcRow = (byte)(8 - ((int)MovingPiecePrimary.SrcPosition / 8));
-    byte dstCol = (byte)((int)MovingPiecePrimary.DstPosition % 8);
-    byte dstRow = (byte)(8 - ((int)MovingPiecePrimary.DstPosition / 8));
+    char srcCol = (MovingPiecePrimary.SrcPosition % 8);
+    char srcRow = (8 - (MovingPiecePrimary.SrcPosition / 8));
+    char dstCol = (MovingPiecePrimary.DstPosition % 8);
+    char dstRow = (8 - (MovingPiecePrimary.DstPosition / 8));
 
     std::string result = "" + (char)('a' + (char)srcCol) + ((char)srcRow)+(char)('a' + (char)dstCol) + ((char)dstRow);
     if (PawnPromotedTo == ChessPieceType::Queen)
@@ -221,31 +221,31 @@ string MoveContent::ToString()
         return PgnMove;
     }
 
-    byte srcCol = (byte)((int)MovingPiecePrimary.SrcPosition % 8);
-    byte srcRow = (byte)(8 - ((int)MovingPiecePrimary.SrcPosition / 8));
-    byte dstCol = (byte)((int)MovingPiecePrimary.DstPosition % 8);
-    byte dstRow = (byte)(8 - ((int)MovingPiecePrimary.DstPosition / 8));
+    char srcCol = (MovingPiecePrimary.SrcPosition % 8);
+    char srcRow = (8 - (MovingPiecePrimary.SrcPosition / 8));
+    char dstCol = (MovingPiecePrimary.DstPosition % 8);
+    char dstRow = (8 - (MovingPiecePrimary.DstPosition / 8));
 
     if (MovingPieceSecondary.PieceType == ChessPieceType::Rook)
     {
         if (MovingPieceSecondary.PieceColor == ChessPieceColor::Black)
         {
-            if (MovingPieceSecondary.SrcPosition == (byte)7)
+            if (MovingPieceSecondary.SrcPosition == 7)
             {
                 PgnMove += "O-O";
             }
-            else if (MovingPieceSecondary.SrcPosition == (byte)0)
+            else if (MovingPieceSecondary.SrcPosition == 0)
             {
                 PgnMove += "O-O-O";
             }
         }
         else if (MovingPieceSecondary.PieceColor == ChessPieceColor::White)
         {
-            if (MovingPieceSecondary.SrcPosition == (byte)63)
+            if (MovingPieceSecondary.SrcPosition == 63)
             {
                 PgnMove += "O-O";
             }
-            else if (MovingPieceSecondary.SrcPosition == (byte)56)
+            else if (MovingPieceSecondary.SrcPosition == 56)
             {
                 PgnMove += "O-O-O";
             }
@@ -258,17 +258,17 @@ string MoveContent::ToString()
         switch (MovingPiecePrimary.PieceType)
         {
             case ChessPieceType::Knight:
-                PgnMove += GetColumnFromInt((int)srcCol);
+                PgnMove += GetColumnFromInt(srcCol);
                 PgnMove += (char)srcRow;
                 break;
             case ChessPieceType::Rook:
-                PgnMove += GetColumnFromInt((int)srcCol);
+                PgnMove += GetColumnFromInt(srcCol);
                 PgnMove += (char)srcRow;
                 break;
             case ChessPieceType::Pawn:
                 if (srcCol != dstCol)
                 {
-                    PgnMove += GetColumnFromInt((int)srcCol);
+                    PgnMove += GetColumnFromInt(srcCol);
                 }
                 break;
         }
@@ -278,7 +278,7 @@ string MoveContent::ToString()
             PgnMove += "x";
         }
 
-        PgnMove += GetColumnFromInt((int)dstCol);
+        PgnMove += GetColumnFromInt(dstCol);
 
         PgnMove += (char)dstRow;
 
@@ -317,16 +317,16 @@ string MoveContent::GeneratePGNString(Square squares[])
 
     bool doubleDestination = false;
 
-    byte srcCol = (byte)((int)MovingPiecePrimary.SrcPosition % 8);
-    byte srcRow = (byte)(8 - ((int)MovingPiecePrimary.SrcPosition / 8));
-    byte dstCol = (byte)((int)MovingPiecePrimary.DstPosition % 8);
-    byte dstRow = (byte)(8 - ((int)MovingPiecePrimary.DstPosition / 8));
+    char srcCol = (MovingPiecePrimary.SrcPosition % 8);
+    char srcRow = (8 - (MovingPiecePrimary.SrcPosition / 8));
+    char dstCol = (MovingPiecePrimary.DstPosition % 8);
+    char dstRow = (8 - (MovingPiecePrimary.DstPosition / 8));
 
     PgnMove = "";
 
     for (int x = 0; x < 64; x++)
     {
-        if ((byte)x == MovingPiecePrimary.DstPosition)
+        if (x == MovingPiecePrimary.DstPosition)
             continue;
 
         //Square square = board.Squares[x];
@@ -340,14 +340,14 @@ string MoveContent::GeneratePGNString(Square squares[])
         {
             if (square.Piece1.PieceColor == MovingPiecePrimary.PieceColor)
             {
-                for(byte &move : square.Piece1.ValidMoves)
+                for(char&move : square.Piece1.ValidMoves)
                 {
                     if (move == MovingPiecePrimary.DstPosition)
                     {
                         doubleDestination = true;
 
-                        byte col = (byte)(x % 8);
-                        byte row = (byte)(8 - (x / 8));
+                        char col = (x % 8);
+                        char row = (8 - (x / 8));
 
                         if (col == srcCol)
                         {
@@ -373,22 +373,22 @@ string MoveContent::GeneratePGNString(Square squares[])
     {
         if (MovingPieceSecondary.PieceColor == ChessPieceColor::Black)
         {
-            if (MovingPieceSecondary.SrcPosition == (byte)7)
+            if (MovingPieceSecondary.SrcPosition == 7)
             {
                 PgnMove += "O-O";
             }
-            else if (MovingPieceSecondary.SrcPosition == (byte)0)
+            else if (MovingPieceSecondary.SrcPosition == 0)
             {
                 PgnMove += "O-O-O";
             }
         }
         else if (MovingPieceSecondary.PieceColor == ChessPieceColor::White)
         {
-            if (MovingPieceSecondary.SrcPosition == (byte)63)
+            if (MovingPieceSecondary.SrcPosition == 63)
             {
                 PgnMove += "O-O";
             }
-            else if (MovingPieceSecondary.SrcPosition == (byte)56)
+            else if (MovingPieceSecondary.SrcPosition == 56)
             {
                 PgnMove += "O-O-O";
             }
@@ -406,13 +406,13 @@ string MoveContent::GeneratePGNString(Square squares[])
                     {
                         if (!doubleColumn)
                         {
-                            PgnMove += GetColumnFromInt((int)srcCol);
+                            PgnMove += GetColumnFromInt(srcCol);
                         }
                         else
                         {
                             if (doubleRow)
                             {
-                                PgnMove += GetColumnFromInt((int)srcCol);
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
 
                             PgnMove += (char)srcRow;
@@ -426,13 +426,13 @@ string MoveContent::GeneratePGNString(Square squares[])
                     {
                         if (!doubleColumn)
                         {
-                            PgnMove += GetColumnFromInt((int)srcCol);
+                            PgnMove += GetColumnFromInt(srcCol);
                         }
                         else
                         {
                             if (doubleRow)
                             {
-                                PgnMove += GetColumnFromInt((int)srcCol);
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
 
                             PgnMove += (char)srcRow;
@@ -446,13 +446,13 @@ string MoveContent::GeneratePGNString(Square squares[])
                     {
                         if (!doubleColumn)
                         {
-                            PgnMove += GetColumnFromInt((int)srcCol);
+                            PgnMove += GetColumnFromInt(srcCol);
                         }
                         else
                         {
                             if (doubleRow)
                             {
-                                PgnMove += GetColumnFromInt((int)srcCol);
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
 
                             PgnMove += (char)srcRow;
@@ -466,13 +466,13 @@ string MoveContent::GeneratePGNString(Square squares[])
                     {
                         if (!doubleColumn)
                         {
-                            PgnMove += GetColumnFromInt((int)srcCol);
+                            PgnMove += GetColumnFromInt(srcCol);
                         }
                         else
                         {
                             if (doubleRow)
                             {
-                                PgnMove += GetColumnFromInt((int)srcCol);
+                                PgnMove += GetColumnFromInt(srcCol);
                             }
 
                             PgnMove += (char)srcRow;
@@ -484,11 +484,11 @@ string MoveContent::GeneratePGNString(Square squares[])
                 {
                     if (doubleDestination && srcCol != dstCol)
                     {
-                        PgnMove += GetColumnFromInt((int)srcCol);
+                        PgnMove += GetColumnFromInt(srcCol);
                     }
                     else if (TakenPiece.PieceType != ChessPieceType::None)
                     {
-                        PgnMove += GetColumnFromInt((int)srcCol);
+                        PgnMove += GetColumnFromInt(srcCol);
                     }
                     break;
                 }
@@ -500,7 +500,7 @@ string MoveContent::GeneratePGNString(Square squares[])
             PgnMove += "x";
         }
 
-        PgnMove += GetColumnFromInt((int)dstCol);
+        PgnMove += GetColumnFromInt(dstCol);
 
         PgnMove += (char)dstRow;
 
@@ -526,9 +526,9 @@ string MoveContent::GeneratePGNString(Square squares[])
 }
 
 //private:
-byte MoveContent::GetBoardIndex(int col, int row)
+char MoveContent::GetBoardIndex(int col, int row)
 {
-    return (byte)(col + (row * 8));
+    return (col + (row * 8));
 }
 
 string MoveContent::GetColumnFromInt(int column)

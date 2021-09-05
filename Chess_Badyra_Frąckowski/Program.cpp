@@ -48,6 +48,15 @@ void Program::RunEngine()
 
 			if (engine.WhoseMove() != engine.HumanPlayer)
 			{
+				cout << "move of " << engine.WhoseMove() << endl;
+
+				for (int i = 0; i < 64; i++) {
+					for (std::list<char>::iterator it = engine.ChessBoard.Squares[i].Piece1.ValidMoves.begin(); it != engine.ChessBoard.Squares[i].Piece1.ValidMoves.end(); ++it) {
+						char field = *it;
+						cout << "dozwolony ruch z pola " << i << " na pole " << (int)field << endl;
+					}
+				}
+
 				MakeEngineMove(engine);
 				//to dodalem bo chyba nigdzie nie ustawia
 				// albo i nie potrzebne (w sumie nie wiem)
@@ -270,10 +279,10 @@ void Program::RunEngine()
 				string src = move.substr(0, 2);
 				string dst = move.substr(2, 2);
 
-				byte srcCol;
-				byte srcRow;
-				byte dstRow;
-				byte dstCol;
+				char srcCol;
+				char srcRow;
+				char dstRow;
+				char dstCol;
 
 				//try
 				//{
@@ -283,14 +292,24 @@ void Program::RunEngine()
 					dstCol = GetColumn(dst);
 				//}
 				//catch (int ex)
-				if (srcCol == (byte)255 || srcRow == (byte)255 || dstRow == (byte)255 || dstCol == (byte)255)
+				if (srcCol == 255 || srcRow == 255 || dstRow == 255 || dstCol == 255)
 				{
 					//Console.WriteLine(ex.Message);
 					printf("Error");
 					continue;
 				}
 				//pomocnicze wypisanie rzedow i kolumn
-				cout << " " << (short)srcCol << " " << (short)srcRow << " " << (short)dstCol << " " << (short)dstRow << endl;
+				cout << " " << srcCol << " " << srcRow << " " << dstCol << " " << dstRow << endl;
+
+				//wypisanie mozliwych ruchow
+				//for (engine.ChessBoard.Squares[0].Piece1.ValidMoves)
+				for(int i=0; i<64; i++){
+					for (std::list<char>::iterator it = engine.ChessBoard.Squares[i].Piece1.ValidMoves.begin(); it != engine.ChessBoard.Squares[i].Piece1.ValidMoves.end(); ++it) {
+						char field = *it;
+						cout << "dozwolony ruch z pola " << i << " na pole " << (int)field << endl;
+					}
+				}
+
 				if (!engine.IsValidMove(srcCol, srcRow, dstCol, dstRow))
 				{
 					printf("Invalid Move");
@@ -367,28 +386,28 @@ void Program::MakeEngineMove(Engine engine)
 
 	string tmp = "";
 
-	byte sourceColumn = (byte)((short)lastMove.MovingPiecePrimary.SrcPosition % 8);
-	byte srcRow = (byte)(8 - ((short)lastMove.MovingPiecePrimary.SrcPosition / 8));
-	byte destinationColumn = (byte)((short)lastMove.MovingPiecePrimary.DstPosition % 8);
-	byte destinationRow = (byte)(8 - ((short)lastMove.MovingPiecePrimary.DstPosition / 8));
+	char sourceColumn = lastMove.MovingPiecePrimary.SrcPosition % 8;
+	char srcRow = 8 - (lastMove.MovingPiecePrimary.SrcPosition / 8);
+	char destinationColumn = lastMove.MovingPiecePrimary.DstPosition % 8;
+	char destinationRow = 8 - (lastMove.MovingPiecePrimary.DstPosition / 8);
 
 	tmp += GetPgnMove(lastMove.MovingPiecePrimary.PieceType);
 
 	if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType::Knight)
 	{
-		tmp += GetColumnFromInt((int)sourceColumn + 1);
+		tmp += GetColumnFromInt(sourceColumn + 1);
 		tmp += (char)srcRow;
 	}
 	else if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType::Rook)
 	{
-		tmp += GetColumnFromInt((int)sourceColumn + 1);
+		tmp += GetColumnFromInt(sourceColumn + 1);
 		tmp += (char)srcRow;
 	}
 	else if (lastMove.MovingPiecePrimary.PieceType == ChessPieceType::Pawn)
 	{
 		if (sourceColumn != destinationColumn)
 		{
-			tmp += GetColumnFromInt((int)sourceColumn + 1);
+			tmp += GetColumnFromInt(sourceColumn + 1);
 		}
 	}
 
@@ -397,9 +416,9 @@ void Program::MakeEngineMove(Engine engine)
 		tmp += "x";
 	}
 
-	tmp += GetColumnFromInt((int)destinationColumn + 1);
+	tmp += GetColumnFromInt(destinationColumn + 1);
 
-	tmp += (int)destinationRow;
+	tmp += destinationRow;
 
 	if (lastMove.PawnPromotedTo == ChessPieceType::Queen)
 	{
@@ -513,7 +532,7 @@ string Program::GetPgnMove(ChessPieceType pieceType)
 	return move;
 }
 
-byte Program::GetRow(string move)
+char Program::GetRow(string move)
 {
 	if (move != "")
 	{
@@ -523,15 +542,15 @@ byte Program::GetRow(string move)
 			//transform((move.substr(1, 1)).begin(), (move.substr(1, 1)).end(), (move.substr(1, 1)).begin(), [](unsigned char c) { return tolower(c); });
 			row = tolower(move[1]);
 			//cout << row << endl;
-			return (byte)(8 - stoi(row));
-			//return (byte)(stoi(row));
+			return (8 - stoi(row));
+			//return (stoi(row));
 		}
 	}
 
-	return (byte)255;
+	return 255;
 }
 
-byte Program::GetColumn(string move)
+char Program::GetColumn(string move)
 {
 	if (move != "")
 	{
@@ -545,44 +564,44 @@ byte Program::GetColumn(string move)
 			//{
 			if(col == "a")
 			{
-				return (byte)0;
+				return 0;
 			}
 			else if (col == "b")
 			{
-				return (byte)1;
+				return 1;
 			}
 			else if (col == "c")
 			{
-				return (byte)2;
+				return 2;
 			}
 			else if (col == "d")
 			{
-				return (byte)3;
+				return 3;
 			}
 			else if (col == "e")
 			{
-				return (byte)4;
+				return 4;
 			}
 			else if (col == "f")
 			{
-				return (byte)5;
+				return 5;
 			}
 			else if (col == "g")
 			{
-				return (byte)6;
+				return 6;
 			}
 			else if (col == "h")
 			{
-				return (byte)7;
+				return 7;
 			}
 			else {
-				return (byte)255;
+				return 255;
 			}
 			//}
 		}
 	}
 
-	return (byte)255;
+	return 255;
 }
 
 void Program::DrawBoard(Engine engine)
@@ -598,8 +617,8 @@ void Program::DrawBoard(Engine engine)
 			printf("%i", 8 - (i / 8));
 		}
 
-		ChessPieceType PieceType = engine.GetPieceTypeAt((byte)i);
-		ChessPieceColor PieceColor = engine.GetPieceColorAt((byte)i);
+		ChessPieceType PieceType = engine.GetPieceTypeAt(i);
+		ChessPieceColor PieceColor = engine.GetPieceColorAt(i);
 		string str;
 
 		switch (PieceType)

@@ -12,6 +12,7 @@
 //#include "MoveContent.h"
 //#include "Piece.h"
 #include "Evaluations.h"
+#include "Evaluations2.h"
 //#include "Square.h"
 #include "ResultBoards.h"
 #include "PieceValidMoves.h"

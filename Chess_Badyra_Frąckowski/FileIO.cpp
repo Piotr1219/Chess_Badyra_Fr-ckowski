@@ -14,8 +14,8 @@
 
 using namespace std;
 
-/*
-void FileIO::SaveCurrentGameMove(Board currentBoard, Board previousBoard, list<OpeningMove> gameBook, MoveContent bestMove)
+
+void SaveCurrentGameMove(Board& currentBoard, Board& previousBoard, list<OpeningMove>& gameBook, MoveContent bestMove)
 {
     try
     {
@@ -41,8 +41,8 @@ void FileIO::SaveCurrentGameMove(Board currentBoard, Board previousBoard, list<O
 
             if ((short)previousBoard.RepeatedMove < repeatedMoves)
             {
-                previousBoard.RepeatedMove = (byte)repeatedMoves;
-                currentBoard.RepeatedMove = (byte)repeatedMoves;
+                previousBoard.RepeatedMove = repeatedMoves;
+                currentBoard.RepeatedMove = repeatedMoves;
             }
         }
         if ((short)currentBoard.RepeatedMove >= 3)
@@ -58,6 +58,7 @@ void FileIO::SaveCurrentGameMove(Board currentBoard, Board previousBoard, list<O
     return;
 }
 
+/*
 bool FileIO::SaveGame(string filePath, Board chessBoard, ChessPieceColor whoseMove, list<MoveContent> moveHistory)
 {
     if (filePath == "")

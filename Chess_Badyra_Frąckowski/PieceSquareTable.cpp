@@ -17,7 +17,7 @@ using namespace std;
 
 int PieceSquareTable::EvaluatePiecePosition(ChessPieceType PieceType,
                                             ChessPieceColor PieceColor,
-                                            byte position, bool endGame)
+                                            char position, bool endGame)
 {
     switch (PieceColor)
     {
@@ -26,74 +26,74 @@ int PieceSquareTable::EvaluatePiecePosition(ChessPieceType PieceType,
             {
                 if (endGame)
                 {
-                    return PawnTableEndGame[(short)position];
+                    return PawnTableEndGame[position];
                 }
 
-                return PawnTable[(short)position];
+                return PawnTable[position];
             }
             if (PieceType == ChessPieceType::Knight)
             {
-                return KnightTable[(short)position];
+                return KnightTable[position];
             }
             if (PieceType == ChessPieceType::Bishop)
             {
-                return BishopTable[(short)position];
+                return BishopTable[position];
             }
             if (PieceType == ChessPieceType::Rook)
             {
-                return RookTable[(short)position];
+                return RookTable[position];
             }
             if (PieceType == ChessPieceType::Queen)
             {
-                return QueenTable[(short)position];
+                return QueenTable[position];
             }
             if (PieceType == ChessPieceType::King)
             {
                 if (endGame)
                 {
-                    return KingEndGameTable[(short)position];
+                    return KingEndGameTable[position];
                 }
 
-                return KingMiddleGameTable[(short)position];
+                return KingMiddleGameTable[position];
             }
             break;
     case ChessPieceColor::Black:
 
-            byte index = (byte)((((short)position + 56)) - (((short)position / 8) * 16));
+            char index = (((position + 56)) - ((position / 8) * 16));
 
             if (PieceType == ChessPieceType::Pawn)
             {
                 if (endGame)
                 {
-                    return PawnTableEndGame[(short)index];
+                    return PawnTableEndGame[index];
                 }
 
-                return PawnTable[(short)index];
+                return PawnTable[index];
             }
             if (PieceType == ChessPieceType::Knight)
             {
-                return KnightTable[(short)index];
+                return KnightTable[index];
             }
             if (PieceType == ChessPieceType::Bishop)
             {
-                return BishopTable[(short)index];
+                return BishopTable[index];
             }
             if (PieceType == ChessPieceType::Rook)
             {
-                return RookTable[(short)index];
+                return RookTable[index];
             }
             if (PieceType == ChessPieceType::Queen)
             {
-                return QueenTable[(short)index];
+                return QueenTable[index];
             }
             if (PieceType == ChessPieceType::King)
             {
                 if (endGame)
                 {
-                    return KingEndGameTable[(short)index];
+                    return KingEndGameTable[index];
                 }
 
-                return KingMiddleGameTable[(short)index];
+                return KingMiddleGameTable[index];
             }
             break;
     }
@@ -103,24 +103,24 @@ int PieceSquareTable::EvaluatePiecePosition(ChessPieceType PieceType,
 
 
 
-int PieceSquareTable::EvaluatePawnWhitePosition(byte position, bool endGame)
+int PieceSquareTable::EvaluatePawnWhitePosition(char position, bool endGame)
 {
     if (endGame)
     {
-        return PawnTableEndGame[(short)position];
+        return PawnTableEndGame[position];
     }
 
-    return PawnTable[(short)position];
+    return PawnTable[position];
 }
 
-int PieceSquareTable::EvaluatePawnBlackPosition(byte position, bool endGame)
+int PieceSquareTable::EvaluatePawnBlackPosition(char position, bool endGame)
 {
-    byte index = (byte)((((short)position + 56)) - (((short)position / 8) * 16));
+    char index = (((position + 56)) - ((position / 8) * 16));
 
     if (endGame)
     {
-        return PawnTableEndGame[(short)index];
+        return PawnTableEndGame[index];
     }
 
-    return PawnTable[(short)index];
+    return PawnTable[index];
 }

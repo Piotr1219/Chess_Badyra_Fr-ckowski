@@ -58,17 +58,17 @@ Engine Puzzle::PuzzleKnightBishopCandidate()
     //Random random = new Random(DateTime.Now.Second);
     srand(time(NULL));
 
-    byte whiteKingIndex;
-    byte blackKingIndex;
-    byte whiteKnightIndex;
-    byte whiteBishopIndex;
+    char whiteKingIndex;
+    char blackKingIndex;
+    char whiteKnightIndex;
+    char whiteBishopIndex;
 
     do
     {
-        whiteKingIndex = (byte)(rand()%64);
-        blackKingIndex = (byte)(rand() % 64);
-        whiteKnightIndex = (byte)(rand() % 64);
-        whiteBishopIndex = (byte)(rand() % 64);
+        whiteKingIndex = (rand()%64);
+        blackKingIndex = (rand() % 64);
+        whiteKnightIndex = (rand() % 64);
+        whiteBishopIndex = (rand() % 64);
     } while (
         whiteKingIndex == blackKingIndex ||
         whiteKingIndex == whiteBishopIndex ||
@@ -101,15 +101,15 @@ Engine Puzzle::PuzzleRookCandidate()
     //Random random = new Random(DateTime.Now.Second);
     srand(time(NULL));
 
-    byte whiteKingIndex;
-    byte blackKingIndex;
-    byte whiteRookIndex;
+    char whiteKingIndex;
+    char blackKingIndex;
+    char whiteRookIndex;
 
     do
     {
-        whiteKingIndex = (byte)(rand() % 64);
-        blackKingIndex = (byte)(rand() % 64);
-        whiteRookIndex = (byte)(rand() % 64);
+        whiteKingIndex = (rand() % 64);
+        blackKingIndex = (rand() % 64);
+        whiteRookIndex = (rand() % 64);
     } while (
         whiteKingIndex == blackKingIndex ||
         whiteKingIndex == whiteRookIndex ||
@@ -137,20 +137,20 @@ Engine Puzzle::PuzzleKingPawnCandidate()
     //Random random = new Random(DateTime.Now.Second);
     srand(time(NULL));
 
-    byte whiteKingIndex;
-    byte blackKingIndex;
-    byte whitePawnIndex;
+    char whiteKingIndex;
+    char blackKingIndex;
+    char whitePawnIndex;
 
     do
     {
-        whiteKingIndex = (byte)(rand() % 64);
-        blackKingIndex = (byte)(rand() % 64);
-        whitePawnIndex = (byte)(rand() % 64);
+        whiteKingIndex = (rand() % 64);
+        blackKingIndex = (rand() % 64);
+        whitePawnIndex = (rand() % 64);
     } while (
         whiteKingIndex == blackKingIndex ||
         whiteKingIndex == whitePawnIndex ||
         blackKingIndex == whiteKingIndex ||
-        (short)whitePawnIndex <= 8 || (short)whitePawnIndex >= 56 ||
+        whitePawnIndex <= 8 || whitePawnIndex >= 56 ||
         whitePawnIndex < blackKingIndex
         );
 

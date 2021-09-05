@@ -30,8 +30,8 @@ public:
     bool WhiteMate;
     bool StaleMate = false;
 
-    byte HalfMoveClock = (byte)0;
-    byte RepeatedMove = (byte)0;
+    char HalfMoveClock = 0;
+    char RepeatedMove = 0;
 
     bool BlackCastled;
     bool WhiteCastled;
@@ -43,8 +43,8 @@ public:
 
     MoveContent LastMove;
 
-    byte WhiteKingPosition;
-    byte BlackKingPosition;
+    char WhiteKingPosition;
+    char BlackKingPosition;
 
     bool BlackAttackBoard[64];
     bool WhiteAttackBoard[64];
@@ -52,7 +52,7 @@ public:
     //Who initated En Passant
     ChessPieceColor EnPassantColor;
     //Positions liable to En Passant
-    byte EnPassantPosition = (byte)0;
+    char EnPassantPosition = 0;
 
     inline static ChessPieceColor WhoseMove;
 
@@ -80,22 +80,22 @@ public:
     Board(const Board &board);
 private:
 
-    static bool PromotePawns(Board board, Piece piece, byte dstPosition, ChessPieceType promoteToPiece);
+    static bool PromotePawns(Board board, Piece piece, char dstPosition, ChessPieceType promoteToPiece);
 
-    static void RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, byte srcPosition, byte dstPosition);
+    static void RecordEnPassant(ChessPieceColor pcColor, ChessPieceType pcType, Board board, char srcPosition, char dstPosition);
 
-    static bool SetEnpassantMove(Board board, byte srcPosition, byte dstPosition, ChessPieceColor pcColor);
+    static bool SetEnpassantMove(Board board, char srcPosition, char dstPosition, ChessPieceColor pcColor);
 
-    static void KingCastle(Board board, Piece piece, byte srcPosition, byte dstPosition);
+    static void KingCastle(Board board, Piece piece, char srcPosition, char dstPosition);
 
     //Fast Copy
 public:
     Board FastCopy();
 
-    static MoveContent MovePiece(Board& board, byte srcPosition, byte dstPosition, ChessPieceType promoteToPiece);
+    static MoveContent MovePiece(Board& board, char srcPosition, char dstPosition, ChessPieceType promoteToPiece);
 
 private:
-    static string GetColumnFromByte(byte column);
+    static string GetColumnFromByte(char column);
 
 public:
     string ToString();

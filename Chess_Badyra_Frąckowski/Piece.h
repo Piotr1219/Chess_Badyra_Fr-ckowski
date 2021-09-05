@@ -55,7 +55,7 @@ class Piece
 
     bool Selected;
 
-    list<byte> ValidMoves;
+    list<char> ValidMoves;
 
     Piece();
 

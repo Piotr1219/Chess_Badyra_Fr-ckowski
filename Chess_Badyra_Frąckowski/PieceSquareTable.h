@@ -114,11 +114,11 @@ class PieceSquareTable
 {
     static int EvaluatePiecePosition(ChessPieceType PieceType,
         ChessPieceColor PieceColor,
-        byte position, bool endGame);
+        char position, bool endGame);
 
 
 
-    static int EvaluatePawnWhitePosition(byte position, bool endGame);
+    static int EvaluatePawnWhitePosition(char position, bool endGame);
 
-    static int EvaluatePawnBlackPosition(byte position, bool endGame);
+    static int EvaluatePawnBlackPosition(char position, bool endGame);
 };

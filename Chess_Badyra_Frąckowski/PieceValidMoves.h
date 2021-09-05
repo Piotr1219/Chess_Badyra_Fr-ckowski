@@ -12,16 +12,16 @@ using namespace std;
 class PieceValidMoves
 {
 public:
-    static void AnalyzeMovePawn(Board& board, byte dstPos, Piece pcMoving);
+    static void AnalyzeMovePawn(Board& board, char dstPos, Piece& pcMoving);
 
-    static bool AnalyzeMove(Board& board, byte dstPos, Piece pcMoving);
+    static bool AnalyzeMove(Board& board, char dstPos, Piece& pcMoving);
 
-    static void CheckValidMovesPawn(list<byte> moves, Piece& pcMoving, byte srcPosition,
-        Board& board, byte count);
+    static void CheckValidMovesPawn(list<char> moves, Piece& pcMoving, char srcPosition,
+        Board& board, char count);
 
-    static void GenerateValidMovesKing(Piece piece, Board& board, byte srcPosition);
+    static void GenerateValidMovesKing(Piece& piece, Board& board, char srcPosition);
 
-    static void GenerateValidMovesKingCastle(Board& board, Piece king);
+    static void GenerateValidMovesKingCastle(Board& board, Piece& king);
 
     static void GenerateValidMoves(Board& board);
 };

@@ -28,7 +28,9 @@ public:
     list<OpeningMove> UndoGameBook;
 
 //private:
-    inline static Board ChessBoard;
+    //inline static 
+    Board ChessBoard;
+
 private:
     Board PreviousChessBoard;
     Board UndoChessBoard;
@@ -70,9 +72,9 @@ public:
     //Stats
     int NodesSearched;
     int NodesQuiessence;
-    byte PlyDepthSearched;
-    byte PlyDepthReached;
-    byte RootMovesSearched;
+    char PlyDepthSearched;
+    char PlyDepthReached;
+    char RootMovesSearched;
 
     TimeSettings GameTimeSettings;
     
@@ -103,14 +105,14 @@ public:
 
     void InitiateBoard(string fen);
 
-    void SetChessPieceSelection(byte boardColumn, byte boardRow,
+    void SetChessPieceSelection(char boardColumn, char boardRow,
         bool selection);
 
     int ValidateOpeningBook();
 
     void Undo();
 
-    byte* GetEnPassantMoves();
+    char* GetEnPassantMoves();
 
     bool GetBlackMate();
 
@@ -120,47 +122,47 @@ public:
 
     bool GetWhiteCheck();
 
-    byte GetRepeatedMove();
+    char GetRepeatedMove();
 
-    byte GetHalfMoveClock();
+    char GetHalfMoveClock();
 
     list<MoveContent> GetMoveHistory();
 
-    ChessPieceType GetPieceTypeAt(byte boardColumn, byte boardRow);
+    ChessPieceType GetPieceTypeAt(char boardColumn, char boardRow);
 
-    ChessPieceType GetPieceTypeAt(byte index);
+    ChessPieceType GetPieceTypeAt(char index);
 
-    ChessPieceColor GetPieceColorAt(byte boardColumn, byte boardRow);
+    ChessPieceColor GetPieceColorAt(char boardColumn, char boardRow);
 
-    ChessPieceColor GetPieceColorAt(byte index);
+    ChessPieceColor GetPieceColorAt(char index);
 
-    bool GetChessPieceSelected(byte boardColumn, byte boardRow);
+    bool GetChessPieceSelected(char boardColumn, char boardRow);
 
     void GenerateValidMoves();
     int EvaluateBoardScore();
 
-    byte** GetValidMoves(byte boardColumn, byte boardRow);
+    char** GetValidMoves(char boardColumn, char boardRow);
 
     int GetScore();
 
-    byte FindSourcePositon(ChessPieceType chessPieceType, ChessPieceColor chessPieceColor, byte dstPosition, bool capture, int forceCol, int forceRow);
+    char FindSourcePositon(ChessPieceType chessPieceType, ChessPieceColor chessPieceColor, char dstPosition, bool capture, int forceCol, int forceRow);
 
     bool IsValidMoveAN(string move);
 
-    bool IsValidMove(byte srcPosition, byte dstPosition);
+    bool IsValidMove(char srcPosition, char dstPosition);
 
-    bool IsValidMove(byte sourceColumn, byte sourceRow, byte destinationColumn, byte destinationRow);
+    bool IsValidMove(char sourceColumn, char sourceRow, char destinationColumn, char destinationRow);
 
     bool IsGameOver();
 
     bool IsTie();
-    bool MovePiece(byte srcPosition, byte dstPosition);
+    bool MovePiece(char srcPosition, char dstPosition);
 
     bool MovePieceAN(string move);
 
-    bool MovePiece(byte sourceColumn, byte sourceRow, byte destinationColumn, byte destinationRow);
+    bool MovePiece(char sourceColumn, char sourceRow, char destinationColumn, char destinationRow);
 
-    void SetChessPiece(Piece piece, byte index);
+    void SetChessPiece(Piece piece, char index);
 
     void AiPonderMove();
 
@@ -177,7 +179,7 @@ public:
     void InitiateEngine();
     bool CheckForMate(ChessPieceColor whosTurn, Board& chessBoard);
     bool FindPlayBookMove(MoveContent* bestMove, Board& chessBoard, list<OpeningMove> openingBook);
-    byte GetBoardIndex(byte boardColumn, byte boardRow);
+    char GetBoardIndex(char boardColumn, char boardRow);
     void PieceTakenAdd(MoveContent lastMove);
 
     void PieceTakenRemove(MoveContent lastMove);

@@ -88,22 +88,22 @@ void CorrectnessTest::TestBoardOrientation()
 //[Test]
 void CorrectnessTest::TestNotation()
 {
-	byte sourceColumn = (byte)0, sourceRow = (byte)0, destinationColumn = (byte)0, destinationRow = (byte)0;
+	char sourceColumn = 0, sourceRow = 0, destinationColumn = 0, destinationRow = 0;
 
 	assert(MoveContent::ParseAN("toolong", &sourceColumn, &sourceRow, &destinationColumn, &destinationRow) == false);
 	assert(MoveContent::ParseAN("abc", &sourceColumn, &sourceRow, &destinationColumn, &destinationRow) == false);
 
 	assert(MoveContent::ParseAN("a8h1", &sourceColumn, &sourceRow, &destinationColumn, &destinationRow) == true);
-	assert((short)sourceColumn == 0);
-	assert((short)sourceRow == 0);
-	assert((short)destinationColumn == 7);
-	assert((short)destinationRow == 7);
+	assert(sourceColumn == 0);
+	assert(sourceRow == 0);
+	assert(destinationColumn == 7);
+	assert(destinationRow == 7);
 
 	assert(MoveContent::ParseAN("b3e4", &sourceColumn, &sourceRow, &destinationColumn, &destinationRow) == true);
-	assert((short)sourceColumn == 1);
-	assert((short)sourceRow == 5);
-	assert((short)destinationColumn == 4);
-	assert((short)destinationRow == 4);
+	assert(sourceColumn == 1);
+	assert(sourceRow == 5);
+	assert(destinationColumn == 4);
+	assert(destinationRow == 4);
 }
 
 //[Test]
@@ -112,31 +112,31 @@ void CorrectnessTest::TestValidMoves()
 	Engine engine = Engine("rnbqkbnr/ppppppp1/8/8/8/8/8/8 w KQkq - 0 1");
 
 	// rook
-	assert(engine.IsValidMove((byte)0, (byte)0, (byte)7, (byte)7) == false);
-	assert(engine.IsValidMove((byte)0, (byte)0, (byte)0, (byte)1) == false);
+	assert(engine.IsValidMove(0, 0, 7, 7) == false);
+	assert(engine.IsValidMove(0, 0, 0, 1) == false);
 	assert(engine.IsValidMoveAN("a8g1") == false);
 	assert(engine.IsValidMoveAN("a8a7") == false);
 
 	// pawn
-	assert(engine.IsValidMove((byte)0, (byte)1, (byte)0, (byte)2) == true);
-	assert(engine.IsValidMove((byte)0, (byte)1, (byte)0, (byte)3) == true);
-	assert(engine.IsValidMove((byte)0, (byte)1, (byte)0, (byte)4) == false);
+	assert(engine.IsValidMove(0, 1, 0, 2) == true);
+	assert(engine.IsValidMove(0, 1, 0, 3) == true);
+	assert(engine.IsValidMove(0, 1, 0, 4) == false);
 	assert(engine.IsValidMoveAN("a7a6") == true);
 	assert(engine.IsValidMoveAN("a7a5") == true);
 	assert(engine.IsValidMoveAN("a7a4") == false);
 
 	// knight
-	assert(engine.IsValidMove((byte)1, (byte)0, (byte)0, (byte)2) == true);
-	assert(engine.IsValidMove((byte)1, (byte)0, (byte)2, (byte)2) == true);
-	assert(engine.IsValidMove((byte)1, (byte)0, (byte)3, (byte)1) == false);
+	assert(engine.IsValidMove(1, 0, 0, 2) == true);
+	assert(engine.IsValidMove(1, 0, 2, 2) == true);
+	assert(engine.IsValidMove(1, 0, 3, 1) == false);
 	assert(engine.IsValidMoveAN("b8a6") == true);
 	assert(engine.IsValidMoveAN("b8c6") == true);
 	assert(engine.IsValidMoveAN("b8d7") == false);
 
 	// rook2
-	assert(engine.IsValidMove((byte)7, (byte)0, (byte)7, (byte)1) == true);
-	assert(engine.IsValidMove((byte)7, (byte)0, (byte)7, (byte)7) == true);
-	assert(engine.IsValidMove((byte)7, (byte)0, (byte)6, (byte)7) == false);
+	assert(engine.IsValidMove(7, 0, 7, 1) == true);
+	assert(engine.IsValidMove(7, 0, 7, 7) == true);
+	assert(engine.IsValidMove(7, 0, 6, 7) == false);
 	assert(engine.IsValidMoveAN("h8h7") == true);
 	assert(engine.IsValidMoveAN("h8h1") == true);
 	assert(engine.IsValidMoveAN("h8g1") == false);
@@ -489,13 +489,13 @@ ResultBoards PerformanceTest::GetPossibleBoards(ChessPieceColor movingSide, Boar
 			continue;
 
 		//For each valid move for this piece
-		for(byte dst : sqr.Piece1.ValidMoves)
+		for(char dst : sqr.Piece1.ValidMoves)
 		{
 			//We make copies of the board and move so that we can move it without effecting the parent board
 			Board board = examineBoard.FastCopy();
 
 			//Make move so we can examine it
-			Board::MovePiece(board, (byte)x, dst, ChessPieceType::Queen);
+			Board::MovePiece(board, x, dst, ChessPieceType::Queen);
 
 			//We Generate Valid Moves for Board
 			PieceValidMoves::GenerateValidMoves(board);
@@ -512,8 +512,9 @@ ResultBoards PerformanceTest::GetPossibleBoards(ChessPieceColor movingSide, Boar
 			}
 
 			//We calculate the board score
-			Evaluation eva1;
-			eva1.EvaluateBoardScore(board);
+			//Evaluation eva1;
+			//eva1.EvaluateBoardScore(board);
+			EvaluateBoardScore2(board);
 
 			//Invert Score to support Negamax
 			board.Score = SideToMoveScore(board.Score, GetOppositeColor(movingSide));

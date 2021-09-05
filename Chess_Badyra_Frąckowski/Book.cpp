@@ -13902,7 +13902,7 @@ int Book::ValidateOpeningBook(list<OpeningMove> openingBook)
 
 }
 
-bool Book::IsValidMove(byte srcPos, byte dstPos, string fen)
+bool Book::IsValidMove(char srcPos, char dstPos, string fen)
 {
     Board chessBoard = Board(fen);
     PieceValidMoves::GenerateValidMoves(chessBoard);
@@ -13913,13 +13913,13 @@ bool Book::IsValidMove(byte srcPos, byte dstPos, string fen)
         return false;
     }
 
-    if (chessBoard.Squares[(short)srcPos].Piece1.PieceType == ChessPieceType::None)
+    if (chessBoard.Squares[srcPos].Piece1.PieceType == ChessPieceType::None)
     {
         return false;
     }
 
-    //foreach(byte bs in chessBoard.Squares[srcPos].Piece.ValidMoves)
-    for (auto& bs : chessBoard.Squares[(short)srcPos].Piece1.ValidMoves)
+    //foreach(char bs in chessBoard.Squares[srcPos].Piece.ValidMoves)
+    for (auto& bs : chessBoard.Squares[srcPos].Piece1.ValidMoves)
     {
         if (bs == dstPos)
         {

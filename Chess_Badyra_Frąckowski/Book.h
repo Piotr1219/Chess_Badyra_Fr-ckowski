@@ -32,6 +32,6 @@ private:
 public:
     static int ValidateOpeningBook(list<OpeningMove> openingBook);
 
-    static bool IsValidMove(byte srcPos, byte dstPos, string fen);
+    static bool IsValidMove(char srcPos, char dstPos, string fen);
 };
 

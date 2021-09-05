@@ -21,6 +21,9 @@ Piece::Piece(const Piece &piece)
     Moved = piece.Moved;
     PieceValue = piece.PieceValue;
     PieceActionValue = piece.PieceActionValue;
+    AttackedValue = piece.AttackedValue;
+    DefendedValue = piece.DefendedValue;
+    Selected = piece.Selected;
 
     if (!piece.ValidMoves.empty())
         LastValidMoveCount = piece.ValidMoves.size();
@@ -32,6 +35,10 @@ Piece::Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor)
 {
     PieceType = chessPiece;
     PieceColor = chessPieceColor;
+    AttackedValue = 0;
+    DefendedValue = 0;
+    Moved = false;
+    Selected = false;
 
     if (PieceType == ChessPieceType::Pawn || PieceType == ChessPieceType::Knight)
     {
@@ -42,9 +49,9 @@ Piece::Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor)
         LastValidMoveCount = 0;
     }
 
-    list<byte> temp_stack;
+    list<char> temp_stack;
     ValidMoves = temp_stack;
-    ValidMoves.push_back((byte)LastValidMoveCount);
+    ValidMoves.push_back(LastValidMoveCount);
 
     PieceValue = CalculatePieceValue(PieceType);
     PieceActionValue = CalculatePieceActionValue(PieceType);

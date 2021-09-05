@@ -27,9 +27,9 @@ public:
 private:
 	string GetPgnMove(ChessPieceType pieceType);
 
-	byte GetRow(string move);
+	char GetRow(string move);
 
-	byte GetColumn(string move);
+	char GetColumn(string move);
 
 	void DrawBoard(Engine engine);
 
