@@ -47,7 +47,7 @@ void Program::RunEngine()
 				DrawBoard(engine);
 			}
 
-			if (engine.WhoseMove() != engine.HumanPlayer)
+			if (engine.ChessBoard.WhoseMove != engine.HumanPlayer)
 			{
 				std::cout << "It is a move of " << engine.WhoseMove() << endl;
 

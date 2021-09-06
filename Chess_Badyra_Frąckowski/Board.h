@@ -54,7 +54,8 @@ public:
     //Positions liable to En Passant
     char EnPassantPosition = 0;
 
-    inline static ChessPieceColor WhoseMove;
+    //inline static 
+    ChessPieceColor WhoseMove;
 
     int MoveCount = 1;
 

@@ -857,7 +857,13 @@ MoveContent Board::MovePiece(Board& board, char srcPosition, char dstPosition, C
         RecordEnPassant(piece.PieceColor, piece.PieceType, board, srcPosition, dstPosition);
     }
 
-    board.WhoseMove = board.WhoseMove == ChessPieceColor::White ? ChessPieceColor::Black : ChessPieceColor::White;
+    //board.WhoseMove = board.WhoseMove == ChessPieceColor::White ? ChessPieceColor::Black : ChessPieceColor::White;
+    if (board.WhoseMove == ChessPieceColor::White) {
+        board.WhoseMove = ChessPieceColor::Black;
+    }
+    else if (board.WhoseMove == ChessPieceColor::Black) {
+        board.WhoseMove = ChessPieceColor::White;
+    }
 
     KingCastle(board, piece, srcPosition, dstPosition);
 
