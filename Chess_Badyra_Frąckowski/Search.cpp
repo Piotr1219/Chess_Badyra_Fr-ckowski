@@ -70,7 +70,7 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
         //return succ.Positions[0].LastMove;
     }
 
-    //cout << "ilosc mozliwych pozycji " << succ.Positions.size() << endl;
+    cout << "ilosc mozliwych pozycji " << succ.Positions.size() << endl;
 
     //Can I make an instant mate?
     for (list<Board>::iterator it = succ.Positions.begin(); it != succ.Positions.end(); ++it)
@@ -101,6 +101,8 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
 
     depth = depth - 1;
 
+    cout << "Depth: " << int(depth) << endl;
+
     *plyDepthReached = ModifyDepth(depth, succ.Positions.size());
 
     //for(Board pos : succ.Positions)
@@ -114,9 +116,9 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
 
         pvChild = list<Position>();
 
-        cout << "search glebsze przegladanie" << endl;
+        //cout << "search glebsze przegladanie" << endl;
         int value = -AlphaBeta(pos, depth, -beta, -alpha, *nodesSearched, nodesQuiessence, &pvChild, false);
-        cout << "petla w pozycjach  " << value << endl;
+        //cout << "petla w pozycjach  " << value << endl;
 
         if (value >= 32767)
         {
@@ -161,6 +163,8 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
     plyDepthReached++;
     progress = 100;
 
+
+    cout << "Returning best move \n";
     return bestMove;
 }
 

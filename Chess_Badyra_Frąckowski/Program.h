@@ -19,7 +19,7 @@ class Program
 public:
 	void RunEngine();
 private:
-	void MakeEngineMove(Engine engine);
+	void MakeEngineMove(Engine &engine);
 
 public:
 	string GetColumnFromInt(int column);

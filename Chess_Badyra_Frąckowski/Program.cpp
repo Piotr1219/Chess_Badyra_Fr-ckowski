@@ -26,7 +26,7 @@ void Program::RunEngine()
 	//Engine engine = Engine();
 	Engine engine;
 	DrawBoard(engine);
-	cout << engine.FEN() << endl;
+	std::cout << engine.FEN() << endl;
 
 	printf("Chess Core\n");
 	printf("Version: 1.0.1\n");
@@ -39,6 +39,7 @@ void Program::RunEngine()
 	
 	while (true)
 	{
+		std::cout << "Start of while loop \n\n";
 		try
 		{
 			if (ShowBoard)
@@ -48,12 +49,12 @@ void Program::RunEngine()
 
 			if (engine.WhoseMove() != engine.HumanPlayer)
 			{
-				cout << "move of " << engine.WhoseMove() << endl;
+				std::cout << "It is a move of " << engine.WhoseMove() << endl;
 
 				for (int i = 0; i < 64; i++) {
 					for (std::list<char>::iterator it = engine.ChessBoard.Squares[i].Piece1.ValidMoves.begin(); it != engine.ChessBoard.Squares[i].Piece1.ValidMoves.end(); ++it) {
 						char field = *it;
-						cout << "dozwolony ruch z pola " << i << " na pole " << (int)field << endl;
+						//cout << "dozwolony ruch z pola " << i << " na pole " << (int)field << endl;
 					}
 				}
 
@@ -68,7 +69,7 @@ void Program::RunEngine()
 
 				string move;
 				//scanf_s("%s", move, 4);
-				cout << "wpisz sowj ruch:" << endl;
+				std::cout << "wpisz sowj ruch:" << endl;
 				cin >> move;
 
 				printf("wpisano: %s \n", move.c_str());
@@ -299,14 +300,14 @@ void Program::RunEngine()
 					continue;
 				}
 				//pomocnicze wypisanie rzedow i kolumn
-				cout << " " << srcCol << " " << srcRow << " " << dstCol << " " << dstRow << endl;
+				std::cout << " " << int(srcCol) << " " << int(srcRow) << " " << int(dstCol) << " " << int(dstRow) << endl;
 
 				//wypisanie mozliwych ruchow
 				//for (engine.ChessBoard.Squares[0].Piece1.ValidMoves)
 				for(int i=0; i<64; i++){
 					for (std::list<char>::iterator it = engine.ChessBoard.Squares[i].Piece1.ValidMoves.begin(); it != engine.ChessBoard.Squares[i].Piece1.ValidMoves.end(); ++it) {
 						char field = *it;
-						cout << "dozwolony ruch z pola " << i << " na pole " << (int)field << endl;
+						//cout << "dozwolony ruch z pola " << i << " na pole " << (int)field << endl;
 					}
 				}
 
@@ -318,10 +319,13 @@ void Program::RunEngine()
 
 				engine.MovePiece(srcCol, srcRow, dstCol, dstRow);
 
-				cout << "wypisanie tablicy tylko po ruchu czlowieka" << endl;
+				std::cout << "wypisanie tablicy tylko po ruchu czlowieka" << endl;
 				DrawBoard(engine);
 
 				MakeEngineMove(engine);
+
+				std::cout << "MakeEngineMove ended \n";
+				std::cout << "Position after computer move: " << engine.ChessBoard.ToString() << endl;
 
 
 				if (engine.StaleMate())
@@ -363,11 +367,16 @@ void Program::RunEngine()
 			printf("Error %i", ex);
 			return;
 		}
+
+		std::cout << "Ending whole segment of code \n";
+		ShowBoard = true;
+		//engine.HumanPlayer = 1;
+		std::cout << "Is it human move now? " << engine.HumanPlayer << endl;
 	}
 	
 }
 
-void Program::MakeEngineMove(Engine engine)
+void Program::MakeEngineMove(Engine &engine)
 {
 	//DateTime start = DateTime.Now;
 	//auto start = std::chrono::system_clock::now();
@@ -379,7 +388,7 @@ void Program::MakeEngineMove(Engine engine)
 	auto Moves = engine.GetMoveHistory();
 	list<MoveContent>::iterator it = Moves.begin();
 	//list<MoveContent>::iterator it = engine.GetMoveHistory().begin();
-	cout << "rozmiar listy " << engine.GetMoveHistory().size() << endl;
+	std::cout << "rozmiar listy " << engine.GetMoveHistory().size() << endl;
 	MoveContent lastMove = *it;
 
 	//MoveContent lastMove = engine.GetMoveHistory().ToArray()[0];
@@ -446,17 +455,17 @@ void Program::MakeEngineMove(Engine engine)
 	//TimeSpan ts = end - start;
 
 	printf("%hhx", engine.PlyDepthReached);
-	printf(" ");
+	printf("\n ");
 
-	cout << engine.ChessBoard.ToString() << endl;
-	int score = engine.GetScore();
+	std::cout << engine.ChessBoard.ToString() << endl;
+	/*int score = engine.GetScore();
 
 	if (score > 0)
 	{
 		score = score / 10;
 	}
 
-	cout << "score: " << score << " " << endl;
+	std::cout << "score: " << score << " " << endl;
 	printf(ts * 100 + " ");
 	printf(engine.NodesSearched + engine.NodesQuiessence + " ");
 	printf("%hhx", engine.PvLine());
@@ -464,6 +473,7 @@ void Program::MakeEngineMove(Engine engine)
 
 	printf("move ");
 	printf(tmp.c_str());
+	*/
 }
 
 string Program::GetColumnFromInt(int column)

@@ -1,6 +1,7 @@
 #include <string>
 #include <list>
 #include <stack>
+#include <iostream>
 //#include "Board.h"
 #include "Evaluations2.h"
 //#include "Square.h"
@@ -528,6 +529,8 @@ void EvaluateBoardScore2(Board& board)
     {
         board.Score += whitePawnCount[7];
     }
+
+    //std::cout << "Score from EvaluateBoardScore2 is : " << board.Score << std::endl;
 }
 
 int CheckPawnWall2(Board board, int pawnPos, int kingPos)

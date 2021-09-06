@@ -2,6 +2,7 @@
 #include <list>
 #include <stack>
 #include <iostream>
+#include <typeinfo>
 #include "Engine.h"
 //#include "Book.h"
 //#include "Evaluations.h"
@@ -892,17 +893,19 @@ void Engine::AiPonderMove()
         if (FindPlayBookMove(&bestMove, ChessBoard, CurrentGameBook) == false ||
             ChessBoard.HalfMoveClock > 90 || ChessBoard.RepeatedMove >= 2)
         {
+            cout << "PlyDepthSearched jest typu: " << typeid(PlyDepthSearched).name() <<", jej wartosc: " << int(PlyDepthSearched) << endl;
             bestMove = Search::IterativeSearch(ChessBoard, PlyDepthSearched, &NodesSearched, &NodesQuiessence, pvLine, &PlyDepthReached, &RootMovesSearched, CurrentGameBook);
             //cout << "przed ruchem komputera " << bestMove.MovingPiecePrimary.SrcPosition << "   " << bestMove.MovingPiecePrimary.DstPosition << endl;
         }
     }
 
     //Make the move 
+    cout << "Udalo sie wyjsc z petli wyszukiwania ruchu\n";
     PreviousChessBoard = Board(ChessBoard);
 
     RootMovesSearched = resultBoards.Positions.size();
 
-    //cout << "ruch komputera " << bestMove.MovingPiecePrimary.SrcPosition << "   " << bestMove.MovingPiecePrimary.DstPosition << endl;
+    cout << "ruch komputera " << int(bestMove.MovingPiecePrimary.SrcPosition) << "   " << int(bestMove.MovingPiecePrimary.DstPosition) << endl;
     Board::MovePiece(ChessBoard, bestMove.MovingPiecePrimary.SrcPosition, bestMove.MovingPiecePrimary.DstPosition, ChessPieceType::Queen);
 
     ChessBoard.LastMove.GeneratePGNString(ChessBoard.Squares);
@@ -920,14 +923,16 @@ void Engine::AiPonderMove()
         sqr.Piece1.AttackedValue = 0;
     }
 
-    PieceValidMoves::GenerateValidMoves(ChessBoard);
+    //PieceValidMoves::GenerateValidMoves(ChessBoard);
     //Evaluation eva1;
     //eva1.EvaluateBoardScore(ChessBoard);
     EvaluateBoardScore2(ChessBoard);
 
     PieceTakenAdd(ChessBoard.LastMove);
 
+    cout << "MoveHistory size before adding move: " << MoveHistory.size() << endl;
     MoveHistory.push_back(ChessBoard.LastMove);
+    cout << "MoveHistory size after adding move: " << MoveHistory.size() << endl;
 
     if (CheckForMate(WhoseMove(), ChessBoard))
     {
@@ -947,6 +952,7 @@ void Engine::AiPonderMove()
     }
 
     Thinking = false;
+    cout << "Koniec funckji AoPonderMove\n";
 }
 
 //region test
