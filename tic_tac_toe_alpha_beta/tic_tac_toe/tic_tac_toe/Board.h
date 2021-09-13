@@ -21,6 +21,7 @@ public:
 	void HumanMove(Board& board);
 	int* GenerateValidMoves(Board board);
 	char CountWhoseMove(Board board);
+	int CountMoves(int* squares, int size);
 
 private:
 

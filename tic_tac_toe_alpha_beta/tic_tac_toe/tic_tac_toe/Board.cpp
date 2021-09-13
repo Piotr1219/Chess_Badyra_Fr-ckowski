@@ -75,6 +75,8 @@ bool Board::IsGameFinished(Board board) {
 		}
 	}
 
+	test_sum_diagonal = 0;
+
 	for (int i = 0; i < board.size; ++i) {
 		if (board.squares[i * board.size + (board.size - 1 - i)] == 1 and test_sum_diagonal >= 0) {
 			++test_sum_diagonal;
@@ -199,4 +201,14 @@ char Board::CountWhoseMove(Board board) {
 		}
 		return 'x';
 	}
+}
+
+int Board::CountMoves(int* squares, int size) {
+	int counter = 0;
+	for (int i = 0; i < size * size; ++i) {
+		if (squares[i] != 0) {
+			++counter;
+		}
+	}
+	return counter;
 }
