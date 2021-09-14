@@ -28,7 +28,7 @@ int main() {
 		root->squares = new int[board.size * board.size];
 		std::copy(board.squares, board.squares + 9, root->squares);
 		root->score = 0;
-		root->parent = 0;
+		root->parent = NULL;
 
 		if (board.IsGameFinished(board)) {
 			PrintBoard(board.squares, board.size);
@@ -38,8 +38,10 @@ int main() {
 		else {
 			GeneratePositions(board.squares, depth, board.size, root);
 
-			int val = SearchBestMove(root);
+			//int val = SearchBestMove(root);
 			board.ComputerMove(board);
+			int delete_depth = 0;
+			DeleteTree(root, delete_depth);
 		}
 		PrintBoard(board.squares, board.size);
 		++depth;

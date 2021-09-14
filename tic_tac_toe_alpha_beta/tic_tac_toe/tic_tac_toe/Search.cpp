@@ -41,11 +41,16 @@ void GeneratePositions(int* board, int &depth, int board_size, Node* &root) {
 		child->score = 0;
 		child->parent = root;
 		root->children[i] = child;
+		child->children_count = 0;
 
 		// in small board_size values depth is not needed, we can evaluate all positions, but might be usefull in future implementations
 
+		//std::cout << "Current pos: " << std::endl;
+		//PrintBoard(child->squares, board_size);
+
 		int* left_cells = Board::GenerateValidMoves(child->squares, board_size);
 		if (left_cells != 0) {
+
 			// increasing value of depth, because we are going deeper into tree
 			depth = depth + 1;
 			GeneratePositions(child->squares, depth, board_size, child);
@@ -69,4 +74,31 @@ int SearchBestMove(Node* &root) {
 	//PrintBoard(root->squares, 3);
 	//std::cout << "Koniec searchbestmove" << std::endl;
 	return 0;
+}
+
+void DeleteTree(Node*& root, int &depth) {
+	for (int i = 0; i < root->children_count; ++i) {
+		//std::cout << "Current pos is depth: " << depth << ", i: " << i << std::endl;
+		if (root->children[i]->children_count != 0) {
+			depth = depth + 1;
+			//std::cout << "Going deeper, depth: " << depth << std::endl;
+			//PrintBoard(root->children[i]->squares, 3);
+			DeleteTree(root->children[i], depth);
+		}
+		//std::cout << "Delete tree depth: " << depth << ", i: " << i << std::endl;
+		//PrintBoard(root->children[i]->squares, 3);
+		root->children[i]->parent = NULL;
+		root->children[i]->score = NULL;
+		delete[] root->children[i]->squares;
+		delete[] root->children[i]->children;
+		delete root->children[i];
+	}
+	root->children_count = 0;
+	depth = depth - 1;
+	if (root->parent == NULL) {
+		root->score = NULL;
+		delete[] root->squares;
+		delete[] root->children;
+		delete root;
+	}
 }
