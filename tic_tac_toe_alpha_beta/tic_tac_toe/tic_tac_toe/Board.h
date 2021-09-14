@@ -19,13 +19,13 @@ public:
 	char CheckWhoseMove(Board board);
 	void ComputerMove(Board &board);
 	void HumanMove(Board& board);
-	int* GenerateValidMoves(Board board);
-	char CountWhoseMove(Board board);
-	int CountMoves(int* squares, int size);
+	void CheckWhoWon(Board board);
+
+	static int* GenerateValidMoves(int* squares, int board_size);
+	static int CountMoves(int* squares, int size);
 
 private:
 
-	void CheckWhoWon(Board board);
 	bool IsMoveValid(Board board, int move);
 
 };
