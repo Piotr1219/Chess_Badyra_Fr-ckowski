@@ -11,9 +11,10 @@ void GeneratePositions(int* board, int &depth, int board_size, Node* &root) {
 
 	// generate all possible moves from given position, where first element of pointer is moves count
 	int* possible_moves = Board::GenerateValidMoves(board, board_size);
-	int len = possible_moves[0];
+	const int len = possible_moves[0];
 
 	// allocate space for all root's children and declare child_count
+
 	root->children = new Node * [len];
 	root->children_count = len;
 
@@ -45,19 +46,19 @@ void GeneratePositions(int* board, int &depth, int board_size, Node* &root) {
 
 		// in small board_size values depth is not needed, we can evaluate all positions, but might be usefull in future implementations
 
-		//std::cout << "Current pos: " << std::endl;
-		//PrintBoard(child->squares, board_size);
-
 		int* left_cells = Board::GenerateValidMoves(child->squares, board_size);
-		if (left_cells != 0) {
+		if (left_cells[0] != 0) {
 
 			// increasing value of depth, because we are going deeper into tree
 			depth = depth + 1;
 			GeneratePositions(child->squares, depth, board_size, child);
 		}
 
+		//std::cout << "Try to delete left_cells" << std::endl;
 		delete[] left_cells;
 	}
+
+	//std::cout << "Try to delete possible_moves" << std::endl;
 	delete[] possible_moves;
 
 	// decreasing depth, because we are returning from recursive algorithm, which means we are going up
@@ -76,29 +77,24 @@ int SearchBestMove(Node* &root) {
 	return 0;
 }
 
-void DeleteTree(Node*& root, int &depth) {
+void DeleteTree(Node* root, int &depth) {
 	for (int i = 0; i < root->children_count; ++i) {
-		//std::cout << "Current pos is depth: " << depth << ", i: " << i << std::endl;
 		if (root->children[i]->children_count != 0) {
 			depth = depth + 1;
-			//std::cout << "Going deeper, depth: " << depth << std::endl;
-			//PrintBoard(root->children[i]->squares, 3);
 			DeleteTree(root->children[i], depth);
 		}
-		//std::cout << "Delete tree depth: " << depth << ", i: " << i << std::endl;
-		//PrintBoard(root->children[i]->squares, 3);
+		//std::cout << "Delete tree depth: " << depth << ", i: " << i << ", children_count: " << root->children[i]->children_count << std::endl;
 		root->children[i]->parent = NULL;
 		root->children[i]->score = NULL;
 		delete[] root->children[i]->squares;
-		delete[] root->children[i]->children;
 		delete root->children[i];
 	}
+	delete[] root->children;
 	root->children_count = 0;
 	depth = depth - 1;
 	if (root->parent == NULL) {
 		root->score = NULL;
 		delete[] root->squares;
-		delete[] root->children;
 		delete root;
 	}
 }

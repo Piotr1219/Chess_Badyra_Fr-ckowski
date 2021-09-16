@@ -20,12 +20,9 @@ public:
 	void ComputerMove(Board &board);
 	void HumanMove(Board& board);
 	void CheckWhoWon(Board board);
-
-	static int* GenerateValidMoves(int* squares, int board_size);
+	
 	static int CountMoves(int* squares, int size);
-
-private:
-
-	bool IsMoveValid(Board board, int move);
+	static int* GenerateValidMoves(int* squares, int board_size);
+	static bool IsMoveValid(int* squares, int board_size, int move);
 
 };

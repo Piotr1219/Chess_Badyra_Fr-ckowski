@@ -21,6 +21,7 @@ bool Board::IsGameFinished(Board board) {
 
 	// look for win in rows
 	for (int i = 0; i < board.size; ++i) {
+		test_sum_row = 0;
 		for (int j = 0; j < board.size; ++j) {
 			if (board.squares[i * board.size + j] == 1 and test_sum_row >= 0) {
 				++test_sum_row;
@@ -42,6 +43,7 @@ bool Board::IsGameFinished(Board board) {
 
 	// look for win in columns
 	for (int j = 0; j < board.size; ++j) {
+		test_sum_col = 0;
 		for (int i = 0; i < board.size; ++i) {
 			if (board.squares[i * board.size + j] == 1 and test_sum_col >= 0) {
 				++test_sum_col;
@@ -149,7 +151,7 @@ void Board::HumanMove(Board& board) {
 		while (!move_made) {
 			std::cout << "Wprowadz swoj ruch: ";
 			std::cin >> move;
-			if (Board::IsMoveValid(board, move)) {
+			if (Board::IsMoveValid(board.squares, board.size, move)) {
 				board.squares[move] = 1;
 				move_made = true;
 				board.x_placed_count = board.x_placed_count + 1;
@@ -167,22 +169,26 @@ void Board::HumanMove(Board& board) {
 
 int* Board::GenerateValidMoves(int* squares, int board_size) {
 	int count_moves = Board::CountMoves(squares, board_size);
-	int* free_cells = new int[board_size * board_size - count_moves + 1];
+	int* free_cells = new int [board_size * board_size - count_moves + 1];
 	int counter = 0;
 
+	free_cells[0] = 0;
 	for (int i = 0; i < board_size * board_size; ++i) {
-		if (squares[i] == 0) {
-			free_cells[counter+1] = i;
-			++counter;
+		if (Board::IsMoveValid(squares, board_size, i)) {
+			counter = counter + 1;
+			free_cells[counter] = i;
 		}
 	}
 	free_cells[0] = counter;
+
 	return free_cells;
 }
 
-bool Board::IsMoveValid(Board board, int move) {
-	if (board.squares[move] == 0 and move < board.size*board.size) {
-		return true;
+bool Board::IsMoveValid(int* squares, int board_size, int move) {
+	if (move < board_size * board_size) {
+		if (squares[move] == 0) {
+			return true;
+		}
 	}
 	return false;
 }
