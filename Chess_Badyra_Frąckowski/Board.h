@@ -94,6 +94,7 @@ public:
     Board FastCopy();
 
     static MoveContent MovePiece(Board& board, char srcPosition, char dstPosition, ChessPieceType promoteToPiece);
+    static MoveContent MovePiece2(Board& board, char srcPosition, char dstPosition, ChessPieceType promoteToPiece, double& time1);
 
 private:
     static string GetColumnFromByte(char column);

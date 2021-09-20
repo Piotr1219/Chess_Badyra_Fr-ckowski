@@ -57,7 +57,7 @@ public:
 private:
     static ResultBoards GetSortValidMoves(Board& examineBoard);
 
-    static int AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int& nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended);
+    static int AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int& nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended, double& time1, double& time2, double& time3);
 
     static int Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearched);
 

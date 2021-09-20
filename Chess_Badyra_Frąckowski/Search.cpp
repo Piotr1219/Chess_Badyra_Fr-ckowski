@@ -3,6 +3,7 @@
 #include <list>
 #include <stack>
 #include <iostream>
+#include <chrono>
 //#include "Board.h"
 //#include "Book.h"
 //#include "MoveContent.h"
@@ -72,6 +73,9 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
 
     cout << "ilosc mozliwych pozycji " << succ.Positions.size() << endl;
 
+    double t1 = 0;
+    double t2 = 0;
+    double t3 = 0;
     //Can I make an instant mate?
     for (list<Board>::iterator it = succ.Positions.begin(); it != succ.Positions.end(); ++it)
     //for(Board &pos : succ.Positions)
@@ -84,7 +88,7 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
         //    cout << pos.Squares[i].Piece1.PieceType << " ";
         //}
 
-        int value = -AlphaBeta(pos, 1, -beta, -alpha, *nodesSearched, nodesQuiessence, &pvChild, true);
+        int value = -AlphaBeta(pos, 1, -beta, -alpha, *nodesSearched, nodesQuiessence, &pvChild, true, t1, t2, t3);
 
         if (value >= 32767)
         {
@@ -92,6 +96,10 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
             return pos.LastMove;
         }
     }
+    cout << "czasy alpha beta 1" << endl;
+    cout << t1 << endl;
+    cout << t2 << endl;
+    cout << t3 << endl << endl;
 
     int currentBoard = 0;
 
@@ -105,6 +113,9 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
 
     *plyDepthReached = ModifyDepth(depth, succ.Positions.size());
 
+    t1 = 0;
+    t2 = 0;
+    t3 = 0;
     //for(Board pos : succ.Positions)
     for (list<Board>::iterator it = succ.Positions.begin(); it != succ.Positions.end(); ++it)
     {
@@ -117,7 +128,8 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
         pvChild = list<Position>();
 
         //cout << "search glebsze przegladanie" << endl;
-        int value = -AlphaBeta(pos, depth, -beta, -alpha, *nodesSearched, nodesQuiessence, &pvChild, false);
+
+        int value = -AlphaBeta(pos, depth, -beta, -alpha, *nodesSearched, nodesQuiessence, &pvChild, false, t1, t2, t3);
         //cout << "petla w pozycjach  " << value << endl;
 
         if (value >= 32767)
@@ -159,6 +171,10 @@ MoveContent Search::IterativeSearch(Board& examineBoard, char depth, int* nodesS
             //cout << "src pos w search " << pos.LastMove.MovingPiecePrimary.SrcPosition << endl;
         }
     }
+    cout << "czasy alpha beta 2" << endl;
+    cout << t1 << endl;
+    cout << t2 << endl;
+    cout << t3 << endl << endl;
 
     plyDepthReached++;
     progress = 100;
@@ -247,9 +263,10 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
     return succ;
 }
 
-int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int& nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended)
-
+// wszystkie rzeczy z czasem dolozone tylko do kontroli szybkosci wykonywania poszczegolnych funkcji
+int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int& nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended, double& time1, double& time2, double& time3)
 {
+    chrono::high_resolution_clock::time_point tp = chrono::high_resolution_clock::now();
     //printf("alphabeta\n");
     nodesSearched++;
 
@@ -306,18 +323,25 @@ int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int&
 
     positions.sort(PositionComparator());
 
+    //koniec pomiaru 2 - tu minimalny czas
+
     for(Position move : positions)
     {
         list<Position> pvChild = list<Position>();
-
+        //tp = chrono::high_resolution_clock::now();
         //Make a copy
         Board board = examineBoard.FastCopy();
-
+        tp = chrono::high_resolution_clock::now();
         //Move Piece
-        Board::MovePiece(board, move.SrcPosition, move.DstPosition, ChessPieceType::Queen);
+        Board::MovePiece2(board, move.SrcPosition, move.DstPosition, ChessPieceType::Queen, time1);
+
+        time2 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
+        tp = chrono::high_resolution_clock::now();
 
         //We Generate Valid Moves for Board
         PieceValidMoves::GenerateValidMoves(board);
+
+        time3 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
 
         if (board.BlackCheck)
         {
@@ -337,7 +361,7 @@ int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int&
             }
         }
 
-        int value = -AlphaBeta(board, depth - 1, -beta, -alpha, nodesSearched, nodesQuiessence, &pvChild, extended);
+        int value = -AlphaBeta(board, depth - 1, -beta, -alpha, nodesSearched, nodesQuiessence, &pvChild, extended, time1, time2, time3);
 
         if (value >= beta)
         {

@@ -3,6 +3,7 @@
 #include <stack>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 //#include "Engine.h"
 #include "Board.h"
 //#include "Book.h"
@@ -622,12 +623,15 @@ bool Board::PromotePawns(Board board, Piece piece, char dstPosition, ChessPieceT
             board.Squares[dstPosition].Piece1.PieceActionValue = piece.CalculatePieceActionValue(promoteToPiece);
             return true;
         }
-        if (dstPosition > 55)
+        else if (dstPosition > 55)
         {
             board.Squares[dstPosition].Piece1.PieceType = promoteToPiece;
             board.Squares[dstPosition].Piece1.PieceValue = piece.CalculatePieceValue(promoteToPiece);
             board.Squares[dstPosition].Piece1.PieceActionValue = piece.CalculatePieceActionValue(promoteToPiece);
             return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -746,8 +750,8 @@ void Board::KingCastle(Board board, Piece piece, char srcPosition, char dstPosit
             }
         }
         //Castle Left
-    else if (dstPosition == 2)
-    {
+        else if (dstPosition == 2)
+        {
             //Ok we are casteling we need to move the Rook
             if (board.Squares[0].Piece1.PieceType != ChessPieceType::None)
             {
@@ -799,11 +803,8 @@ Board Board::FastCopy()
 MoveContent Board::MovePiece(Board& board, char srcPosition, char dstPosition, ChessPieceType promoteToPiece)
 {
     Piece piece = board.Squares[srcPosition].Piece1;
-
     //Record my last move
     board.LastMove = MoveContent();
-
-
 
     if (piece.PieceColor == ChessPieceColor::Black)
     {
@@ -882,6 +883,98 @@ MoveContent Board::MovePiece(Board& board, char srcPosition, char dstPosition, C
         board.StaleMate = true;
     }
 
+    return board.LastMove;
+}
+
+MoveContent Board::MovePiece2(Board& board, char srcPosition, char dstPosition, ChessPieceType promoteToPiece, double& time1)
+{
+    Piece piece = board.Squares[srcPosition].Piece1;
+
+    //Record my last move
+    board.LastMove = MoveContent();
+
+
+
+    if (piece.PieceColor == ChessPieceColor::Black)
+    {
+        board.MoveCount++;
+    }
+    //Add One to HalfMoveClockCount to check for 50 move limit.
+    board.HalfMoveClock = (board.HalfMoveClock + 1);
+
+    //En Passant
+    if (board.EnPassantPosition > 0)
+    {
+        board.LastMove.EnPassantOccured = SetEnpassantMove(board, srcPosition, dstPosition, piece.PieceColor);
+    }
+
+    if (!board.LastMove.EnPassantOccured)
+    {
+        Square sqr = board.Squares[dstPosition];
+
+        if (sqr.Piece1.PieceType != ChessPieceType::None)
+        {
+            board.LastMove.TakenPiece = PieceTaken(sqr.Piece1.PieceColor, sqr.Piece1.PieceType,
+                sqr.Piece1.Moved, dstPosition);
+            board.HalfMoveClock = 0;
+        }
+        else
+        {
+            board.LastMove.TakenPiece = PieceTaken(ChessPieceColor::White, ChessPieceType::None, false,
+                dstPosition);
+
+        }
+    }
+
+    board.LastMove.MovingPiecePrimary = PieceMoving(piece.PieceColor, piece.PieceType, piece.Moved, srcPosition, dstPosition);
+
+    //Delete the piece in its source position
+    //cout << "piece type przed bledem " << board.Squares[srcPosition].Piece1.PieceType << " index " << srcPosition << endl;
+    board.Squares[srcPosition].Piece1.PieceType = ChessPieceType::None;
+
+    //Add the piece to its new position
+    piece.Moved = true;
+    piece.Selected = false;
+    board.Squares[dstPosition].Piece1 = piece;
+
+    //Reset EnPassantPosition
+    board.EnPassantPosition = 0;
+
+    //Record En Passant if Pawn Moving
+    if (piece.PieceType == ChessPieceType::Pawn)
+    {
+        board.HalfMoveClock = 0;
+        RecordEnPassant(piece.PieceColor, piece.PieceType, board, srcPosition, dstPosition);
+    }
+
+    //board.WhoseMove = board.WhoseMove == ChessPieceColor::White ? ChessPieceColor::Black : ChessPieceColor::White;
+    if (board.WhoseMove == ChessPieceColor::White) {
+        board.WhoseMove = ChessPieceColor::Black;
+    }
+    else if (board.WhoseMove == ChessPieceColor::Black) {
+        board.WhoseMove = ChessPieceColor::White;
+    }
+
+    chrono::high_resolution_clock::time_point tp = chrono::high_resolution_clock::now();
+    //to trwa dlugo
+    KingCastle(board, piece, srcPosition, dstPosition);
+
+    //Promote Pawns 
+    // it to promotepawns tez dziala dlugo
+    if (PromotePawns(board, piece, dstPosition, promoteToPiece))
+    {
+        board.LastMove.PawnPromotedTo = promoteToPiece;
+    }
+    else
+    {
+        board.LastMove.PawnPromotedTo = ChessPieceType::None;
+    }
+
+    if (board.HalfMoveClock >= 100)
+    {
+        board.StaleMate = true;
+    }
+    time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
     return board.LastMove;
 }
 

@@ -59,7 +59,7 @@ void Program::RunEngine()
 				}
 
 				MakeEngineMove(engine);
-				//to dodalem bo chyba nigdzie nie ustawia
+				//to ponizej dodalem bo chyba nigdzie nie ustawia
 				// albo i nie potrzebne (w sumie nie wiem)
 				//engine.setWhoseMove(engine.HumanPlayer);
 			}
