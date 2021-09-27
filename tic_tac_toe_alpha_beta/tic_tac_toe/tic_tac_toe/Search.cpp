@@ -65,7 +65,7 @@ void GeneratePositions(int* board, int &depth, int board_size, Node* &root) {
 	depth = depth - 1;
 }
 
-int SearchBestMove(Node* root, bool Maximize, int& alpha, int& beta) {
+int SearchBestMove(Node* root, bool Maximize, int alpha, int beta) {
 	if (root->children_count == 0) {
 		root->score = IsGameFinished(root->squares, 3);						// HARDCODED FOR NOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		//std::cout << "Returned score from leaf: " << root->score << " from: " << std::endl;
@@ -75,47 +75,28 @@ int SearchBestMove(Node* root, bool Maximize, int& alpha, int& beta) {
 
 	if (Maximize) {
 		int bestVal = -10000;
-		//for (int i = 0; i < root->children_count; ++i) {
-		//	root->children[i]->score = bestVal;
-		//}
 		for (int i = 0; i < root->children_count; ++i) {
-			//std::cout << "Going deeper, alpha is: " << alpha << ", beta is: " << beta << std::endl;
 			int val = SearchBestMove(root->children[i], false, alpha, beta);
-			//std::cout << "Returned score: " << val <<", when Maximize is: " << Maximize << ", alpha is: " << alpha << ", beta is : " << beta << " from: " << std::endl;
-			//PrintBoard(root->children[i]->squares, 3);
-			//std::cout << "Val: " << val << ", BestVal: " << bestVal << std::endl;
 			bestVal = std::max(bestVal, val);
 			alpha = std::max(bestVal, alpha);
-			/*if (beta < alpha) {
-				std::cout << "alpha val: " << alpha << ", beta val: " << beta << std::endl;
-				std::cout << "Breaking from else, score is: " << bestVal << ", when Maximize: " << Maximize << ", searched amount: " << i << std::endl;
-				PrintBoard(root->squares, 3);
+			if (beta <= alpha) {
 				break;
 			}
-			*/
+			
 		}
 		root->score = bestVal;
 		return root->score;
 	}
 	else {
 		int bestVal = 10000;
-		//for (int i = 0; i < root->children_count; ++i) {
-		//	root->children[i]->score = bestVal;
-		//}
 		for (int i = 0; i < root->children_count; ++i) {
-			//std::cout << "Going deeper, alpha is: " << alpha << ", beta is: " << beta << std::endl;
 			int val = SearchBestMove(root->children[i], true, alpha, beta);
-			//std::cout << "Returned score: " << val << ", when Maximize is: " << Maximize << ", alpha is: " << alpha << ", beta is : " << beta << " from: " << std::endl;
-			//PrintBoard(root->children[i]->squares, 3);
 			bestVal = std::min(bestVal, val);
 			beta = std::min(bestVal, beta);
-			/*if (beta < alpha) {
-				std::cout << "alpha val: " << alpha << ", beta val: " << beta << std::endl;
-				std::cout << "Breaking from else, score is: " << bestVal << ", when Maximize: " << Maximize << ", searched amount: " << i << std::endl;
-				PrintBoard(root->squares, 3);
+			if (beta <= alpha) {
 				break;
 			}
-			*/
+			
 		}
 		root->score = bestVal;
 		return root->score;

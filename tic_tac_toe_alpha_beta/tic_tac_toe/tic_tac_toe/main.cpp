@@ -30,10 +30,15 @@ int main() {
 		root->score = 0;
 		root->parent = NULL;
 
-		if (IsGameFinished(board.squares, board.size)!=0) {
+		int test_end = IsGameFinished(board.squares, board.size);
+		if (test_end!=0) {
 			PrintBoard(board.squares, board.size);
-			board.CheckWhoWon(board);
-			PrintBoard(board.squares, board.size);
+			if (test_end == 1 || test_end == -1) {
+				std::cout << "Game ended in draw" << std::endl;
+			}
+			else {
+				board.CheckWhoWon(board);
+			}
 			break;
 		}
 		else {
@@ -41,25 +46,13 @@ int main() {
 			int alpha = -10000;
 			int beta = 10000;
 			int val = SearchBestMove(root, false, alpha, beta);
-			std::cout << "Val returned by searching tree: " << val << std::endl;
+			//std::cout << "Val returned by searching tree: " << val << std::endl;
 
-			for (int i = 0; i < root->children_count; ++i) {
-				std::cout << "Wynik wezla: " << root->children[i]->score << std::endl;
-				PrintBoard(root->children[i]->squares, 3);
-			}
-
-			std::cout << "Sprawdzono dzieci" << std::endl;
 			for (int i = 0; i < root->children_count; ++i) {
 				if (root->children[i]->score == val) {
-					std::cout << "Wczytanie board" << std::endl;
-					//PrintBoard(root->children[i]->squares, board.size);
-					//std::copy(board.squares, board.squares + int(board.size * board.size), root->children[i]->squares);
-					//PrintBoard(board.squares, board.size);
-					//board.squares = root->children[i]->squares;
 					for (int j = 0; j < board.size * board.size; ++j) {
 						board.squares[j] = root->children[i]->squares[j];
 					}
-					std::cout << "Break" << std::endl;
 					break;
 				}
 			}

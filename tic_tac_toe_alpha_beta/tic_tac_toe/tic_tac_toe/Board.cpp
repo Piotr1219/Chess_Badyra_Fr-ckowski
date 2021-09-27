@@ -101,7 +101,12 @@ int IsGameFinished(int* squares, int board_size) {
 		}
 	}
 
-	return 0;
+	int test_draw = 1;
+	for (int i = 0; i < board_size * board_size; ++i) {
+		test_draw = test_draw * squares[i];
+	}
+
+	return test_draw;
 }
 
 // need to check from CheckWhoseMove to CheckWhatSymbolNext, because x is always placed first
