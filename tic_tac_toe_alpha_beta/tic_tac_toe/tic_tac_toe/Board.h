@@ -15,7 +15,6 @@ public:
 
 	Board(int size);
 
-	bool IsGameFinished(Board board);
 	char CheckWhoseMove(Board board);
 	void ComputerMove(Board &board);
 	void HumanMove(Board& board);
@@ -26,3 +25,5 @@ public:
 	static bool IsMoveValid(int* squares, int board_size, int move);
 
 };
+
+int IsGameFinished(int* squares, int board_size);

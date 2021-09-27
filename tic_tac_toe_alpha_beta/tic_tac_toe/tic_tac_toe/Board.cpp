@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Board.h"
+#include "main.h"
 
 Board::Board(int row_len) {
 
@@ -16,17 +17,17 @@ Board::Board(int row_len) {
 
 }
 
-bool Board::IsGameFinished(Board board) {
+int IsGameFinished(int* squares, int board_size) {
 	int test_sum_row = 0;
 
 	// look for win in rows
-	for (int i = 0; i < board.size; ++i) {
+	for (int i = 0; i < board_size; ++i) {
 		test_sum_row = 0;
-		for (int j = 0; j < board.size; ++j) {
-			if (board.squares[i * board.size + j] == 1 and test_sum_row >= 0) {
+		for (int j = 0; j < board_size; ++j) {
+			if (squares[i * board_size + j] == 1 and test_sum_row >= 0) {
 				++test_sum_row;
 			}
-			else if (board.squares[i * board.size + j] == -1 and test_sum_row <= 0) {
+			else if (squares[i * board_size + j] == -1 and test_sum_row <= 0) {
 				--test_sum_row;
 			}
 			else {
@@ -34,7 +35,7 @@ bool Board::IsGameFinished(Board board) {
 			}
 
 			if (test_sum_row == 3 || test_sum_row == -3) {
-				return true;
+				return test_sum_row;
 			}
 		}
 	}
@@ -42,13 +43,13 @@ bool Board::IsGameFinished(Board board) {
 	int test_sum_col = 0;
 
 	// look for win in columns
-	for (int j = 0; j < board.size; ++j) {
+	for (int j = 0; j < board_size; ++j) {
 		test_sum_col = 0;
-		for (int i = 0; i < board.size; ++i) {
-			if (board.squares[i * board.size + j] == 1 and test_sum_col >= 0) {
+		for (int i = 0; i < board_size; ++i) {
+			if (squares[i * board_size + j] == 1 and test_sum_col >= 0) {
 				++test_sum_col;
 			}
-			else if (board.squares[i * board.size + j] == -1 and test_sum_col <= 0) {
+			else if (squares[i * board_size + j] == -1 and test_sum_col <= 0) {
 				--test_sum_col;
 			}
 			else {
@@ -56,7 +57,7 @@ bool Board::IsGameFinished(Board board) {
 			}
 
 			if (test_sum_col == 3 || test_sum_col == -3) {
-				return true;
+				return test_sum_col;
 			}
 		}
 	}
@@ -66,11 +67,11 @@ bool Board::IsGameFinished(Board board) {
 	// look for win in diagonals
 
 	// for now only support 3x3 boards and their main diagonals
-	for (int i = 0; i < board.size; ++i) {
-		if (board.squares[i * board.size + i] == 1 and test_sum_diagonal >= 0) {
+	for (int i = 0; i < board_size; ++i) {
+		if (squares[i * board_size + i] == 1 and test_sum_diagonal >= 0) {
 			++test_sum_diagonal;
 		}
-		else if (board.squares[i * board.size + i] == -1 and test_sum_diagonal <= 0) {
+		else if (squares[i * board_size + i] == -1 and test_sum_diagonal <= 0) {
 			--test_sum_diagonal;
 		}
 		else {
@@ -78,17 +79,17 @@ bool Board::IsGameFinished(Board board) {
 		}
 
 		if (test_sum_diagonal == 3 || test_sum_diagonal == -3) {
-			return true;
+			return test_sum_diagonal;
 		}
 	}
 
 	test_sum_diagonal = 0;
 
-	for (int i = 0; i < board.size; ++i) {
-		if (board.squares[i * board.size + (board.size - 1 - i)] == 1 and test_sum_diagonal >= 0) {
+	for (int i = 0; i < board_size; ++i) {
+		if (squares[i * board_size + (board_size - 1 - i)] == 1 and test_sum_diagonal >= 0) {
 			++test_sum_diagonal;
 		}
-		else if (board.squares[i * board.size + (board.size - 1 - i)] == -1 and test_sum_diagonal <= 0) {
+		else if (squares[i * board_size + (board_size - 1 - i)] == -1 and test_sum_diagonal <= 0) {
 			--test_sum_diagonal;
 		}
 		else {
@@ -96,7 +97,7 @@ bool Board::IsGameFinished(Board board) {
 		}
 
 		if (test_sum_diagonal == 3 || test_sum_diagonal == -3) {
-			return true;
+			return test_sum_diagonal;
 		}
 	}
 
@@ -128,8 +129,8 @@ void Board::ComputerMove(Board &board) {
 	// further implementation of choosing best move
 
 	int *free_cells = Board::GenerateValidMoves(board.squares, board.size);
-	if (sizeof(free_cells) > 0) {
-		int move = free_cells[1];
+	if (free_cells[0] != 0) {
+		int move = free_cells[0];
 
 		board.squares[move] = -1;
 		board.o_placed_count = board.o_placed_count + 1;
@@ -176,6 +177,8 @@ int* Board::GenerateValidMoves(int* squares, int board_size) {
 	for (int i = 0; i < board_size * board_size; ++i) {
 		if (Board::IsMoveValid(squares, board_size, i)) {
 			counter = counter + 1;
+			//std::cout << "Move is still possible: " << i << std::endl;
+			//PrintBoard(squares, board_size);
 			free_cells[counter] = i;
 		}
 	}
@@ -185,9 +188,11 @@ int* Board::GenerateValidMoves(int* squares, int board_size) {
 }
 
 bool Board::IsMoveValid(int* squares, int board_size, int move) {
-	if (move < board_size * board_size) {
-		if (squares[move] == 0) {
-			return true;
+	if (IsGameFinished(squares, board_size) == 0) {
+		if (move < board_size * board_size) {
+			if (squares[move] == 0) {
+				return true;
+			}
 		}
 	}
 	return false;
