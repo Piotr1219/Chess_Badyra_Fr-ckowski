@@ -2,6 +2,8 @@
 #include "Board.cpp"
 #include "main.h"
 #include "Search.cpp"
+//#include "stdio.h"
+#include "test_gpu.cuh"
 
 int main() {
 	Board board = Board(3);
@@ -20,6 +22,13 @@ int main() {
 
 	int depth = 0;
 	while (IsGameFinished(board.squares, board.size)==0) {
+
+
+		// TEST FOR CUDA
+
+		Test::test();
+		std::cout << std::endl;
+
 		board.HumanMove(board);
 		++depth;
 

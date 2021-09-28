@@ -35,5 +35,13 @@
     <ClInclude Include="Search.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="test_gpu.cuh">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="test_gpu.cu">
+      <Filter>Pliki źródłowe</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
