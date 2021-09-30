@@ -703,7 +703,7 @@ void Board::KingCastle(Board board, Piece piece, char srcPosition, char dstPosit
     }
 
     //Lets see if this is a casteling move.
-    if (piece.PieceColor == ChessPieceColor::White && srcPosition == 60)
+    else if (piece.PieceColor == ChessPieceColor::White && srcPosition == 60)
     {
         //Castle Right
         if (dstPosition == 62)
@@ -765,6 +765,85 @@ void Board::KingCastle(Board board, Piece piece, char srcPosition, char dstPosit
         }
     }
 
+    return;
+}
+
+void Board::KingCastle2(Board board, Piece piece, char srcPosition, char dstPosition, double& time1)
+{
+    chrono::high_resolution_clock::time_point tp = chrono::high_resolution_clock::now();
+    if (piece.PieceType != ChessPieceType::King)
+    {
+        time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
+        return;
+    }
+
+    //Lets see if this is a casteling move.
+    else if (piece.PieceColor == ChessPieceColor::White && srcPosition == 60)
+    {
+        //Castle Right
+        if (dstPosition == 62)
+        {
+            //Ok we are casteling we need to move the Rook
+            if (board.Squares[63].Piece1.PieceType != ChessPieceType::None)
+            {
+                board.Squares[61].Piece1 = board.Squares[63].Piece1;
+                board.Squares[63].Piece1.PieceType = ChessPieceType::None;
+                board.WhiteCastled = true;
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[61].Piece1.PieceColor, board.Squares[61].Piece1.PieceType, board.Squares[61].Piece1.Moved, 63, 61);
+                board.Squares[61].Piece1.Moved = true;
+                time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
+                return;
+            }
+        }
+        //Castle Left
+        else if (dstPosition == 58)
+        {
+            //Ok we are casteling we need to move the Rook
+            if (board.Squares[56].Piece1.PieceType != ChessPieceType::None)
+            {
+                board.Squares[59].Piece1 = board.Squares[56].Piece1;
+                board.Squares[56].Piece1.PieceType = ChessPieceType::None;
+                board.WhiteCastled = true;
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[59].Piece1.PieceColor, board.Squares[59].Piece1.PieceType, board.Squares[59].Piece1.Moved, 56, 59);
+                board.Squares[59].Piece1.Moved = true;
+                time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
+                return;
+            }
+        }
+    }
+    else if (piece.PieceColor == ChessPieceColor::Black && srcPosition == 4)
+    {
+        if (dstPosition == 6)
+        {
+            //Ok we are casteling we need to move the Rook
+            if (board.Squares[7].Piece1.PieceType != ChessPieceType::None)
+            {
+                board.Squares[5].Piece1 = board.Squares[7].Piece1;
+                board.Squares[7].Piece1.PieceType = ChessPieceType::None;
+                board.BlackCastled = true;
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[5].Piece1.PieceColor, board.Squares[5].Piece1.PieceType, board.Squares[5].Piece1.Moved, 7, 5);
+                board.Squares[5].Piece1.Moved = true;
+                time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
+                return;
+            }
+        }
+        //Castle Left
+        else if (dstPosition == 2)
+        {
+            //Ok we are casteling we need to move the Rook
+            if (board.Squares[0].Piece1.PieceType != ChessPieceType::None)
+            {
+                board.Squares[3].Piece1 = board.Squares[0].Piece1;
+                board.Squares[0].Piece1.PieceType = ChessPieceType::None;
+                board.BlackCastled = true;
+                board.LastMove.MovingPieceSecondary = PieceMoving(board.Squares[3].Piece1.PieceColor, board.Squares[3].Piece1.PieceType, board.Squares[3].Piece1.Moved, 0, 3);
+                board.Squares[3].Piece1.Moved = true;
+                time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
+                return;
+            }
+        }
+    }
+    time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
     return;
 }
 
@@ -955,10 +1034,12 @@ MoveContent Board::MovePiece2(Board& board, char srcPosition, char dstPosition, 
         board.WhoseMove = ChessPieceColor::White;
     }
 
+
     chrono::high_resolution_clock::time_point tp = chrono::high_resolution_clock::now();
     //to trwa dlugo
     KingCastle(board, piece, srcPosition, dstPosition);
-
+    //KingCastle2(board, piece, srcPosition, dstPosition, time1);
+    time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
     //Promote Pawns 
     // it to promotepawns tez dziala dlugo
     if (PromotePawns(board, piece, dstPosition, promoteToPiece))
@@ -974,7 +1055,7 @@ MoveContent Board::MovePiece2(Board& board, char srcPosition, char dstPosition, 
     {
         board.StaleMate = true;
     }
-    time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
+    //time1 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();
     return board.LastMove;
 }
 

@@ -371,6 +371,11 @@ void PieceValidMoves::GenerateValidMoves(Board& board)
     short blackRooksMoved = 0;
     short whiteRooksMoved = 0;
 
+    for (int i = 0; i < 64; i++) {
+        board.WhiteAttackBoard[i] = false;
+        board.BlackAttackBoard[i] = false;
+    }
+
     //Calculate Remaining Material on Board to make the End Game Decision
     int remainingPieces = 0;
 

@@ -88,6 +88,7 @@ private:
     static bool SetEnpassantMove(Board board, char srcPosition, char dstPosition, ChessPieceColor pcColor);
 
     static void KingCastle(Board board, Piece piece, char srcPosition, char dstPosition);
+    static void KingCastle2(Board board, Piece piece, char srcPosition, char dstPosition, double& time1);
 
     //Fast Copy
 public:

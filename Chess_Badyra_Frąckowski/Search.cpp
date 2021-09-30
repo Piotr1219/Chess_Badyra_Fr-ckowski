@@ -333,6 +333,7 @@ int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int&
         Board board = examineBoard.FastCopy();
         tp = chrono::high_resolution_clock::now();
         //Move Piece
+        //Board::MovePiece(board, move.SrcPosition, move.DstPosition, ChessPieceType::Queen);
         Board::MovePiece2(board, move.SrcPosition, move.DstPosition, ChessPieceType::Queen, time1);
 
         time2 += chrono::duration_cast<chrono::duration<double>>(chrono::high_resolution_clock::now() - tp).count();

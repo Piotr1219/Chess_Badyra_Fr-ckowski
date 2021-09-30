@@ -923,7 +923,7 @@ void Engine::AiPonderMove()
         sqr.Piece1.AttackedValue = 0;
     }
 
-    //PieceValidMoves::GenerateValidMoves(ChessBoard);
+    PieceValidMoves::GenerateValidMoves(ChessBoard);
     //Evaluation eva1;
     //eva1.EvaluateBoardScore(ChessBoard);
     EvaluateBoardScore2(ChessBoard);

@@ -268,12 +268,12 @@ void Program::RunEngine()
 
 				if (move.length() < 4)
 				{
-					//continue;
+					continue;
 				}
 
 				if (move.length() > 5)
 				{
-					//continue;
+					continue;
 				}
 				//printf("%i", move.length());
 
@@ -287,10 +287,10 @@ void Program::RunEngine()
 
 				//try
 				//{
-					srcCol = GetColumn(src);
-					srcRow = GetRow(src);
-					dstRow = GetRow(dst);
-					dstCol = GetColumn(dst);
+				srcCol = GetColumn(src);
+				srcRow = GetRow(src);
+				dstRow = GetRow(dst);
+				dstCol = GetColumn(dst);
 				//}
 				//catch (int ex)
 				if (srcCol == 255 || srcRow == 255 || dstRow == 255 || dstCol == 255)
@@ -317,7 +317,9 @@ void Program::RunEngine()
 					continue;
 				}
 
-				engine.MovePiece(srcCol, srcRow, dstCol, dstRow);
+				if (!engine.MovePiece(srcCol, srcRow, dstCol, dstRow)) {
+					continue;
+				}
 
 				std::cout << "wypisanie tablicy tylko po ruchu czlowieka" << endl;
 				DrawBoard(engine);
@@ -330,6 +332,7 @@ void Program::RunEngine()
 
 				if (engine.StaleMate())
 				{
+					DrawBoard(engine);
 					if (engine.InsufficientMaterial())
 					{
 						printf("1/2-1/2 {Draw by insufficient material}");
@@ -350,11 +353,13 @@ void Program::RunEngine()
 				}
 				else if (engine.GetWhiteMate())
 				{
+					DrawBoard(engine);
 					printf("0-1 {Black mates}");
 					engine.NewGame();
 				}
 				else if (engine.GetBlackMate())
 				{
+					DrawBoard(engine);
 					printf("1-0 {White mates}");
 					engine.NewGame();
 				}
