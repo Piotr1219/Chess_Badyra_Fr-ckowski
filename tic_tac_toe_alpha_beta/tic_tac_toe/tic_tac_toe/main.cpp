@@ -39,6 +39,10 @@ int main() {
 		root->score = 0;
 		root->parent = NULL;
 
+		// TEST FOR CUDA
+
+		Test::GenerateTree(board.squares, depth, board.size, root);
+
 		int test_end = IsGameFinished(board.squares, board.size);
 		if (test_end!=0) {
 			PrintBoard(board.squares, board.size);

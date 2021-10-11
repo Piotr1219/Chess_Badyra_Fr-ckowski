@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "device_launch_parameters.h"
 
 class Board {
 
@@ -20,9 +21,9 @@ public:
 	void HumanMove(Board& board);
 	void CheckWhoWon(Board board);
 	
-	static int CountMoves(int* squares, int size);
-	static int* GenerateValidMoves(int* squares, int board_size);
-	static bool IsMoveValid(int* squares, int board_size, int move);
+	__host__ __device__ static int CountMoves(int* squares, int size);
+	__host__ __device__ static int* GenerateValidMoves(int* squares, int board_size);
+	__host__ __device__ static bool IsMoveValid(int* squares, int board_size, int move);
 
 };
 
