@@ -2,6 +2,9 @@
 #include <iostream>
 #include "device_launch_parameters.h"
 
+typedef int* (*pointFunctionGenerateValidMoves)(int*, int);
+typedef int (*pointFunctionCountMoves)(int*, int);
+
 class Board {
 
 public:

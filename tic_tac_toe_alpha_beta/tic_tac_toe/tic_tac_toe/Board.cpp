@@ -2,6 +2,12 @@
 #include "Board.h"
 #include "main.h"
 
+extern __device__ pointFunctionCountMoves CountMovesPointer = Board::CountMoves;
+extern pointFunctionCountMoves host_CountMovesPointer;
+
+extern __device__ pointFunctionGenerateValidMoves GenerateValidMovesPointer = Board::GenerateValidMoves;
+extern pointFunctionGenerateValidMoves host_GenerateValidMovesPointer;
+
 Board::Board(int row_len) {
 
 	size = row_len;
