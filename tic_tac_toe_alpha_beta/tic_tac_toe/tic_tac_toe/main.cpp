@@ -40,7 +40,8 @@ int main() {
 		root->parent = NULL;
 
 		// TEST FOR CUDA
-
+		printf("Position given to cuda\n");
+		PrintBoard(board.squares, board.size);
 		Test::GenerateTree(board.squares, depth, board.size, root);
 
 		int test_end = IsGameFinished(board.squares, board.size);
