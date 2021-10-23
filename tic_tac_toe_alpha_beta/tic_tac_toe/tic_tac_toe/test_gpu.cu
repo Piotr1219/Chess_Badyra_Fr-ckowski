@@ -168,7 +168,7 @@ __global__ void generate_tree(int* board, int depth, int board_size, Node* root,
 	root->squares = root_squares;
 	root->parent = root_parent;
 
-	printf("Testing kernel, pos:\n");
+	printf("Testing kernel, index: %d, depth: %d, pos:\n", index, depth);
 	printf(" %d  %d  %d\n", board[0], board[1], board[2]);
 	printf(" %d  %d  %d\n", board[3], board[4], board[5]);
 	printf(" %d  %d  %d\n", board[6], board[7], board[8]);
@@ -185,10 +185,10 @@ __global__ void generate_tree(int* board, int depth, int board_size, Node* root,
 	root->children = new Node * [len];
 	root->children_count = len;
 
-	printf("Children count: %d\n", root->children_count);
+	printf("Children count: %d, index: %d, depth: %d\n", root->children_count, index, depth);
 
 	// check which symbol should be drawn next and declare symbol value: 1 = 'x', -1 = 'o'
-	printf("Before counting moves, pos\n");
+	printf("Before counting moves, index: %d, depth: %d, pos\n", index, depth);
 	printf(" %d  %d  %d\n", root->squares[0], root->squares[1], root->squares[2]);
 	printf(" %d  %d  %d\n", root->squares[3], root->squares[4], root->squares[5]);
 	printf(" %d  %d  %d\n", root->squares[6], root->squares[7], root->squares[8]);
@@ -201,7 +201,7 @@ __global__ void generate_tree(int* board, int depth, int board_size, Node* root,
 		symbol = -1;
 	}
 
-	printf("Calculated symbol: %d\n", symbol);
+	//printf("Calculated symbol: %d\n", symbol);
 
 	// for each possible position we need to create new child and add it to root->children array
 
@@ -222,20 +222,23 @@ __global__ void generate_tree(int* board, int depth, int board_size, Node* root,
 
 	delete[] possible_moves;
 
-	printf("Created children\n");
+	//printf("Created children\n");
 
 	// in small board_size values depth is not needed, we can evaluate all positions, but might be usefull in future implementations
 
-	int* left_cells = (*GenerateValidMovesPointer)(root->children[index]->squares, board_size);
+	int** left_cells = new int* [index];
 
-	printf("Generated left_cells\n");
-	if (left_cells[0] != 0) {
-		printf("In if\n");
+	left_cells[index] = (*GenerateValidMovesPointer)(root->children[index]->squares, board_size);
+
+	printf("Generated next len: %d, index: %d, depth: %d\n", left_cells[index][0], index, depth);
+	if (left_cells[index][0] != 0) {
+		//printf("In if\n");
 		// increasing value of depth, because we are going deeper into tree
 		depth = depth + 1;
-		//generate_tree<<<1, root->children_count>>>(root->children[index]->squares, depth, board_size, child, GenerateValidMovesPointer, CountMovesPointer);
+		generate_tree<<<1, root->children_count>>>(root->children[index]->squares, depth, board_size, root->children[index], root->children[index]->squares, root->children[index]->parent, root->children[index]->score, GenerateValidMovesPointer, CountMovesPointer, d_result);
+		cudaDeviceSynchronize();
 	}
-	printf("After if\n");
+	//printf("After if\n");
 
 	//std::cout << "Try to delete left_cells" << std::endl;
 	delete[] left_cells;
@@ -246,7 +249,7 @@ __global__ void generate_tree(int* board, int depth, int board_size, Node* root,
 	depth = depth - 1;
 	*d_result = root->children_count;
 
-	printf("Exiting kernel, child_count: %d\n", *d_result);
+	printf("Exiting kernel, child_count: %d, index: %d, depth: %d\n", *d_result, index, depth);
 }
 
 namespace Test {
@@ -300,6 +303,6 @@ namespace Test {
 		cudaMemcpy(result, d_result, sizeof(int), cudaMemcpyDeviceToHost);
 
 		printf("Exiting device function\n");
-		printf("Children count: %d\n", result);
+		printf("Children count: %d\n", *result);
 	}
 }
