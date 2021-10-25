@@ -21,13 +21,14 @@ int main() {
 	}
 
 	int depth = 0;
+	int offset = 0;
 	while (IsGameFinished(board.squares, board.size)==0) {
 
 
 		// TEST FOR CUDA
 
-		Test::test();
-		std::cout << std::endl;
+		//Test::test();
+		//std::cout << std::endl;
 
 		board.HumanMove(board);
 		++depth;
@@ -36,16 +37,24 @@ int main() {
 		Node* root = new Node;
 		root->squares = new int[board.size * board.size];
 		std::copy(board.squares, board.squares + 9, root->squares);
+		/*
+		root->squares[0] = -1;
+		root->squares[1] = 1;
+		root->squares[2] = -1;
+		root->squares[3] = 1;
+		*/
 		root->score = 0;
 		root->parent = NULL;
 
+
+
 		// TEST FOR CUDA
-		printf("Position given to cuda\n");
-		PrintBoard(board.squares, board.size);
-		Test::GenerateTree(board.squares, depth, board.size, root);
+		//printf("Position given to cuda\n");
+		//PrintBoard(board.squares, board.size);
+		//Test::GenerateTree(board.squares, depth, board.size, root);
 
 		int test_end = IsGameFinished(board.squares, board.size);
-		if (test_end!=0) {
+		if (test_end != 0) {
 			PrintBoard(board.squares, board.size);
 			if (test_end == 1 || test_end == -1) {
 				std::cout << "Game ended in draw" << std::endl;
@@ -55,7 +64,9 @@ int main() {
 			}
 			break;
 		}
-		else {
+		else{
+			flat_node** memory = CreateFlatTreeHead(board.squares, depth, board.size);
+
 			GeneratePositions(board.squares, depth, board.size, root);
 			int alpha = -10000;
 			int beta = 10000;

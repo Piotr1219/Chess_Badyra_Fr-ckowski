@@ -7,11 +7,13 @@
 
 typedef int* (*pointFunctionGenerateValidMoves)(int*, int);
 typedef int (*pointFunctionCountMoves)(int*, int);
+typedef void (*pointFunctionGenerateTreeParrarel)(int*, int&, int, Node*);
 
 __device__ int CountMovesGPU(int* squares, int size);
 __device__ int* GenerateValidMovesGPU(int* squares, int board_size);
 __device__ bool IsMoveValidGPU(int* squares, int board_size, int move);
 __device__ int IsGameFinishedGPU(int* squares, int board_size);
+__device__ void GenerateTreeParrarel(int* board, int& depth, int board_size, Node* root);
 
 namespace Test {
 	void test(void);
