@@ -104,7 +104,7 @@ void GenerateFlatTree(int parent_offset, int parent_sibling_count, int& depth, i
 			//printf("There are possible moves\n");
 
 			// initialize each parent with now known child_count
-			memory[parent_offset]->first_child = parent_offset + parent_sibling_count;
+			memory[parent_offset]->first_child = offset;
 			//printf("Parent address: %p\n", memory[parent_offset]);
 			//for (parent_offset; parent_offset <= last_child; ++parent_offset) {
 
