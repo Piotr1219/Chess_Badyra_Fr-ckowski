@@ -266,6 +266,9 @@ void EvaluateBoardScore2(Board& board)
         whitePawnCount[i] = 0;
     }
 
+
+    // Add cuda below
+
     for (int x = 0; x < 64; x++)
     {
         Square square = board.Squares[x];
@@ -350,6 +353,8 @@ void EvaluateBoardScore2(Board& board)
         }
 
     }
+
+    // for now cuda ends here
 
     if (insufficientMaterial)
     {

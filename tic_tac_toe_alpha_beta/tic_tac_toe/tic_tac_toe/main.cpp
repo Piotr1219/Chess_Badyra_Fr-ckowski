@@ -6,7 +6,9 @@
 #include "test_gpu.cuh"
 
 int main() {
-	Board board = Board(3);
+	Board board = Board(3, 5);
+
+	printf("test shape: %d\n", board.test.shape);
 
 	// set who is starting game
 	// board.human_starts = false;
@@ -49,9 +51,9 @@ int main() {
 
 
 		// TEST FOR CUDA
-		//printf("Position given to cuda\n");
-		//PrintBoard(board.squares, board.size);
-		//Test::GenerateTree(board.squares, depth, board.size, root);
+		printf("Position given to cuda\n");
+		PrintBoard(board.squares, board.size);
+		Test::GenerateTree(board.squares, depth, board.size, root);
 
 		int test_end = IsGameFinished(board.squares, board.size);
 		if (test_end != 0) {
@@ -67,7 +69,7 @@ int main() {
 		else{
 			flat_node** memory = CreateFlatTreeHead(board.squares, depth, board.size);
 
-			GeneratePositions(board.squares, depth, board.size, root);
+			//GeneratePositions(board.squares, depth, board.size, root);
 			int alpha = -10000;
 			int beta = 10000;
 			int val = SearchBestMove(root, false, alpha, beta);

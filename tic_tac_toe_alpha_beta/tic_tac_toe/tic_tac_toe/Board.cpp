@@ -1,10 +1,12 @@
 #include <iostream>
 #include "Board.h"
 #include "main.h"
+#include "Test_class.h"
 
 
-Board::Board(int row_len) {
+Board::Board(int row_len, int shape) {
 
+	test = Test_class(shape);
 	size = row_len;
 	squares = new int[int(size * size)];
 	human_starts = true;

@@ -155,11 +155,13 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Search.cpp" />
+    <ClCompile Include="Test_class.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Search.h" />
+    <ClInclude Include="Test_class.h" />
     <ClInclude Include="test_gpu.cuh" />
   </ItemGroup>
   <ItemGroup>

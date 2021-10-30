@@ -1,11 +1,13 @@
 #pragma once
 #include <iostream>
 #include "device_launch_parameters.h"
+#include "Test_class.h"
 
 class Board {
 
 public:
 
+	Test_class test;
 	int size;
 	int *squares;
 	int x_placed_count;
@@ -14,7 +16,7 @@ public:
 	
 	//constructor
 
-	Board(int size);
+	__device__ __host__ Board(int size, int shape);
 
 	char CheckWhoseMove(Board board);
 	void ComputerMove(Board &board);

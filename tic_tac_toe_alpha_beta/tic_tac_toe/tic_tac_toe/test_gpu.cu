@@ -2,6 +2,7 @@
 #include "test_gpu.cuh"
 #include "Search.h"
 #include "Board.h"
+#include "Test_class.h"
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
@@ -225,7 +226,10 @@ __device__ pointFunctionGenerateTreeParrarel GenerateTreeParrarelPointer = Gener
 // There is issue with GenerateValidMovesPointer, propably it needs device word in initialization, propably same problem with CountMovesPointer
 
 
-__global__ void generate_tree(int* board, int depth, int board_size, Node* root, int* root_squares, Node* root_parent, int root_score, pointFunctionGenerateValidMoves GenerateValidMovesPointer, pointFunctionCountMoves CountMovesPointer, int* d_result) {
+__global__ void generate_tree(int* board, int depth, int board_size, Node* root, int* root_squares, Node* root_parent, int root_score, pointFunctionGenerateValidMoves GenerateValidMovesPointer, pointFunctionCountMoves CountMovesPointer, int* d_result, Board* test_board) {
+
+	printf("%d\n", (*test_board).size);
+	printf("%d\n", (*test_board).test.shape);
 
 	int index = threadIdx.x;
 
@@ -328,7 +332,7 @@ __global__ void generate_tree(int* board, int depth, int board_size, Node* root,
 		//printf("In if\n");
 		// increasing value of depth, because we are going deeper into tree
 		depth = depth + 1;
-		generate_tree<<<1, left_cells[0]>>>(root->children[index]->squares, depth, board_size, root->children[index], root->children[index]->squares, root->children[index]->parent, root->children[index]->score, GenerateValidMovesPointer, CountMovesPointer, d_result);
+		generate_tree<<<1, left_cells[0]>>>(root->children[index]->squares, depth, board_size, root->children[index], root->children[index]->squares, root->children[index]->parent, root->children[index]->score, GenerateValidMovesPointer, CountMovesPointer, d_result, test_board);
 		//printf("Exiting depth %d\n", depth);
 		cudaDeviceSynchronize();
 		depth = depth - 1;
@@ -389,6 +393,12 @@ namespace Test {
 		Node* root_parent;
 		Node* d_root;
 
+		Board test_board = Board(3, 5);
+		Board* d_test_board;
+		const size_t sz = size_t(sizeof(Board));
+		cudaMalloc((void**)&d_test_board, sz);
+		cudaMemcpy(d_test_board, &test_board, sz, cudaMemcpyHostToDevice);
+
 		gpuErrchk(cudaMalloc(&d_board, board_size * board_size * sizeof(int)));
 		gpuErrchk(cudaMalloc(&d_result, sizeof(int)));
 		gpuErrchk(cudaMalloc(&root_squares, board_size * board_size * sizeof(int)));
@@ -401,14 +411,14 @@ namespace Test {
 		cudaMemcpy(root_parent, root->parent, sizeof(Node), cudaMemcpyHostToDevice);
 		cudaMemcpy(d_root, root, sizeof(Node), cudaMemcpyHostToDevice);
 
-		printf("Testowanie generowania na karcie nie w kernelu:\n");
+		//printf("Testowanie generowania na karcie nie w kernelu:\n");
 
-		generate_tree_parrarel << <1, 1 >> > (d_board, depth, board_size, d_root, root_squares, root_parent, root->score, host_GenerateValidMovesPointer, host_CountMovesPointer, host_GenerateTreeParrarelPointer, d_result);
-		cudaDeviceSynchronize();
+		//generate_tree_parrarel << <1, 1 >> > (d_board, depth, board_size, d_root, root_squares, root_parent, root->score, host_GenerateValidMovesPointer, host_CountMovesPointer, host_GenerateTreeParrarelPointer, d_result);
+		//cudaDeviceSynchronize();
 
-		printf("Wygenerowano cale drzewo, teraz w kernelu testy zaczac czas:\n");
+		//printf("Wygenerowano cale drzewo, teraz w kernelu testy zaczac czas:\n");
 
-		generate_tree << <1, 8 >> > (d_board, depth, board_size, d_root, root_squares, root_parent, root->score, host_GenerateValidMovesPointer, host_CountMovesPointer, d_result);
+		generate_tree << <1, 8 >> > (d_board, depth, board_size, d_root, root_squares, root_parent, root->score, host_GenerateValidMovesPointer, host_CountMovesPointer, d_result, d_test_board);
 		//gpuErrchk(cudaPeekAtLastError());
 		gpuErrchk(cudaDeviceSynchronize());
 
