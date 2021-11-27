@@ -131,8 +131,14 @@ void Program::RunEngine()
 					engine.setGameDifficulty(Engine::Difficulty::Hard);
 					continue;
 				}
+				if (move == "medium")
+				{
+					engine.setGameDifficulty(Engine::Difficulty::Medium);
+					continue;
+				}
 				if (move == "easy")
 				{
+					engine.setGameDifficulty(Engine::Difficulty::Easy);
 					continue;
 				}
 				if (move.rfind("accepted", 0) == 0)

@@ -179,9 +179,6 @@ int EvaluatePieceScore2(Square square, char position, bool endGamePhase,
             score += KingTable[index];
         }
 
-
-
-
     }
 
     return score;
@@ -189,6 +186,7 @@ int EvaluatePieceScore2(Square square, char position, bool endGamePhase,
 
 void EvaluateBoardScore2(Board& board)
 {
+    //printf("bs");
     //Black Score - 
     //White Score +
     board.Score = 0;
@@ -335,7 +333,7 @@ void EvaluateBoardScore2(Board& board)
                 insufficientMaterial = false;
             }
         }
-
+        /*
         if ((blackBishopCount + whiteBishopCount) > 1)
         {
             insufficientMaterial = false;
@@ -348,7 +346,7 @@ void EvaluateBoardScore2(Board& board)
         {
             insufficientMaterial = false;
         }
-
+        */
     }
 
     if (insufficientMaterial)

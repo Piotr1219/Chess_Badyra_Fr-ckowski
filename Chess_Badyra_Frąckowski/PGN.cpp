@@ -59,7 +59,7 @@ string PGN::GeneratePGN(list<MoveContent> moveHistory, int round, string whitePl
 
         if (move.MovingPiecePrimary.PieceColor == ChessPieceColor::White)
         {
-            tmp += ((moveHistory.size() / 2) - count + 1) + ". ";
+            tmp += to_string(((moveHistory.size() / 2) - count + 1)) + ". ";
         }
 
         tmp += move.ToString();

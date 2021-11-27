@@ -241,6 +241,7 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
 
             //We calculate the board score
             //Evaluation eva1;
+            //printf("\nsortvalid\n");
             EvaluateBoardScore2(board);
 
             //Invert Score to support Negamax
@@ -267,7 +268,7 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
 int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int& nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended, double& time1, double& time2, double& time3)
 {
     chrono::high_resolution_clock::time_point tp = chrono::high_resolution_clock::now();
-    //printf("alphabeta\n");
+    //printf("\nalphabeta\n");
     nodesSearched++;
 
     if (examineBoard.HalfMoveClock >= 100 || examineBoard.RepeatedMove >= 3)
@@ -371,7 +372,6 @@ int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int&
 
             kIndex = ((kIndex + 1) % 2);
 
-
             return beta;
         }
         if (value > alpha)
@@ -399,6 +399,7 @@ int Search::Quiescence(Board& examineBoard, int alpha, int beta, int& nodesSearc
 
     //Evaluate Score
     //Evaluation eva1;
+    //printf("\nquiscence\n");
     EvaluateBoardScore2(examineBoard);
 
     //Invert Score to support Negamax
