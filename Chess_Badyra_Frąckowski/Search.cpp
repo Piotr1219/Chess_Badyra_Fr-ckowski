@@ -4,6 +4,7 @@
 #include <stack>
 #include <iostream>
 #include <chrono>
+#include "EvaluateMovesCuda.cuh"
 //#include "Board.h"
 //#include "Book.h"
 //#include "MoveContent.h"
@@ -12,12 +13,6 @@
 //#include "PieceValidMoves.h"
 
 using namespace std;
-
-
-string Position::ToString()
-{
-    return Move;
-}
 
 
 //bool Search::sortComparator::operator() (Board & s2, Board & s1)
@@ -266,6 +261,7 @@ ResultBoards Search::GetSortValidMoves(Board& examineBoard)
 // wszystkie rzeczy z czasem dolozone tylko do kontroli szybkosci wykonywania poszczegolnych funkcji
 int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int& nodesSearched, int* nodesQuiessence, list<Position>* pvLine, bool extended, double& time1, double& time2, double& time3)
 {
+    //printf("New alphabeta iteration, depth: %d, nodesSearched: %d\n", depth, nodesSearched);
     chrono::high_resolution_clock::time_point tp = chrono::high_resolution_clock::now();
     //printf("alphabeta\n");
     nodesSearched++;
@@ -287,8 +283,13 @@ int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int&
             return Quiescence(examineBoard, alpha, beta, *nodesQuiessence);
         }
     }
-
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     list<Position> positions = EvaluateMoves(examineBoard, depth);
+    std::chrono::steady_clock::time_point end1 = std::chrono::steady_clock::now();
+    list<Position> positions_cuda = EvaluateMoves::EvaluateMovesCuda(examineBoard, depth);
+    std::chrono::steady_clock::time_point end2 = std::chrono::steady_clock::now();
+
+    printf("Len of cpu positions: %d, time: %d\nLen of gpu positions: %d, time: %d\n", positions.size(), std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin).count(), positions_cuda.size(), std::chrono::duration_cast<std::chrono::microseconds>(end2 - end1).count());
 
     if (examineBoard.WhiteCheck || examineBoard.BlackCheck || positions.size() == 0)
     {
@@ -491,6 +492,16 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, char depth)
     //bool foundPV = false;
 
 
+    //here will be added next cuda optimalization AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+    // to kernel :
+    // list of 64 Pieces
+    // list of pieces valid moves (it is std::list so it needs to be passed separatedly)
+    // initialize Position() class for cuda
+    // KillerMove function
+
+    // return shall be all created positions
+
     for (short x = 0; x < 64; x++)
     {
         Piece piece = examineBoard.Squares[x].Piece1;
@@ -511,6 +522,7 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, char depth)
             move.SrcPosition = x;
             move.DstPosition = dst;
 
+            /*
             if (move.SrcPosition == KillerMove[0][depth].SrcPosition && move.DstPosition == KillerMove[0][depth].DstPosition)
             {
                 //move.TopSort = true;
@@ -525,6 +537,7 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, char depth)
                 positions.push_back(move);
                 continue;
             }
+            */
 
             Piece pieceAttacked = examineBoard.Squares[move.DstPosition].Piece1;
 
@@ -589,6 +602,8 @@ list<Position> Search::EvaluateMoves(Board& examineBoard, char depth)
             positions.push_back(move);
         }
     }
+
+    // and there it shall be ended UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
 
     return positions;
 }

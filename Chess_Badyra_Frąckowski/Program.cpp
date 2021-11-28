@@ -6,6 +6,7 @@
 #include <iostream>
 ///#include "Engine.h"
 #include "Program.h"
+#include "PositionEvaluationCuda.cuh"
 ///#include "functions.h"
 //#include "Board.h"
 //#include "Book.h"
@@ -69,6 +70,7 @@ void Program::RunEngine()
 
 				string move;
 				//scanf_s("%s", move, 4);
+				//EvaluatePieces::test();
 				std::cout << "wpisz sowj ruch:" << endl;
 				cin >> move;
 

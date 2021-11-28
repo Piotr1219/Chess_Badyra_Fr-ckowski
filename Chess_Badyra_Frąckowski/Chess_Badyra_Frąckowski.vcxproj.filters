@@ -78,6 +78,12 @@
     <ClCompile Include="Evaluations2.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Position.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Program.h">
@@ -140,5 +146,25 @@
     <ClInclude Include="Evaluations2.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="Header.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="EvaluateMovesCuda.cuh">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Position.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="PositionEvaluationCuda.cu">
+      <Filter>Pliki źródłowe</Filter>
+    </CudaCompile>
+    <CudaCompile Include="PositionEvaluationCuda.cuh">
+      <Filter>Pliki nagłówkowe</Filter>
+    </CudaCompile>
+    <CudaCompile Include="EvaluateMovesCuda.cu">
+      <Filter>Pliki źródłowe</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

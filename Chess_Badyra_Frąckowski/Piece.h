@@ -2,16 +2,12 @@
 #include <string>
 #include <list>
 #include <stack>
-//#include "Engine.h"
-//#include "Board.h"
-//#include "Book.h"
-//#include "main.h"
-//#include "functions.h"
-//#include "MoveContent.h"
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 using namespace std;
 
-enum ChessPieceColor
+__device__ __host__ enum ChessPieceColor
 {
     White,
     Black
@@ -21,7 +17,7 @@ enum ChessPieceColor
 
 //#region ChessPieceType enum
 
-enum ChessPieceType
+__device__ __host__ enum ChessPieceType
 {
     King,
     Queen,
@@ -57,11 +53,11 @@ class Piece
 
     list<char> ValidMoves;
 
-    Piece();
+    __device__ __host__ Piece();
 
-    Piece(const Piece& piece);
+    __host__ Piece(const Piece& piece);
 
-    Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor);
+    __device__ __host__ Piece(ChessPieceType chessPiece, ChessPieceColor chessPieceColor);
 
 
     static string GetPieceTypeShort(ChessPieceType pieceType);

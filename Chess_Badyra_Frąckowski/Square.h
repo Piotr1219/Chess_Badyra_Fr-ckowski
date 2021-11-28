@@ -2,23 +2,16 @@
 #include <string>
 #include <list>
 #include <stack>
-//#include "Engine.h"
-//#include "Board.h"
-//#include "Book.h"
-//#include "main.h"
-//#include "functions.h"
-//#include "MoveContent.h"
 #include "Piece.h"
-//#include "Evaluations.h"
-//#include "PGN.h"
-//#include "PieceMoves.h"
-//#include "PieceSquareTable.h"
+#include <iostream>
+//#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 struct Square
 {
     Piece Piece1;
 
-    Square(Piece piece);
-    Square();
+    __device__ __host__ Square(Piece piece);
+    __device__ __host__ Square();
 
 };

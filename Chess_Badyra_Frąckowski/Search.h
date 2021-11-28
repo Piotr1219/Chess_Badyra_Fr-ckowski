@@ -14,19 +14,9 @@
 //#include "Square.h"
 #include "ResultBoards.h"
 #include "PieceValidMoves.h"
+#include "Position.h"
 
 using namespace std;
-
-struct Position
-{
-    char SrcPosition;
-    char DstPosition;
-    int Score;
-    //internal bool TopSort;
-    string Move;
-public:
-    string ToString();
-};
 
 bool Sort(Position s2, Position s1);
 

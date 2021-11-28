@@ -6,6 +6,7 @@
 #include <cctype>
 #include "Engine.h"
 #include "functions.h"
+#include "PositionEvaluationCuda.cuh"
 //#include "Board.h"
 //#include "Book.h"
 //#include "Piece.h"

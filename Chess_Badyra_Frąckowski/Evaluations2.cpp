@@ -4,7 +4,9 @@
 #include <iostream>
 //#include "Board.h"
 #include "Evaluations2.h"
+#include "PositionEvaluationCuda.cuh"
 //#include "Square.h"
+#include <chrono>
 
 using namespace std;
 
@@ -131,7 +133,7 @@ int EvaluatePieceScore2(Square square, char position, bool endGamePhase,
     }
     else if (square.Piece1.PieceType == ChessPieceType::Bishop)
     {
-        bishopCount = (bishopCount + 1);
+        bishopCount = (bishopCount + 1);        // nie wiem co siê tutaj wydarza do koñca
 
         if (bishopCount >= 2)
         {
@@ -189,6 +191,7 @@ int EvaluatePieceScore2(Square square, char position, bool endGamePhase,
 
 void EvaluateBoardScore2(Board& board)
 {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     //Black Score - 
     //White Score +
     board.Score = 0;
@@ -266,13 +269,20 @@ void EvaluateBoardScore2(Board& board)
         whitePawnCount[i] = 0;
     }
 
+    // add cuda below
+
+    // needed structures and objects:
+    // Square class needs in fact Piece class, and two enum types ChessPieceColor, ChessPieceType
+    // board score propably will be replaced as 64 element int pointer for score, and bool for EndGamePhase, after cuda we will assign each board its score
+    // EvaluatePieceScore2 seems to have only regular data types
+    // CheckPawnWall functions have to many if instructions, for now will not include them in evaluation results
     for (int x = 0; x < 64; x++)
     {
         Square square = board.Squares[x];
 
         if (square.Piece1.PieceType == ChessPieceType::None)
         {
-            continue;
+            continue;       // TODO: is it really necessary here? Does nothing i guess
         }
 
 
@@ -350,6 +360,7 @@ void EvaluateBoardScore2(Board& board)
         }
 
     }
+    // until that point
 
     if (insufficientMaterial)
     {
@@ -531,6 +542,10 @@ void EvaluateBoardScore2(Board& board)
     }
 
     //std::cout << "Score from EvaluateBoardScore2 is : " << board.Score << std::endl;
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    //std::cout << "Time difference cpu = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+    //std::cout << "Testing cuda evaluation :\n";
+    EvaluatePieces::EvaluatePiecesCuda(board);
 }
 
 int CheckPawnWall2(Board board, int pawnPos, int kingPos)
