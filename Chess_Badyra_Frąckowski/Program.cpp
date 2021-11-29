@@ -23,8 +23,8 @@ void Program::RunEngine()
 {
 	bool ShowBoard = false;
 
-	//Engine engine = Engine();
-	Engine engine;
+	Engine engine = Engine("r1bqkb1r/pp1p1ppp/2n1pn2/2p5/4P3/3P1NP1/PPP2P1P/RNBQKB1RwKQkq-01");
+	//Engine engine;
 	DrawBoard(engine);
 	std::cout << engine.FEN() << endl;
 
@@ -485,6 +485,9 @@ void Program::MakeEngineMove(Engine &engine)
 	printf("move ");
 	printf(tmp.c_str());
 	*/
+	int count_searched = int(engine.NodesSearched);
+	int count_quiescence = int(engine.NodesQuiessence);
+	printf("Nodes searched: %d\nNodesQuiescence: %d\n", count_searched, count_quiescence);
 }
 
 string Program::GetColumnFromInt(int column)
