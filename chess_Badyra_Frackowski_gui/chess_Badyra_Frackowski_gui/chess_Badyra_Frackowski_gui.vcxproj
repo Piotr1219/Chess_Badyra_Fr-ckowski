@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{6DEAFD4E-9091-4165-B03B-496C4A105EB6}</ProjectGuid>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <Keyword>ManagedCProj</Keyword>
+    <RootNamespace>chessBadyraFrackowskigui</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>main</EntryPointSymbol>
+      <StackReserveSize>500000000</StackReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+      <EntryPointSymbol>main</EntryPointSymbol>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Book.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Evaluations.cpp" />
+    <ClCompile Include="Evaluations2.cpp" />
+    <ClCompile Include="FileIO.cpp" />
+    <ClCompile Include="functions.cpp" />
+    <ClCompile Include="main2.cpp" />
+    <ClCompile Include="MoveContent.cpp" />
+    <ClCompile Include="MyForm.cpp" />
+    <ClCompile Include="nsd.cpp" />
+    <ClCompile Include="PGN.cpp" />
+    <ClCompile Include="Piece.cpp" />
+    <ClCompile Include="PieceMoves.cpp" />
+    <ClCompile Include="PieceSquareTable.cpp" />
+    <ClCompile Include="PieceTaken.cpp" />
+    <ClCompile Include="PieceValidMoves.cpp" />
+    <ClCompile Include="Program.cpp" />
+    <ClCompile Include="program_top.cpp" />
+    <ClCompile Include="Puzzle.cpp" />
+    <ClCompile Include="ResultBoards.cpp" />
+    <ClCompile Include="Search.cpp" />
+    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Square.cpp" />
+    <ClCompile Include="Test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Board.h" />
+    <ClInclude Include="Book.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="Evaluations.h" />
+    <ClInclude Include="Evaluations2.h" />
+    <ClInclude Include="FileIO.h" />
+    <ClInclude Include="functions.h" />
+    <ClInclude Include="MoveContent.h" />
+    <ClInclude Include="MyForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="nsd.h" />
+    <ClInclude Include="PGN.h" />
+    <ClInclude Include="Piece.h" />
+    <ClInclude Include="PieceMoves.h" />
+    <ClInclude Include="PieceSquareTable.h" />
+    <ClInclude Include="PieceTaken.h" />
+    <ClInclude Include="PieceValidMoves.h" />
+    <ClInclude Include="Program.h" />
+    <ClInclude Include="program_top.h" />
+    <ClInclude Include="Puzzle.h" />
+    <ClInclude Include="ResultBoards.h" />
+    <ClInclude Include="Search.h" />
+    <ClInclude Include="Source.h" />
+    <ClInclude Include="Square.h" />
+    <ClInclude Include="Test.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MyForm.resx">
+      <DependentUpon>MyForm.h</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Desktop\board\Chess_bdt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_blt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_Board.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_kdt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_klt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_ndt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_nlt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_pdt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_plt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_qdt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_qlt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_rdt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\Chess_rlt60.png" />
+    <Image Include="..\..\..\..\Desktop\board\empty.png" />
+    <Image Include="..\..\..\..\Desktop\board\Empty_Board.jpg" />
+    <Image Include="..\..\..\..\Desktop\board\unnamed.jpg" />
+    <Image Include="Chess_bdt60.png" />
+    <Image Include="Chess_blt60.png" />
+    <Image Include="Chess_Board.png" />
+    <Image Include="Chess_kdt60.png" />
+    <Image Include="Chess_klt60.png" />
+    <Image Include="Chess_ndt60.png" />
+    <Image Include="Chess_nlt60.png" />
+    <Image Include="Chess_pdt60.png" />
+    <Image Include="Chess_plt60.png" />
+    <Image Include="Chess_qdt60.png" />
+    <Image Include="Chess_qlt60.png" />
+    <Image Include="Chess_rdt60.png" />
+    <Image Include="Chess_rlt60.png" />
+    <Image Include="empty.png" />
+    <Image Include="Empty_Board.jpg" />
+    <Image Include="unnamed.jpg" />
+    <Image Include="white_pawn.bmp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
