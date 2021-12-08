@@ -3,6 +3,12 @@
 //#include <stdio.h>
 #include <chrono>
 
+extern int time1 = 0;
+extern int time2 = 0;
+extern int time3 = 0;
+extern int time4 = 0;
+extern int time5 = 0;
+
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
@@ -60,7 +66,7 @@ namespace EvaluateMoves {
 			std::copy(piece.ValidMoves.begin(), piece.ValidMoves.end(), each_squares_possible_moves + 32 * i);
 		}
 		std::chrono::steady_clock::time_point end1 = std::chrono::steady_clock::now();
-		std::cout << "Time for list to array conversion: " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << "[탎]" << std::endl;
+		//std::cout << "Time for list to array conversion: " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << "[탎]" << std::endl;
 
 		std::chrono::steady_clock::time_point begin2 = std::chrono::steady_clock::now();
 		Square* d_squares;
@@ -75,22 +81,40 @@ namespace EvaluateMoves {
 		cudaMemcpy(d_squares, examineBoard.Squares, 64 * sizeof(Square), cudaMemcpyHostToDevice);
 		cudaMemcpy(d_each_square_possible_moves, each_squares_possible_moves, 64 * 32 * sizeof(int), cudaMemcpyHostToDevice);
 		std::chrono::steady_clock::time_point end2 = std::chrono::steady_clock::now();
-		std::cout << "Time for data upload: " << std::chrono::duration_cast<std::chrono::microseconds>(end2 - begin2).count() << "[탎]" << std::endl;
+		//std::cout << "Time for data upload: " << std::chrono::duration_cast<std::chrono::microseconds>(end2 - begin2).count() << "[탎]" << std::endl;
 
 		std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 		evaluate_moves_kernel << <64, 32 >> > (d_squares, d_each_square_possible_moves, d_moves);
-		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-		std::cout << "Time for cuda kernel only: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[탎]" << std::endl;
-		cudaMemcpy(moves, d_moves, 64 * 32 * sizeof(Position), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
+		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+		//std::cout << "Time for cuda kernel only: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[탎]" << std::endl;
+
+		std::chrono::steady_clock::time_point begin3 = std::chrono::steady_clock::now();
+		cudaMemcpy(moves, d_moves, 64 * 32 * sizeof(Position), cudaMemcpyDeviceToHost);
 		cudaFree(d_squares), cudaFree(d_each_square_possible_moves), cudaFree(d_moves);
+		std::chrono::steady_clock::time_point end3 = std::chrono::steady_clock::now();
+
+		time1 = time1 + std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count();
+		time2 = time2 + std::chrono::duration_cast<std::chrono::microseconds>(end2 - begin2).count();
+		time3 = time3 + std::chrono::duration_cast<std::chrono::microseconds>(end3 - begin3).count();
+		time4 = time4 + std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
 		
+		std::chrono::steady_clock::time_point begin4 = std::chrono::steady_clock::now();
 		list<Position> positions = list<Position>();
 		for (int i = 0; i < 64 * 32; ++i) {
 			if (moves[i].SrcPosition != -1) {
 				positions.push_back(moves[i]);
 			}
 		}
+
+		delete[] each_squares_possible_moves;
+		delete moves;
+
+		std::chrono::steady_clock::time_point end4 = std::chrono::steady_clock::now();
+
+		time1 = time1 + std::chrono::duration_cast<std::chrono::microseconds>(end4 - begin4).count();
+
+		//printf("CPU preproccess: %d, GPU load: %d, GPU kernel: %d, GPU send: %d\n", time1, time2, time4, time3);
 
 		return positions;
 	}

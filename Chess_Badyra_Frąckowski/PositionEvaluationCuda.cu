@@ -1,7 +1,18 @@
+#include <cuda.h>
+#include <device_functions.h>
+#include <cuda_runtime_api.h>
 #include "PositionEvaluationCuda.cuh"
 #include <assert.h>
 //#include <stdio.h>
 #include <chrono>
+#ifndef __CUDACC__  
+	#define __CUDACC__
+#endif
+
+extern long time_cuda = 0;
+extern long count_positions = 0;
+extern long min_time = 1000000000;
+extern long max_time = 0;
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
@@ -10,6 +21,28 @@ inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort =
 	{
 		fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
 		if (abort) exit(code);
+	}
+}
+
+__global__ void sum_matrix(int* result) {
+	__shared__ int score[64];
+
+	int index = threadIdx.x;
+	score[index] = result[index];
+
+	__syncthreads();
+	{
+		//printf("Score from index %d is %d\n", index, score[index]);
+		for (int stride = 32; stride > 0; stride >>= 1) {
+			//__syncthreads();
+			if (index < stride) {
+				score[index] = score[index] + score[index + stride];
+				//printf("Score from index %d is %d\n", index, score[index]);
+			}
+			__syncthreads();
+		}
+
+		result[0] = score[0];
 	}
 }
 
@@ -90,138 +123,163 @@ __host__ __device__ static short Pawns[64];
 */
 
 
-__global__ void evaluate_board_kernel(Square* squares, bool endGamePhase, int* score) 
-{	/*
+__global__ void evaluate_board_kernel(Square* squares, bool endGamePhase, int* result) 
+{	
+	/*
 	__shared__ short PawnTable[64];
 	__shared__ short KnightTable[64];
 	__shared__ short BishopTable[64];
 	__shared__ short KingTable[64];
 	__shared__ short KingTableEndGame[64];
 	*/
-	//__shared__ int score[64];
+		__shared__ int score[64];
 
-	int index = blockIdx.x * blockDim.x + threadIdx.x;
-	int position = index;
-	/*
-	PawnTable[index] = PawnTableGPU[index];
-	KnightTable[index] = KnightTableGPU[index];
-	BishopTable[index] = BishopTableGPU[index];
-	KingTable[index] = KingTableGPU[index];
-	KingTableEndGame[index] = KingTableEndGameGPU[index];
-	*/
-
-	if (squares[index].Piece1.PieceColor == ChessPieceColor::Black)
-	{
-		position = (63 - index);
-	}
-
-	if (squares[index].Piece1.PieceType == ChessPieceType::None)
-	{
-		score[index] = 0;
-	}
-	else {
-
-		//Calculate Piece Values
-		score[index] += squares[index].Piece1.PieceValue;
-		//printf("first assignment: %d\n", score[index]);
-		score[index] += squares[index].Piece1.DefendedValue;
-		//printf("second assignment: %d\n", score[index]);
-		score[index] -= squares[index].Piece1.AttackedValue;
-		//printf("third assignment: %d\n", score[index]);
-
-		//Double Penalty for Hanging Pieces
-		if (squares[index].Piece1.DefendedValue < squares[index].Piece1.AttackedValue)
-		{
-			score[index] -= ((squares[index].Piece1.AttackedValue - squares[index].Piece1.DefendedValue) * 10);
-			//printf("forth assignment: %d\n", score[index]);
-		}
-
-		//Add Points for Mobility
+		int index = threadIdx.x;
+		int position = index;
 		/*
-		if (!squares[index].Piece1.ValidMoves.empty())
-		{
-			score[index] += squares[index].Piece1.ValidMoves.size();
-		}
+		PawnTable[index] = PawnTableGPU[index];
+		KnightTable[index] = KnightTableGPU[index];
+		BishopTable[index] = BishopTableGPU[index];
+		KingTable[index] = KingTableGPU[index];
+		KingTableEndGame[index] = KingTableEndGameGPU[index];
 		*/
-
-		// LastValidMoveCount is not always initialized!!!! So it gives error somethimes
-		//score[index] += squares[index].Piece1.LastValidMoveCount;
-		//printf("fifth assignment: %d\n", score[index]);
-
-		if (squares[index].Piece1.PieceType == ChessPieceType::Pawn)
+	{
+		if (squares[index].Piece1.PieceColor == ChessPieceColor::Black)
 		{
+			position = (63 - index);
+		}
 
-			if (index % 8 == 0 || index % 8 == 7)
+		if (squares[index].Piece1.PieceType == ChessPieceType::None)
+		{
+			score[index] = 0;
+			//printf("Assigned to index %d value %d\n", index, score[index]);
+		}
+		else {
+
+			//Calculate Piece Values
+			score[index] += squares[index].Piece1.PieceValue;
+			//printf("first assignment: %d\n", score[index]);
+			score[index] += squares[index].Piece1.DefendedValue;
+			//printf("second assignment: %d\n", score[index]);
+			score[index] -= squares[index].Piece1.AttackedValue;
+			//printf("third assignment: %d\n", score[index]);
+
+			//Double Penalty for Hanging Pieces
+			if (squares[index].Piece1.DefendedValue < squares[index].Piece1.AttackedValue)
 			{
-				//Rook Pawns are worth 15% less because they can only attack one way
-				score[index] -= 15;
-				//printf("sixht assignment: %d\n", score[index]);
+				score[index] -= ((squares[index].Piece1.AttackedValue - squares[index].Piece1.DefendedValue) * 10);
+				//printf("forth assignment: %d\n", score[index]);
 			}
 
-			//Calculate Position Values
-			score[index] += PawnTableGPU[position];
-			//printf("seventh assignment: %d\n", score[index]);
-		}
-		else if (squares[index].Piece1.PieceType == ChessPieceType::Knight)
-		{
-			//*knightCount = (knightCount);
-
-			score[index] += KnightTableGPU[position];
-
-			//In the end game remove a few points for Knights since they are worth less
-			if (endGamePhase)
-			{
-				score[index] -= 10;
-			}
-
-		}
-		else if (squares[index].Piece1.PieceType == ChessPieceType::Bishop)
-		{
-			//In the end game Bishops are worth more
-			if (endGamePhase)
-			{
-				score[index] += 10;
-			}
-
-			score[index] += BishopTableGPU[position];
-		}
-		else if (squares[index].Piece1.PieceType == ChessPieceType::Queen)
-		{
-			if (squares[index].Piece1.Moved && !endGamePhase)
-			{
-				score[index] -= 10;
-			}
-		}
-		else if (squares[index].Piece1.PieceType == ChessPieceType::King)
-		{
+			//Add Points for Mobility
 			/*
 			if (!squares[index].Piece1.ValidMoves.empty())
 			{
-				if (squares[index].Piece1.ValidMoves.size() < 2)
+				score[index] += squares[index].Piece1.ValidMoves.size();
+			}
+			*/
+
+			// LastValidMoveCount is not always initialized!!!! So it gives error somethimes
+			//score[index] += squares[index].Piece1.LastValidMoveCount;
+			//printf("fifth assignment: %d\n", score[index]);
+
+			if (squares[index].Piece1.PieceType == ChessPieceType::Pawn)
+			{
+
+				if (index % 8 == 0 || index % 8 == 7)
+				{
+					//Rook Pawns are worth 15% less because they can only attack one way
+					score[index] -= 15;
+					//printf("sixht assignment: %d\n", score[index]);
+				}
+
+				//Calculate Position Values
+				score[index] += PawnTableGPU[position];
+				//printf("seventh assignment: %d\n", score[index]);
+			}
+			else if (squares[index].Piece1.PieceType == ChessPieceType::Knight)
+			{
+				//*knightCount = (knightCount);
+
+				score[index] += KnightTableGPU[position];
+
+				//In the end game remove a few points for Knights since they are worth less
+				if (endGamePhase)
+				{
+					score[index] -= 10;
+				}
+
+			}
+			else if (squares[index].Piece1.PieceType == ChessPieceType::Bishop)
+			{
+				//In the end game Bishops are worth more
+				if (endGamePhase)
+				{
+					score[index] += 10;
+				}
+
+				score[index] += BishopTableGPU[position];
+			}
+			else if (squares[index].Piece1.PieceType == ChessPieceType::Queen)
+			{
+				if (squares[index].Piece1.Moved && !endGamePhase)
+				{
+					score[index] -= 10;
+				}
+			}
+			else if (squares[index].Piece1.PieceType == ChessPieceType::King)
+			{
+				/*
+				if (!squares[index].Piece1.ValidMoves.empty())
+				{
+					if (squares[index].Piece1.ValidMoves.size() < 2)
+					{
+						score[index] -= 5;
+					}
+				}
+				*/
+				if (squares[index].Piece1.LastValidMoveCount < 2)
 				{
 					score[index] -= 5;
 				}
-			}
-			*/
-			if (squares[index].Piece1.LastValidMoveCount < 2)
-			{
-				score[index] -= 5;
-			}
 
-			if (endGamePhase)
-			{
-				score[index] += KingTableEndGameGPU[position];
+				if (endGamePhase)
+				{
+					score[index] += KingTableEndGameGPU[position];
+				}
+				else
+				{
+					score[index] += KingTableGPU[position];
+				}
 			}
-			else
-			{
-				score[index] += KingTableGPU[position];
+			if (squares[index].Piece1.PieceColor == ChessPieceColor::Black) {
+				score[index] = -score[index];
 			}
 		}
-		if (squares[index].Piece1.PieceColor == ChessPieceColor::Black) {
-			score[index] = -score[index];
-		}
+		//printf("Ended node: %d\n", index);
 	}
-	//printf("Ended node: %d\n", index);
+
+	//__shared__ int results[64];
+	//results[index] = score[index];
+	__syncthreads();
+	/*
+	{
+		//printf("Score from index %d is %d\n", index, score[index]);
+		for (int stride = 32; stride > 0; stride >>= 1) {
+			//__syncthreads();
+			if (index < stride) {
+				score[index] = score[index] + score[index + stride];
+				//printf("Score from index %d is %d\n", index, score[index]);
+			}
+			__syncthreads();
+		}
+
+		result[0] = score[0];
+
+	}
+	*/
+	
+	sum_matrix << <1, 64 >> >(score);
 
 }
 
@@ -567,7 +625,7 @@ namespace EvaluatePieces {
 		}
 		*/
 		int* d_score;
-		int* score = (int*)malloc(64*sizeof(int));
+		int* score = (int*)malloc(sizeof(int));
 		/*
 		short* d_Kings;
 		short* d_Queens;
@@ -580,7 +638,7 @@ namespace EvaluatePieces {
 		Square* d_squares;
 		
 
-		cudaMalloc(&d_score, 64*sizeof(int));
+		cudaMalloc(&d_score, sizeof(int));
 		cudaMalloc(&d_squares, sizeof(board.Squares));
 		/*
 		cudaMalloc(&d_Kings, 64 * sizeof(short));
@@ -610,7 +668,8 @@ namespace EvaluatePieces {
 
 		evaluate_board_kernel << <1, 64 >> > (d_squares, board.EndGamePhase, d_score);
 		//evaluate_board_kernel_v2 << <1, 64 >> > (late_game, d_score, d_Kings, d_Queens, d_Rooks, d_Bishops, d_Knights, d_Pawns);
-		cudaMemcpy(score, d_score, 64 * sizeof(int), cudaMemcpyDeviceToHost);
+		cudaMemcpy(score, d_score, sizeof(int), cudaMemcpyDeviceToHost);
+		cudaDeviceSynchronize();
 		if (board.StaleMate)
 		{
 			return;
@@ -684,12 +743,12 @@ namespace EvaluatePieces {
 				board.Score += 50;
 			}
 		}
-		cudaDeviceSynchronize();
 		//board.Score = *score;
-		for (int i = 0; i < 64; ++i) {
-			board.Score += score[i];
+		//for (int i = 0; i < 64; ++i) {
+			//board.Score += score[i];
 			//printf("Score from i: %d is: %d\n", i, score[i]);
-		}
+		//}
+		board.Score = *score;
 		/*
 		//Black Isolated Pawns
 		if (blackPawnCount[0] >= 1 && blackPawnCount[1] == 0)
@@ -841,7 +900,15 @@ namespace EvaluatePieces {
 		*/
 		//std::cout << "Score from cuda evaluation is : " << board.Score << std::endl;
 		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-		//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+		time_cuda = time_cuda + std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+		count_positions = count_positions + 1;
+		if (min_time > std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) {
+			min_time = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+		}
+		if (max_time < std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() && std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() < 160000) {
+			max_time = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+		}
+		std::cout << "Time difference gpu = " << time_cuda << "[µs], positions counted: " << count_positions << ", min time: " << min_time << ", max time: " << max_time << " board score: " << board.Score << std::endl;
 		cudaFree(d_squares), cudaFree(d_score); 
 		//cudaFree(d_Kings), cudaFree(d_Queens), cudaFree(d_Rooks), cudaFree(d_Bishops), cudaFree(d_Knights), cudaFree(d_Pawns);
 		//cudaFree(d_PawnTable);

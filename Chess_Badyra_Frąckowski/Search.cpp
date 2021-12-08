@@ -13,6 +13,9 @@
 //#include "PieceValidMoves.h"
 
 using namespace std;
+extern long time_gpu = 0;
+extern long time_cpu_search = 0;
+extern long positions_count = 0;
 
 
 //bool Search::sortComparator::operator() (Board & s2, Board & s1)
@@ -22,7 +25,7 @@ using namespace std;
 struct sortComparator {
     bool operator () (Board& s2, Board& s1)
     {
-        return (((s1.Score) - (s2.Score)) > 0);
+        return (((s1.Score) - (s2.Score)) < 0);
     }
 };
 
@@ -288,8 +291,12 @@ int Search::AlphaBeta(Board& examineBoard, char depth, int alpha, int beta, int&
     std::chrono::steady_clock::time_point end1 = std::chrono::steady_clock::now();
     list<Position> positions_cuda = EvaluateMoves::EvaluateMovesCuda(examineBoard, depth);
     std::chrono::steady_clock::time_point end2 = std::chrono::steady_clock::now();
+    positions_count = positions_count + 1;
+    time_cpu_search = time_cpu_search + std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin).count();
+    time_gpu = time_gpu + std::chrono::duration_cast<std::chrono::microseconds>(end2 - end1).count();
+    printf("Time cpu: %d, time gpu: %d, positions count: %d\n", time_cpu_search, time_gpu, positions_count);
 
-    printf("Len of cpu positions: %d, time: %d\nLen of gpu positions: %d, time: %d\n", positions.size(), std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin).count(), positions_cuda.size(), std::chrono::duration_cast<std::chrono::microseconds>(end2 - end1).count());
+    //printf("Len of cpu positions: %d, time: %d\nLen of gpu positions: %d, time: %d\n", positions.size(), std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin).count(), positions_cuda.size(), std::chrono::duration_cast<std::chrono::microseconds>(end2 - end1).count());
 
     if (examineBoard.WhiteCheck || examineBoard.BlackCheck || positions.size() == 0)
     {

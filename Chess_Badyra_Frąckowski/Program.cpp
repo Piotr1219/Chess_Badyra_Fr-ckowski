@@ -24,8 +24,8 @@ void Program::RunEngine()
 {
 	bool ShowBoard = false;
 
-	//Engine engine = Engine();
-	Engine engine;
+	Engine engine = Engine("3rr1k1/b1q2pp1/2pp3p/1p2nN2/p3P2P/2P2P2/PP1Q2P1/1B1RR2K wKQkq-01");
+	//Engine engine;
 	DrawBoard(engine);
 	std::cout << engine.FEN() << endl;
 
@@ -131,6 +131,11 @@ void Program::RunEngine()
 				if (move == "hard")
 				{
 					engine.setGameDifficulty(Engine::Difficulty::Hard);
+					continue;
+				}
+				if (move == "medium")
+				{
+					engine.setGameDifficulty(Engine::Difficulty::Medium);
 					continue;
 				}
 				if (move == "easy")

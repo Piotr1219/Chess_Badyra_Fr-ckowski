@@ -8,6 +8,11 @@
 //#include "Square.h"
 #include <chrono>
 
+extern long time_cpu = 0;
+extern long positions_cpu = 0;
+extern long min_time_cpu = 1000000000;
+extern long max_time_cpu = 0;
+
 using namespace std;
 
 int EvaluatePieceScore2(Square square, char position, bool endGamePhase,
@@ -541,11 +546,23 @@ void EvaluateBoardScore2(Board& board)
         board.Score += whitePawnCount[7];
     }
 
+    int temp = board.Score;
+
     //std::cout << "Score from EvaluateBoardScore2 is : " << board.Score << std::endl;
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    //std::cout << "Time difference cpu = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+    positions_cpu = positions_cpu + 1;
+    if (min_time_cpu > std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) {
+        min_time_cpu = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    }
+    if (max_time_cpu < std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) {
+        max_time_cpu = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    }
+    time_cpu = time_cpu + std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time difference cpu = " << time_cpu << "[µs], positions cpu: " << positions_cpu << ", min time: " << min_time_cpu << ", max time: " << max_time_cpu << std::endl;
+    //std::cout << "Cpu result: " << board.Score << std::endl;
     //std::cout << "Testing cuda evaluation :\n";
     EvaluatePieces::EvaluatePiecesCuda(board);
+    board.Score = temp;
 }
 
 int CheckPawnWall2(Board board, int pawnPos, int kingPos)
